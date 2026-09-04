@@ -31,6 +31,11 @@ independente deve ser ativada assim que o revisor técnico tiver conta GitHub re
 colaborador. O proprietário não deve aprovar a própria mudança quando o documento representar um
 gate de liberação.
 
+Enquanto o repositório privado permanecer em uma conta pessoal Free, o GitHub informa que rulesets e
+proteções clássicas não são aplicados. Nesse período, o fluxo por pull request e o check documental
+são controles processuais, não uma barreira técnica contra bypass do proprietário. O estado e a
+condição de remoção dessa exceção estão em [CONTROLES_REPOSITORIO.md](CONTROLES_REPOSITORIO.md).
+
 ## Rastreabilidade EV2
 
 Cada evidência EV2 deve identificar, quando aplicável:

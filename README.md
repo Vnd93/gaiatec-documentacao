@@ -40,3 +40,5 @@ branch de desenvolvimento EV2 no commit qualificado registrado em [ORIGEM.md](OR
 Este é o repositório principal para manutenção da documentação. Alterações futuras devem ser feitas
 aqui por branches e pull requests, seguindo [GOVERNANCA.md](GOVERNANCA.md). Código executável,
 workflows de implantação e secrets de runtime continuam fora deste repositório documental.
+
+Estado dos controles técnicos: [CONTROLES_REPOSITORIO.md](CONTROLES_REPOSITORIO.md).
