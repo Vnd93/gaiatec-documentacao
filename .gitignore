@@ -3,3 +3,8 @@ Thumbs.db
 desktop.ini
 *.tmp
 *.bak
+node_modules/
+.env
+.env.*
+!.env.example
+coverage/
