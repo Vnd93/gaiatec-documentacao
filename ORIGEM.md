@@ -38,3 +38,17 @@ repositório.
 O checkout de desenvolvimento passou a usar `Vnd93/gaiatec-cms` como `origin`. O repositório
 histórico permanece configurado como `legacy-source`, somente para leitura e com push localmente
 desabilitado. Detalhes: [evidência da migração](docs/ev2/fase-12/MIGRACAO_REPOSITORIO_EXECUTAVEL_2026-09-04.md).
+
+## Atualização EV2.13
+
+- Repositório executável de origem: <https://github.com/Vnd93/gaiatec-cms>
+- Branch de origem: `ev2/fase-13-hardening-pre-producao`
+- SHA do candidato qualificado: `518e8e5df605264013d94a16998d00168d4d03c7`
+- Commit documental de origem: `8740d1cb776f76953d16b6c23ac94d960a8192f6`
+- CI vinculada: [run 33924530169](https://github.com/Vnd93/gaiatec-cms/actions/runs/33924530169)
+- Data da sincronização: `2026-09-04`
+- Destinos: `docs/ev2/fase-13/`, `docs/adr/ADR-022*`, índice EV2, backlog EV2.0 e notas G12
+
+A atualização registra o Gate G13 de staging, suas evidências JSON sanitizadas e a elegibilidade
+runtime fail-closed. Ela não transfere código, build ou secrets e não declara o Gate G12 nem produção
+aprovados.
