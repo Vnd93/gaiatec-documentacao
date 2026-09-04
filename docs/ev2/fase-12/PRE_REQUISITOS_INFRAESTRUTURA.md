@@ -9,8 +9,9 @@ ou substituído por confirmação verbal.
 | ------------------------------ | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
 | Cloudflare produção            | projeto `gaiatec-website` ativo e com histórico recuperável                                | manter token de Pages com menor privilégio e validar baseline na janela    |
 | Deployment produtivo observado | `ff2dbb65-2f8b-4840-a9a1-f2fde29e8ebf`, release `ba1131060177cdc602448ba4e9aeccf7afc298a5` | reconfirmar automaticamente; o valor pode mudar                            |
-| Ambiente GitHub `production`   | não configurado                                                                            | criar ambiente protegido, lista com dois revisores e `prevent_self_review` |
-| Branch `main`                  | sem proteção                                                                               | exigir PR, um approval, admins incluídos e checks estritos da CI           |
+| Repositório executável         | `Vnd93/gaiatec-cms` privado, administrável e com histórico migrado                         | manter código e runtime separados do repositório documental                |
+| Ambiente GitHub `production`   | não configurado; nenhum secret foi cadastrado                                              | criar somente após existir proteção efetiva e revisores independentes      |
+| Branch `main`                  | privada em conta pessoal Free; proteção não é aplicada pelo GitHub                         | mover para organização Team/Enterprise e ativar a regra exigida            |
 | Secrets/variables Actions      | ausentes                                                                                   | cadastrar somente no ambiente protegido conforme lista abaixo              |
 | Supabase de produção           | projeto isolado `chfuhctnhqgyjowkvllv` saudável, mas no plano Free e ainda vazio           | backup externo, restore drill, migrations, funções e revisão RLS aprovados |
 | Edge Functions EV2             | guardas ainda recusam produção por desenho                                                 | criar release produtiva separada e homologá-la antes de qualquer ativação  |
@@ -72,10 +73,17 @@ mas não faz deploy. A execução local autenticada continua possível somente a
 
 ## Autoridade necessária
 
-As sessões GitHub verificadas não possuem administração efetiva: `Vnd93` tem permissão `write` e
-`dzsystemsproductions` não possui acesso ao repositório. Por isso, a criação do ambiente protegido e
-da proteção de `main` requer autenticação como `pedronishida` ou elevação comprovada de outra conta.
-Essa limitação não reduz a segurança: nenhum secret foi colocado no escopo do repositório e o
-workflow se recusa a prosseguir enquanto os controles não estiverem efetivamente configurados.
+`Vnd93` é proprietário e administrador efetivo do novo repositório executável. Foram aplicados os
+controles disponíveis: Actions restrito a ações oficiais e dependências externas por SHA exato,
+pin obrigatório em SHA completo, token padrão somente leitura, criação/aprovação de PR por workflow
+desabilitada, retenção de 30 dias, grafo de dependências e alertas/correções de segurança.
+
+O bloqueio restante não é de autenticação: o GitHub informa que rulesets e proteções clássicas não
+são aplicados a repositórios privados de conta pessoal Free. Como o guard de release exige proteção
+real da `main`, o ambiente `production` e seus secrets não foram criados. A liberação exige mover o
+repositório privado para uma organização GitHub Team/Enterprise, cadastrar o revisor técnico e então
+aplicar os controles desta página. Não criar regra inócua nem cadastrar secrets antes disso.
 
 Evidência detalhada: [infraestrutura produtiva de 4 de setembro de 2026](EVIDENCIAS_INFRAESTRUTURA_PRODUCAO_2026-09-04.md).
+Evidência da migração:
+[repositório executável de 4 de setembro de 2026](MIGRACAO_REPOSITORIO_EXECUTAVEL_2026-09-04.md).

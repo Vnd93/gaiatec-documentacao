@@ -3,6 +3,9 @@
 Fonte oficial da documentação técnica, funcional, operacional e de governança do projeto
 **website_gaiatecsistemas**.
 
+O código executável é mantido separadamente no repositório privado
+[`Vnd93/gaiatec-cms`](https://github.com/Vnd93/gaiatec-cms).
+
 ## Evolução do CMS — EV2
 
 - [Índice e visão geral da EV2](docs/ev2/README.md)
@@ -11,6 +14,7 @@ Fonte oficial da documentação técnica, funcional, operacional e de governanç
 - [Gate de prontidão](docs/ev2/GATE_DE_PRONTIDAO.md)
 - [Fase 12 — implantação controlada](docs/ev2/fase-12/README.md)
 - [Estado da infraestrutura produtiva](docs/ev2/fase-12/EVIDENCIAS_INFRAESTRUTURA_PRODUCAO_2026-09-04.md)
+- [Migração do repositório executável](docs/ev2/fase-12/MIGRACAO_REPOSITORIO_EXECUTAVEL_2026-09-04.md)
 
 ## Arquitetura e auditoria
 
@@ -39,6 +43,7 @@ branch de desenvolvimento EV2 no commit qualificado registrado em [ORIGEM.md](OR
 
 Este é o repositório principal para manutenção da documentação. Alterações futuras devem ser feitas
 aqui por branches e pull requests, seguindo [GOVERNANCA.md](GOVERNANCA.md). Código executável,
-workflows de implantação e secrets de runtime continuam fora deste repositório documental.
+workflows de implantação e secrets de runtime continuam fora deste repositório documental, no
+repositório privado `Vnd93/gaiatec-cms`.
 
 Estado dos controles técnicos: [CONTROLES_REPOSITORIO.md](CONTROLES_REPOSITORIO.md).

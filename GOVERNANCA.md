@@ -12,7 +12,10 @@ Este repositório não deve conter:
 - workflows com autoridade para alterar produção;
 - cópias não sanitizadas de logs ou dados pessoais.
 
-Secrets e controles de deployment pertencem exclusivamente ao repositório que executa o software.
+Secrets e controles de deployment pertencem exclusivamente ao repositório privado executável
+[`Vnd93/gaiatec-cms`](https://github.com/Vnd93/gaiatec-cms). A separação e os controles verificados
+estão registrados em
+[Migração do repositório executável](docs/ev2/fase-12/MIGRACAO_REPOSITORIO_EXECUTAVEL_2026-09-04.md).
 
 ## Fluxo de alteração
 
