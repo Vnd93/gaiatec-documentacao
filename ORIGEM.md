@@ -23,3 +23,18 @@ Foram transferidos todos os 10 arquivos Markdown existentes no commit de origem,
 A importação preserva o conteúdo das três árvores no commit acima. O remoto de origem está
 configurado somente para leitura neste checkout; a manutenção documental passa a ocorrer neste
 repositório.
+
+## Repositório executável administrável
+
+- Repositório privado: <https://github.com/Vnd93/gaiatec-cms>
+- Origem histórica: <https://github.com/pedronishida/website_gaiatecsistemas>
+- Data da migração: `2026-09-04`
+- Branch ativa migrada: `ev2/desenvolvimento-fases-1-a-12`
+- Ponta validada na migração: `5c3e00f3ca5d5be6754c130c75cc01745e30e03e`
+- Branch padrão após o hardening: `ev2/desenvolvimento-fases-1-a-12`
+- Merge do hardening: `77cda0b2c5d6999cfb5d260ad24f06f83d231b11`
+- Candidato G12 preservado: `8250db0ddb221306a2621aa9c6004f45823ec532`
+
+O checkout de desenvolvimento passou a usar `Vnd93/gaiatec-cms` como `origin`. O repositório
+histórico permanece configurado como `legacy-source`, somente para leitura e com push localmente
+desabilitado. Detalhes: [evidência da migração](docs/ev2/fase-12/MIGRACAO_REPOSITORIO_EXECUTAVEL_2026-09-04.md).

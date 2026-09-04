@@ -21,6 +21,14 @@
 O check executa formatação, valida links locais e procura padrões de credenciais sem imprimir o
 conteúdo encontrado.
 
+## Separação do código executável
+
+O código, os workflows e o histórico técnico foram migrados para o repositório privado
+[`Vnd93/gaiatec-cms`](https://github.com/Vnd93/gaiatec-cms). Este repositório continua sendo a fonte
+oficial exclusivamente documental. A evidência de origem, integridade, controles de Actions e
+bloqueios remanescentes está em
+[Migração do repositório executável](docs/ev2/fase-12/MIGRACAO_REPOSITORIO_EXECUTAVEL_2026-09-04.md).
+
 ## Exceção de proteção da `main`
 
 A interface administrativa do GitHub informa que rulesets e proteções clássicas **não são

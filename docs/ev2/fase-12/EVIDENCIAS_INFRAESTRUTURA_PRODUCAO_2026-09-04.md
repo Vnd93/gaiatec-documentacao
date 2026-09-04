@@ -45,20 +45,26 @@ Referências: [preços e limites do Supabase](https://supabase.com/pricing),
 [pausa de projetos Free](https://supabase.com/docs/guides/platform/free-project-pausing) e
 [backups de banco](https://supabase.com/docs/guides/platform/backups).
 
-## Bloqueio GitHub confirmado
+## Repositório executável e bloqueio GitHub confirmado
 
-A configuração segura dos secrets não foi contornada:
+O repositório privado executável [`Vnd93/gaiatec-cms`](https://github.com/Vnd93/gaiatec-cms) foi
+criado sob administração de `Vnd93`. A linha histórica, as branches relevantes e a tag de arquivo
+foram migradas e validadas por SHA. O GitHub Actions foi bloqueado durante a transferência e depois
+reativado com dependências fixadas por SHA completo e allowlist mínima.
 
-- `Vnd93` possui somente permissão `write` no repositório `pedronishida/website_gaiatecsistemas`;
-- `dzsystemsproductions`, disponível no seletor de contas do Chrome, não possui acesso ao
-  repositório;
-- as páginas de acesso/ambientes retornam indisponibilidade para essas sessões.
+Apesar da administração efetiva, a interface do GitHub informa que rulesets e proteções clássicas
+não são aplicados ao repositório privado enquanto ele permanecer em conta pessoal Free. A
+configuração segura dos secrets não foi contornada:
 
-Consequentemente, o ambiente protegido `production`, seus revisores, a proteção de `main` e seus
-secrets/variables continuam pendentes. A senha de banco não foi armazenada em secret de repositório
-nem em qualquer local não autorizado. A próxima sessão deve usar `pedronishida` ou uma conta que
-tenha permissão administrativa efetiva; só então as credenciais devem ser inseridas diretamente no
-ambiente protegido `production`.
+- nenhuma regra sem enforcement foi criada;
+- o ambiente `production` não foi criado;
+- nenhum secret ou variable de produção foi cadastrado;
+- o workflow continua exigindo ambiente e proteção de `main` válidos e falha fechado na ausência;
+- a senha de banco não foi armazenada em secret de repositório nem em local não autorizado.
+
+A remoção do bloqueio exige organização GitHub Team/Enterprise e revisor técnico independente. Só
+depois da proteção efetiva as credenciais podem ser inseridas diretamente no ambiente protegido.
+Evidência detalhada: [migração do repositório executável](MIGRACAO_REPOSITORIO_EXECUTAVEL_2026-09-04.md).
 
 ## Decisão
 
