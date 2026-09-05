@@ -15,7 +15,7 @@ não promove staging, não acessa dados reais e não autoriza produção.
 | Restore drill             | workflow semanal/manual decripta a cópia enviada, restaura em Supabase local efêmero e compara as tabelas públicas | primeiro drill produtivo pendente                                     |
 | DPO/legal                 | registro G12 v2 exige identidade, instante, referência e hash exato do escopo aprovado                             | aprovação humana não declarada                                        |
 | E-mail real               | Resend definido; domínio, remetente, destinatário corporativo e entrega sintética são verificados                  | credencial de produção e execução pendentes                           |
-| CSP                       | origens auditadas; staging comum em Report-Only e canary/preview/produto em enforcement                            | canary isolado do SHA `ced95e61…` passou; preview produtivo pendente  |
+| CSP                       | origens auditadas; staging comum em Report-Only e canary/preview/produto em enforcement                            | canary isolado do SHA `7804d5b4…` passou; preview produtivo pendente  |
 | Operação                  | registro G12 v2 exige quatro responsáveis distintos e evidência individual                                         | identidades reais pendentes                                           |
 | Autorização final         | workflow e registro exigem `AUTORIZO-G12-PRODUCAO:<SHA completo>`                                                  | ausente por desenho                                                   |
 
@@ -27,8 +27,9 @@ não promove staging, não acessa dados reais e não autoriza produção.
 - [Análise CSP](ANALISE_CSP.md)
 - [Responsáveis, DPO/legal e autorização](RESPONSAVEIS_E_APROVACOES.md)
 - [Evidências verificadas](EVIDENCIAS_CONTROLES_2026-09-05.md)
-- [Evidência HTTP bruta do canary CSP](evidencias/G16_CSP_HTTP_ced95e61.json)
-- [Evidência de navegador bruta do canary CSP](evidencias/G16_CSP_BROWSER_ced95e61.json)
+- [Evidência HTTP aprovada do canary CSP](evidencias/G16_CSP_HTTP_7804d5b.json)
+- [Evidência de navegador aprovada do canary CSP](evidencias/G16_CSP_BROWSER_7804d5b.json)
+- [Primeira janela HTTP preservada em pausa](evidencias/G16_CSP_HTTP_7804d5b_ATTEMPT1_PAUSE.json)
 
 O registro final deve ser criado a partir de
 `docs/ev2/fase-12/G12_APPROVAL.template.json`, salvo como
