@@ -98,5 +98,5 @@ de um observador, restaurou uma transição visual e tornou o carregador em grad
 pipeline local passou com 51 arquivos e 168/168 testes; CIs de push e PR aprovaram qualidade, banco
 e navegador; o alias efêmero `ev2-final-rc` confirmou health/manifest no SHA exato e smoke HTTP 6/6.
 Os PRs de código #6–#8 foram integrados em ordem no head `69aef81…` do ramo EV2 consolidado, e os
-PRs documentais #5–#6 foram integrados em `main`. Não há bloqueador P0/P1 conhecido no escopo
+PRs documentais #5–#7 foram integrados em `main`. Não há bloqueador P0/P1 conhecido no escopo
 validado. O Gate G12 e todos os limites de produção permanecem inalterados.

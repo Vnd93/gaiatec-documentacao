@@ -5,6 +5,7 @@
 **Candidato:** `36c5cae3ff565f4b10974a84f021d6491d248931`<br>
 **Head integrado:** `69aef81ce3b7f0431245bfa442cf5e5a17bbd4f8`<br>
 **PR de código:** [Vnd93/gaiatec-cms#8](https://github.com/Vnd93/gaiatec-cms/pull/8)<br>
+**PR documental:** [Vnd93/gaiatec-documentacao#7](https://github.com/Vnd93/gaiatec-documentacao/pull/7)<br>
 **Produção:** não alterada
 
 ## Escopo avaliado
@@ -72,7 +73,8 @@ em `ev2/desenvolvimento-fases-1-a-12`. O head consolidado contém tanto o SHA ap
 o SHA do hardening final. Os PRs documentais
 [#5](https://github.com/Vnd93/gaiatec-documentacao/pull/5) e
 [#6](https://github.com/Vnd93/gaiatec-documentacao/pull/6) também foram integrados em `main` nessa
-ordem.
+ordem. O PR documental [#7](https://github.com/Vnd93/gaiatec-documentacao/pull/7) consolida este
+relatório e o índice final no mesmo branch canônico.
 
 ## Decisão final
 

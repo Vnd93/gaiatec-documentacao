@@ -1,6 +1,6 @@
 # EV2.15 — Fechamento técnico e integração segura
 
-**Estado:** código qualificado e integrado; fechamento documental em validação<br>
+**Estado:** qualificação e integração concluídas; limites de produção preservados<br>
 **Data-base:** 5 de setembro de 2026<br>
 **Branch de código consolidada:** `ev2/desenvolvimento-fases-1-a-12`<br>
 **Branch documental:** `docs/ev2-fase-15-fechamento-operacional`<br>
@@ -46,7 +46,7 @@ G14.
 3. hardening final, PR `Vnd93/gaiatec-cms#8` — integrado;
 4. documentação EV2.13, PR `Vnd93/gaiatec-documentacao#5` — integrada;
 5. documentação EV2.14, PR `Vnd93/gaiatec-documentacao#6` — integrada;
-6. este fechamento documental, em PR próprio.
+6. fechamento documental, PR `Vnd93/gaiatec-documentacao#7` — integrado.
 
 Cada PR posterior deve ser reposicionado para a base consolidada somente depois da integração do
 anterior. Uma validação remota verde não autoriza publicação em produção.
@@ -59,6 +59,7 @@ anterior. Uma validação remota verde não autoriza publicação em produção.
 - [CI do PR do candidato](https://github.com/Vnd93/gaiatec-cms/actions/runs/33976383770)
 - [Preview efêmero validado](https://ev2-final-rc.gaiatec-cms-staging.pages.dev)
 - [CI do ramo consolidado](https://github.com/Vnd93/gaiatec-cms/actions/runs/33977119188)
+- [PR documental #7](https://github.com/Vnd93/gaiatec-documentacao/pull/7)
 
 ## Limites remanescentes
 
