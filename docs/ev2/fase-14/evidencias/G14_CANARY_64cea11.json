@@ -1,0 +1,237 @@
+{
+  "schemaVersion": 1,
+  "gate": "G14",
+  "outcome": "G14_CANARY_PASS",
+  "target": {
+    "ref": "glcqsosxwgmlhzgcsnzv",
+    "name": "GAIATEC CMS Staging",
+    "region": "us-east-2",
+    "candidateOrigin": "https://ev2-g14-canary.gaiatec-cms-staging.pages.dev",
+    "stableOrigin": "https://gaiatec-cms-staging.pages.dev"
+  },
+  "candidateSha": "64cea11e196bc3889dc6ea7ab1b6b151f64b0220",
+  "startedAt": "2026-09-05T14:59:15.697Z",
+  "completedAt": "2026-09-05T15:00:06.342Z",
+  "checks": 35,
+  "passed": 35,
+  "checkResults": [
+    {
+      "name": "flags_default_off",
+      "result": "PASS",
+      "detail": "[{\"flag_key\":\"ev2.ai_assist\",\"default_enabled\":false,\"kill_switch\":false},{\"flag_key\":\"ev2.ai_execute\",\"default_enabled\":false,\"kill_switch\":false}]"
+    },
+    {
+      "name": "candidate_release_exact",
+      "result": "PASS",
+      "detail": "{\"manifest\":{\"valid\":true,\"violations\":[]},\"health\":{\"valid\":true,\"violations\":[]}}"
+    },
+    {
+      "name": "candidate_private_route",
+      "result": "PASS",
+      "detail": "login=200; execution=200"
+    },
+    {
+      "name": "authentication_required",
+      "result": "PASS",
+      "detail": 401
+    },
+    {
+      "name": "two_synthetic_mfa_users",
+      "result": "PASS",
+      "detail": 2
+    },
+    {
+      "name": "individual_flags_default_closed",
+      "result": "PASS",
+      "detail": "ai_assist_required"
+    },
+    {
+      "name": "no_broad_activation_present",
+      "result": "PASS",
+      "detail": 0
+    },
+    {
+      "name": "dual_individual_overrides",
+      "result": "PASS",
+      "detail": "individual_overrides/individual_overrides"
+    },
+    {
+      "name": "synthetic_provider_boundary",
+      "result": "PASS",
+      "detail": "{\"providerMode\":\"synthetic\",\"externalProviderEnabled\":false,\"realDataAllowed\":false}"
+    },
+    {
+      "name": "dual_flag_required",
+      "result": "PASS",
+      "detail": "user_override_off"
+    },
+    {
+      "name": "closed_tool_catalog",
+      "result": "PASS",
+      "detail": "draft.apply_patch,release.publish,release.rollback,release.schedule,workflow.submit"
+    },
+    {
+      "name": "policy_contract",
+      "result": "PASS",
+      "detail": "{\"gate\":\"G14\",\"dataClass\":\"synthetic\",\"maxPlanSteps\":20,\"approvalMinutes\":10,\"productionAllowed\":false,\"compensationRequired\":true,\"externalProviderEnabled\":false,\"reviewerSeparationRequired\":true}"
+    },
+    {
+      "name": "mfa_required",
+      "result": "PASS",
+      "detail": "CMS_AI_EXECUTE_MFA_REQUIRED"
+    },
+    {
+      "name": "production_denied",
+      "result": "PASS",
+      "detail": "CMS_AI_EXECUTE_PRODUCTION_GATED"
+    },
+    {
+      "name": "personal_data_denied",
+      "result": "PASS",
+      "detail": "CMS_AI_EXECUTE_INPUT_DENIED"
+    },
+    {
+      "name": "concurrent_target_creation_single_winner",
+      "result": "PASS",
+      "detail": "200:created,409:CMS_AI_EXECUTE_TARGET_CONFLICT"
+    },
+    {
+      "name": "dry_run_plan_created",
+      "result": "PASS",
+      "detail": "57763c9c11595a4e43b29464462fa34cb4721b3d876965d7847933a2326b2a62"
+    },
+    {
+      "name": "review_queue_segregated",
+      "result": "PASS",
+      "detail": "{\"owned\":false,\"approvable\":true}"
+    },
+    {
+      "name": "self_approval_denied",
+      "result": "PASS",
+      "detail": "CMS_AI_EXECUTE_REVIEWER_SEPARATION_REQUIRED"
+    },
+    {
+      "name": "changed_hash_denied",
+      "result": "PASS",
+      "detail": "CMS_AI_EXECUTE_PLAN_CONFLICT"
+    },
+    {
+      "name": "distinct_reviewer_approval",
+      "result": "PASS",
+      "detail": "approved"
+    },
+    {
+      "name": "approver_cannot_execute",
+      "result": "PASS",
+      "detail": "CMS_AI_EXECUTE_FORBIDDEN"
+    },
+    {
+      "name": "concurrent_execution_single_winner",
+      "result": "PASS",
+      "detail": "200:executed,409:CMS_AI_EXECUTE_PLAN_CONFLICT"
+    },
+    {
+      "name": "atomic_idempotent_execution",
+      "result": "PASS",
+      "detail": "2938577d-8482-4233-94fc-901d0d7cfee9"
+    },
+    {
+      "name": "synthetic_publication_only",
+      "result": "PASS",
+      "detail": "{\"lifecycle\":\"published\",\"version\":4}"
+    },
+    {
+      "name": "self_compensation_approval_denied",
+      "result": "PASS",
+      "detail": "CMS_AI_EXECUTE_REVIEWER_SEPARATION_REQUIRED"
+    },
+    {
+      "name": "compensation_approved_by_other_actor",
+      "result": "PASS",
+      "detail": "compensation_approved"
+    },
+    {
+      "name": "expired_compensation_approval_closed",
+      "result": "PASS",
+      "detail": "{\"compensationApproved\":false,\"compensatable\":false}"
+    },
+    {
+      "name": "expired_compensation_approval_renewed",
+      "result": "PASS",
+      "detail": "expired,active"
+    },
+    {
+      "name": "compensation_approver_cannot_execute",
+      "result": "PASS",
+      "detail": "CMS_AI_EXECUTE_FORBIDDEN"
+    },
+    {
+      "name": "concurrent_recovery_has_no_deadlock",
+      "result": "PASS",
+      "detail": "200/404:CMS_AI_EXECUTE_RUN_NOT_FOUND"
+    },
+    {
+      "name": "monotonic_compensation",
+      "result": "PASS",
+      "detail": "{\"status\":\"compensated\",\"lifecycle\":\"draft\",\"version\":5}"
+    },
+    {
+      "name": "policy_audit_complete",
+      "result": "PASS",
+      "detail": "decisions=16"
+    },
+    {
+      "name": "production_and_stable_state_unchanged",
+      "result": "PASS",
+      "detail": "{\"before\":{\"flags\":[{\"flag_key\":\"ev2.ai_assist\",\"default_enabled\":false,\"kill_switch\":false},{\"flag_key\":\"ev2.ai_execute\",\"default_enabled\":false,\"kill_switch\":false}],\"revisions\":86,\"outbox\":103},\"after\":{\"flags\":[{\"flag_key\":\"ev2.ai_assist\",\"default_enabled\":false,\"kill_switch\":false},{\"flag_key\":\"ev2.ai_execute\",\"default_enabled\":false,\"kill_switch\":false}],\"revisions\":86,\"outbox\":103}}"
+    },
+    {
+      "name": "synthetic_residue_zero",
+      "result": "PASS",
+      "detail": 0
+    }
+  ],
+  "providerMode": "synthetic",
+  "externalProviderCalls": 0,
+  "realDataUsed": false,
+  "productionMutations": 0,
+  "stableState": {
+    "before": {
+      "flags": [
+        {
+          "flag_key": "ev2.ai_assist",
+          "default_enabled": false,
+          "kill_switch": false
+        },
+        {
+          "flag_key": "ev2.ai_execute",
+          "default_enabled": false,
+          "kill_switch": false
+        }
+      ],
+      "revisions": 86,
+      "outbox": 103
+    },
+    "after": {
+      "flags": [
+        {
+          "flag_key": "ev2.ai_assist",
+          "default_enabled": false,
+          "kill_switch": false
+        },
+        {
+          "flag_key": "ev2.ai_execute",
+          "default_enabled": false,
+          "kill_switch": false
+        }
+      ],
+      "revisions": 86,
+      "outbox": 103
+    }
+  },
+  "syntheticResidue": 0,
+  "failures": {
+    "operation": null,
+    "cleanup": null
+  }
+}
