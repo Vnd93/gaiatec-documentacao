@@ -49,8 +49,8 @@ Habilitar GitHub Pro na conta pessoal ou mover o repositório privado para uma o
 Team/Enterprise e então ativar:
 
 1. pull request obrigatório;
-2. dois approvals independentes, CODEOWNERS, descarte de approvals obsoletos e revisão do último
-   push por outra pessoa;
+2. PR obrigatório de `@Vnd93`, CODEOWNERS exclusivo e zero approvals, compatível com o mantenedor
+   humano único;
 3. check `Documentation quality / quality` obrigatório e atualizado com a base;
 4. bloqueio de force-push e exclusão;
 5. aplicação aos administradores, sem bypass para documentos de gate.
