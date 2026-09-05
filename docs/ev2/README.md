@@ -1,9 +1,10 @@
 # EV2 — Evolução do CMS GAIATEC
 
-**Status:** Gates G0–G11 e G13–G14 aprovados; G12 pendente; produção e provider externo bloqueados<br>
+**Status:** Gates G0–G11 e G13–G14 aprovados; EV2.15 qualificada; G12 pendente; produção bloqueada<br>
 **Data-base:** 5 de setembro de 2026<br>
 **Fonte canônica:** Markdown versionado neste diretório<br>
-**Branch de execução:** `ev2/fase-14-ia-transacional-controlada`<br>
+**Branch de código consolidada:** `ev2/desenvolvimento-fases-1-a-12`<br>
+**Branch documental canônica:** `main`<br>
 **Branch documental preservado:** `ev2/fase-0-documentacao-e-planejamento`
 
 ## Ordem de leitura
@@ -28,10 +29,13 @@
 18. [EV2.12 — implantação controlada](fase-12/README.md) — health/release, canary, error budget, aprovações segregadas, promoção imutável, handover e rollback.
 19. [EV2.13 — hardening e elegibilidade runtime](fase-13/README.md) — isolamento de secrets, evidência vinculada, manifesto agregado, revogação e canary individual.
 20. [EV2.14 — IA transacional controlada](fase-14/README.md) — sandbox sintético, plano/dry-run, aprovação por hash, execução atômica, compensação e plano do Gate G14.
+21. [EV2.15 — fechamento técnico e integração segura](fase-15/README.md) — zero avisos acionáveis, regressões finais, preview efêmero e consolidação ordenada dos PRs.
 
 ## Escopo documental
 
-Esta trilha converte o manual e a auditoria do CMS em requisitos implementáveis, testáveis, rastreáveis e reversíveis. Ela cobre EV2.0–EV2.14 sem substituir o histórico das fases anteriores.
+Esta trilha converte o manual e a auditoria do CMS em requisitos implementáveis, testáveis,
+rastreáveis e reversíveis. Ela cobre as entregas funcionais EV2.0–EV2.14 e o fechamento técnico
+EV2.15 sem substituir o histórico das fases anteriores.
 
 O documento principal é a fonte de verdade para o desenvolvimento. O DOCX que originou esta versão permanece apenas como artefato editorial; mudanças futuras devem ser feitas primeiro no Markdown e revisadas por pull request.
 
@@ -88,3 +92,11 @@ restritas a staging e o build foi publicado somente no alias `ev2-g14-canary`. O
 G14 foi aprovado apenas para o sandbox sintético. As flags seguem default-off; produção,
 dados/domínios reais, provider externo, ativação global, merge, promoção do staging estável e o
 Gate G12 continuam bloqueados.
+
+Na EV2.15, o SHA `36c5cae…` eliminou os 46 avisos acionáveis remanescentes, corrigiu o ciclo de vida
+de um observador, restaurou uma transição visual e tornou o carregador em grade acessível. O
+pipeline local passou com 51 arquivos e 168/168 testes; CIs de push e PR aprovaram qualidade, banco
+e navegador; o alias efêmero `ev2-final-rc` confirmou health/manifest no SHA exato e smoke HTTP 6/6.
+Os PRs de código #6–#8 foram integrados em ordem no head `69aef81…` do ramo EV2 consolidado, e os
+PRs documentais #5–#6 foram integrados em `main`. Não há bloqueador P0/P1 conhecido no escopo
+validado. O Gate G12 e todos os limites de produção permanecem inalterados.
