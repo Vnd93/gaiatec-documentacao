@@ -32,6 +32,27 @@ O probe G12 agora recusa o candidato se o header ativo estiver ausente, se ambos
 presentes, se BrasilAPI/Nominatim faltarem ou se Resend reaparecer no browser. O preview produtivo é
 testado antes da promoção, portanto uma regressão CSP interrompe o workflow antes do domínio real.
 
+## Resultado do canary controlado
+
+O build imutável `ced95e61f89ff14eda9675e0ec730614899dde65` foi publicado somente no projeto
+Cloudflare de staging, branch `ev2-g16-csp-canary`, deployment
+`https://ae766b32.gaiatec-cms-staging.pages.dev`. O workflow passou a aquecer as quatro rotas duas
+vezes antes de medir, sem alterar o orçamento de 1.500 ms. A mudança foi motivada por duas medições
+do candidato anterior que preservaram 100% de disponibilidade e 0% de 5xx, mas capturaram o
+aquecimento inicial acima do orçamento; essas tentativas foram mantidas no artefato operacional e
+não tratadas como aprovação.
+
+No SHA final do canary:
+
+- a sonda HTTP passou 22/22 respostas, disponibilidade 100%, 0% de 5xx e p95 público de 1.127,818 ms;
+- health, release header, manifesto, `noindex` e CSP corresponderam exatamente ao candidato;
+- Chromium percorreu `/`, `/contato`, `/relatorio-de-obra/login` e `/admin/login`;
+- as quatro rotas retornaram 200 com CSP enforced e `criticalViolations=0`;
+- dados reais, produção, domínio real e staging estável permaneceram sem mutação.
+
+Relatórios brutos: [HTTP](evidencias/G16_CSP_HTTP_ced95e61.json) e
+[navegador](evidencias/G16_CSP_BROWSER_ced95e61.json).
+
 ## Riscos residuais e redução futura
 
 - `style-src 'unsafe-inline'` ainda é necessário pelos estilos inline existentes; remover exige
@@ -45,5 +66,6 @@ Scripts inline permanecem bloqueados. A orientação de CSP recomenda nonce ou h
 `unsafe-inline`:
 <https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/script-src>.
 
-O status `criticalViolations=0` só pode ser registrado após o canary do SHA final; a análise estática
-e os testes locais não substituem essa evidência.
+O canary de staging comprova o comportamento do SHA acima, mas não substitui o preview do candidato
+final de produção. Se o SHA produtivo mudar, CSP e todas as demais evidências vinculadas ao candidato
+devem ser repetidas.

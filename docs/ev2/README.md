@@ -107,6 +107,7 @@ conhecido no escopo validado. O Gate G12 e todos os limites de produção perman
 Na EV2.16, o repositório executável passou a recusar produção sem dois reviews reais, CODEOWNERS,
 backup externo cifrado com restore comprovado, entrega sintética pelo Resend, CSP enforced sem
 violação crítica, parecer DPO/legal identificado, quatro responsáveis distintos e autorização
-literal contendo o SHA completo. A suíte integral local passou. O canary CSP em staging e todos os
-controles que dependem de plano, secrets ou identidades reais continuam pendentes; nenhum deles foi
-simulado ou marcado como aprovado.
+literal contendo o SHA completo. A suíte integral local passou. O canary CSP isolado do SHA
+`ced95e61…` passou 22/22 respostas HTTP e quatro rotas de navegador com zero violação crítica,
+sem tocar produção ou staging estável. Os controles que dependem de plano, secrets ou identidades
+reais continuam pendentes; nenhum deles foi simulado ou marcado como aprovado.

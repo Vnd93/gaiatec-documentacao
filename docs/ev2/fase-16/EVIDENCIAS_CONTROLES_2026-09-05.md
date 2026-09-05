@@ -8,6 +8,8 @@
   estado `ACTIVE_HEALTHY`, sem migrations, funções, dados ou secrets;
 - staging `glcqsosxwgmlhzgcsnzv`: preservado e saudável;
 - Resend: integração existente confirmada no código; nenhuma credencial produtiva lida ou copiada.
+- Cloudflare staging: alias isolado `ev2-g16-csp-canary` atualizado para o SHA `ced95e61…`; staging
+  estável e projeto produtivo não foram promovidos.
 
 ## Alterações técnicas verificadas
 
@@ -18,14 +20,34 @@
 - proteção exige duas revisões reais e CODEOWNERS;
 - G12 approval schema v2 exige DPO/legal, quatro owners, todos os controles e autorização com SHA.
 
-Validação inicial:
+Validação local do candidato:
 
 - `npm run test:ev2:phase12`: 10/10;
 - `npm run test:ev2:phase16`: 5/5;
+- `npm run check`: 51 arquivos/168 testes Vitest, todos os testes EV2 e legados, typecheck, lint,
+  formatação, build e orçamento de bundle aprovados;
+- `npm audit --audit-level=high`: zero vulnerabilidades.
 - produção, dados reais, domínio real e staging estável: zero mutações.
+
+## Canary CSP G16 em staging
+
+Candidato: `ced95e61f89ff14eda9675e0ec730614899dde65`.
+
+- deployment imutável: `https://ae766b32.gaiatec-cms-staging.pages.dev`;
+- HTTP: 22/22 respostas, 100% de disponibilidade, 0% de 5xx, p95 público 1.127,818 ms,
+  orçamentos por rota aprovados e nenhum desvio de release/health/manifest/noindex/CSP;
+- navegador: quatro rotas, quatro status 200, CSP enforced, SHA exato e zero violação crítica;
+- relatórios brutos: [HTTP](evidencias/G16_CSP_HTTP_ced95e61.json) e
+  [navegador](evidencias/G16_CSP_BROWSER_ced95e61.json).
+
+O candidato anterior `3433aebb…` teve duas janelas HTTP em `pause` somente por latência de
+aquecimento (p95 1.608,260 ms e 1.510,146 ms), seguidas por uma janela aprovada de 1.007,746 ms e
+canary de navegador sem violações. O achado originou aquecimento explícito e testado no workflow;
+nenhum limite foi aumentado e nenhuma tentativa reprovada foi descrita como aprovação.
 
 ## Evidências ainda inexistentes
 
 Não foram fabricados: ruleset/proteção efetiva, reviewers, CODEOWNERS, backup real, restore real,
-parecer DPO/legal, chave Resend de produção, entrega sintética produtiva, canary CSP do SHA final,
-quatro identidades operacionais ou autorização de produção. Esses itens continuam bloqueando G12.
+parecer DPO/legal, chave Resend de produção, entrega sintética produtiva, preview CSP do SHA final de
+produção, quatro identidades operacionais ou autorização de produção. Esses itens continuam
+bloqueando G12.
