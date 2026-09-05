@@ -1,6 +1,6 @@
 # Estado dos controles do repositório
 
-**Verificado em:** 4 de setembro de 2026  
+**Verificado em:** 5 de setembro de 2026  
 **Repositório:** `Vnd93/gaiatec-documentacao`  
 **Visibilidade:** privado  
 **Proprietário:** `Vnd93`
@@ -45,10 +45,12 @@ Até a remoção da exceção:
 
 ## Condição para enforcement técnico
 
-Mover o repositório privado para uma organização GitHub Team ou Enterprise e então ativar:
+Habilitar GitHub Pro na conta pessoal ou mover o repositório privado para uma organização GitHub
+Team/Enterprise e então ativar:
 
 1. pull request obrigatório;
-2. um approval independente, com conversas resolvidas;
+2. dois approvals independentes, CODEOWNERS, descarte de approvals obsoletos e revisão do último
+   push por outra pessoa;
 3. check `Documentation quality / quality` obrigatório e atualizado com a base;
 4. bloqueio de force-push e exclusão;
 5. aplicação aos administradores, sem bypass para documentos de gate.

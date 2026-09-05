@@ -1,9 +1,10 @@
 # EV2 — Evolução do CMS GAIATEC
 
-**Status:** Gates G0–G11 e G13–G14 aprovados; EV2.15 qualificada; G12 pendente; produção bloqueada<br>
+**Status:** Gates G0–G11 e G13–G14 aprovados; EV2.15 qualificada; controles EV2.16 implementados; G12 pendente; produção bloqueada<br>
 **Data-base:** 5 de setembro de 2026<br>
 **Fonte canônica:** Markdown versionado neste diretório<br>
 **Branch de código consolidada:** `ev2/desenvolvimento-fases-1-a-12`<br>
+**Branch candidata EV2.16:** `ev2/fase-16-prontidao-producao-g12`<br>
 **Branch documental canônica:** `main`<br>
 **Branch documental preservado:** `ev2/fase-0-documentacao-e-planejamento`
 
@@ -30,12 +31,13 @@
 19. [EV2.13 — hardening e elegibilidade runtime](fase-13/README.md) — isolamento de secrets, evidência vinculada, manifesto agregado, revogação e canary individual.
 20. [EV2.14 — IA transacional controlada](fase-14/README.md) — sandbox sintético, plano/dry-run, aprovação por hash, execução atômica, compensação e plano do Gate G14.
 21. [EV2.15 — fechamento técnico e integração segura](fase-15/README.md) — zero avisos acionáveis, regressões finais, hash G14 multiplataforma, preview efêmero e consolidação ordenada dos PRs.
+22. [EV2.16 — controles vinculantes de prontidão](fase-16/README.md) — revisão independente, backup/restore externo, Resend, CSP, DPO/legal, quatro owners e autorização vinculada ao SHA.
 
 ## Escopo documental
 
 Esta trilha converte o manual e a auditoria do CMS em requisitos implementáveis, testáveis,
 rastreáveis e reversíveis. Ela cobre as entregas funcionais EV2.0–EV2.14 e o fechamento técnico
-EV2.15 sem substituir o histórico das fases anteriores.
+EV2.15 e os controles de prontidão EV2.16 sem substituir o histórico das fases anteriores.
 
 O documento principal é a fonte de verdade para o desenvolvimento. O DOCX que originou esta versão permanece apenas como artefato editorial; mudanças futuras devem ser feitas primeiro no Markdown e revisadas por pull request.
 
@@ -101,3 +103,10 @@ qualidade, banco e navegador; o alias efêmero `ev2-final-rc` confirmou health/m
 e smoke HTTP 6/6. Os PRs de código #6–#9 foram integrados em ordem no head `e92632c…` do ramo EV2
 consolidado, e os PRs documentais #5–#9 foram integrados em `main`. Não há bloqueador P0/P1
 conhecido no escopo validado. O Gate G12 e todos os limites de produção permanecem inalterados.
+
+Na EV2.16, o repositório executável passou a recusar produção sem dois reviews reais, CODEOWNERS,
+backup externo cifrado com restore comprovado, entrega sintética pelo Resend, CSP enforced sem
+violação crítica, parecer DPO/legal identificado, quatro responsáveis distintos e autorização
+literal contendo o SHA completo. A suíte integral local passou. O canary CSP em staging e todos os
+controles que dependem de plano, secrets ou identidades reais continuam pendentes; nenhum deles foi
+simulado ou marcado como aprovado.
