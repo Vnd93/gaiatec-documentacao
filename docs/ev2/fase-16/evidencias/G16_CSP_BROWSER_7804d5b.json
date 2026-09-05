@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "event": "ev2.phase16.csp.browser-canary",
+  "origin": "https://ev2-g16-csp-canary.gaiatec-cms-staging.pages.dev",
+  "candidateSha": "7804d5b44786941e4fa1f4c6ad5626cb26bee802",
+  "executedAt": "2026-09-05T18:13:55.976Z",
+  "routes": [
+    {
+      "path": "/",
+      "status": 200,
+      "release": "7804d5b44786941e4fa1f4c6ad5626cb26bee802",
+      "cspEnforced": true,
+      "violations": []
+    },
+    {
+      "path": "/contato",
+      "status": 200,
+      "release": "7804d5b44786941e4fa1f4c6ad5626cb26bee802",
+      "cspEnforced": true,
+      "violations": []
+    },
+    {
+      "path": "/relatorio-de-obra/login",
+      "status": 200,
+      "release": "7804d5b44786941e4fa1f4c6ad5626cb26bee802",
+      "cspEnforced": true,
+      "violations": []
+    },
+    {
+      "path": "/admin/login",
+      "status": 200,
+      "release": "7804d5b44786941e4fa1f4c6ad5626cb26bee802",
+      "cspEnforced": true,
+      "violations": []
+    }
+  ],
+  "criticalViolations": 0,
+  "outcome": "pass",
+  "realDataUsed": false,
+  "productionMutations": 0
+}

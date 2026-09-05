@@ -14,6 +14,7 @@ O código executável é mantido separadamente no repositório privado
 - [Gate de prontidão](docs/ev2/GATE_DE_PRONTIDAO.md)
 - [Fase 12 — implantação controlada](docs/ev2/fase-12/README.md)
 - [Fase 13 — hardening e elegibilidade runtime](docs/ev2/fase-13/README.md)
+- [Fase 16 — controles vinculantes de prontidão para produção](docs/ev2/fase-16/README.md)
 - [Relatório do canary G13](docs/ev2/fase-13/RELATORIO_CANARY_STAGING_2026-09-04.md)
 - [Pacote de revisão independente REV-01](docs/ev2/fase-13/PACOTE_REVISAO_REV01_2026-09-04.md)
 - [Estado da infraestrutura produtiva](docs/ev2/fase-12/EVIDENCIAS_INFRAESTRUTURA_PRODUCAO_2026-09-04.md)

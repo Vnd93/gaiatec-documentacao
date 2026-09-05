@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "event": "g12.rollout.probe",
+  "origin": "https://ev2-g16-csp-canary.gaiatec-cms-staging.pages.dev",
+  "candidateSha": "7804d5b44786941e4fa1f4c6ad5626cb26bee802",
+  "environment": "staging",
+  "measuredResponses": 22,
+  "sampleCount": 22,
+  "availabilityPercent": 100,
+  "http5xxRatePercent": 0,
+  "publicP95Ms": 1384.7560000000003,
+  "requestTimeoutMs": 10000,
+  "routeMetrics": {
+    "/": {
+      "samples": 5,
+      "availabilityPercent": 100,
+      "p50Ms": 876.0922,
+      "p95Ms": 949.0812999999998,
+      "maxMs": 949.0812999999998
+    },
+    "/produtos": {
+      "samples": 5,
+      "availabilityPercent": 100,
+      "p50Ms": 907.7052999999996,
+      "p95Ms": 1384.7560000000003,
+      "maxMs": 1384.7560000000003
+    },
+    "/contato": {
+      "samples": 5,
+      "availabilityPercent": 100,
+      "p50Ms": 593.1863999999996,
+      "p95Ms": 1457.4346999999998,
+      "maxMs": 1457.4346999999998
+    },
+    "/admin/login": {
+      "samples": 5,
+      "availabilityPercent": 100,
+      "p50Ms": 37.39730000000054,
+      "p95Ms": 39.00560000000041,
+      "maxMs": 39.00560000000041
+    }
+  },
+  "routeBudgetsValid": true,
+  "releaseHeadersExact": true,
+  "healthContractValid": true,
+  "manifestReleaseExact": true,
+  "nonProductionNoindexValid": true,
+  "cspPolicyValid": true,
+  "outcome": "pass",
+  "violations": []
+}
