@@ -29,7 +29,7 @@
 18. [EV2.12 — implantação controlada](fase-12/README.md) — health/release, canary, error budget, aprovações segregadas, promoção imutável, handover e rollback.
 19. [EV2.13 — hardening e elegibilidade runtime](fase-13/README.md) — isolamento de secrets, evidência vinculada, manifesto agregado, revogação e canary individual.
 20. [EV2.14 — IA transacional controlada](fase-14/README.md) — sandbox sintético, plano/dry-run, aprovação por hash, execução atômica, compensação e plano do Gate G14.
-21. [EV2.15 — fechamento técnico e integração segura](fase-15/README.md) — zero avisos acionáveis, regressões finais, preview efêmero e consolidação ordenada dos PRs.
+21. [EV2.15 — fechamento técnico e integração segura](fase-15/README.md) — zero avisos acionáveis, regressões finais, hash G14 multiplataforma, preview efêmero e consolidação ordenada dos PRs.
 
 ## Escopo documental
 
@@ -94,9 +94,10 @@ dados/domínios reais, provider externo, ativação global, merge, promoção do
 Gate G12 continuam bloqueados.
 
 Na EV2.15, o SHA `36c5cae…` eliminou os 46 avisos acionáveis remanescentes, corrigiu o ciclo de vida
-de um observador, restaurou uma transição visual e tornou o carregador em grade acessível. O
-pipeline local passou com 51 arquivos e 168/168 testes; CIs de push e PR aprovaram qualidade, banco
-e navegador; o alias efêmero `ev2-final-rc` confirmou health/manifest no SHA exato e smoke HTTP 6/6.
-Os PRs de código #6–#8 foram integrados em ordem no head `69aef81…` do ramo EV2 consolidado, e os
-PRs documentais #5–#7 foram integrados em `main`. Não há bloqueador P0/P1 conhecido no escopo
-validado. O Gate G12 e todos os limites de produção permanecem inalterados.
+de um observador, restaurou uma transição visual e tornou o carregador em grade acessível. O SHA
+final `aa1b646…` também tornou o hash do dataset G14 estável em LF/CRLF e apontou a fonte documental
+canônica. O pipeline local passou com 51 arquivos e 168/168 testes; CIs de push e PR aprovaram
+qualidade, banco e navegador; o alias efêmero `ev2-final-rc` confirmou health/manifest no SHA exato
+e smoke HTTP 6/6. Os PRs de código #6–#9 foram integrados em ordem no head `e92632c…` do ramo EV2
+consolidado, e os PRs documentais #5–#8 foram integrados em `main`. Não há bloqueador P0/P1
+conhecido no escopo validado. O Gate G12 e todos os limites de produção permanecem inalterados.
