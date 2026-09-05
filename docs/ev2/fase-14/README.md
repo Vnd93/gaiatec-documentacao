@@ -1,7 +1,7 @@
 # EV2.14 — IA transacional controlada
 
-**Estado:** candidato local implementado; Gate G14 pendente<br>
-**Data-base:** 4 de setembro de 2026<br>
+**Estado:** Gate G14 aprovado no sandbox sintético de staging<br>
+**Data-base:** 5 de setembro de 2026<br>
 **Branch:** `ev2/fase-14-ia-transacional-controlada`<br>
 **Produção e dados reais:** bloqueados
 
@@ -47,7 +47,9 @@ aprovada por outro ator.
 4. [Plano do canary em staging](PLANO_CANARY_STAGING.md)
 5. [Relatório de validação local](RELATORIO_VALIDACAO_LOCAL_2026-09-04.md)
 6. [Correções da revisão técnica](RELATORIO_CORRECOES_REVISAO_2026-09-05.md)
-7. [ADR-023](../../adr/ADR-023-ia-transacional-sintetica-e-aprovacao-por-hash.md)
+7. [Tentativa fail-closed do canary](RELATORIO_CANARY_G14_2026-09-05.md)
+8. [Canary G14 aprovado](RELATORIO_CANARY_G14_APROVADO_2026-09-05.md)
+9. [ADR-023](../../adr/ADR-023-ia-transacional-sintetica-e-aprovacao-por-hash.md)
 
 ## Verificação local
 
@@ -64,9 +66,13 @@ npm run build
 não fazem parte da validação local. Elas recusam execução sem as frases explícitas descritas no plano
 de canary.
 
-## Próximo passo controlado
+## Resultado e próximo passo controlado
 
-Concluir CI no SHA candidato e revisão independente. Depois, mediante nova autorização que nomeie
-o SHA e o escopo, executar o rehearsal da migration `0054`, aplicar migration/função/build no alias
-isolado e rodar o canary com dois usuários sintéticos MFA. G14 permanece `pause` até as evidências
-remotas e o pgTAP estarem vinculados ao mesmo SHA.
+O SHA `64cea11e196bc3889dc6ea7ab1b6b151f64b0220`, aprovado pelo REV-01, passou o canary G14 com
+35/35 verificações, dois usuários sintéticos MFA, zero chamada externa, zero dado real e zero
+resíduo. A migration `0054` e `cms-ai-execute` permanecem somente em staging; as duas flags seguem
+default-off.
+
+Merge, ativação global, dados/domínios reais, provider externo, promoção do staging estável e
+produção continuam bloqueados. Qualquer uma dessas ações exige autorização e gate próprios; a
+aprovação de G14 não as promove automaticamente.

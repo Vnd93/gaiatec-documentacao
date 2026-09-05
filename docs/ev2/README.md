@@ -1,7 +1,7 @@
 # EV2 — Evolução do CMS GAIATEC
 
-**Status:** Gates G0–G11 e G13 aprovados; G12/G14 pendentes; produção e provider externo bloqueados<br>
-**Data-base:** 4 de setembro de 2026<br>
+**Status:** Gates G0–G11 e G13–G14 aprovados; G12 pendente; produção e provider externo bloqueados<br>
+**Data-base:** 5 de setembro de 2026<br>
 **Fonte canônica:** Markdown versionado neste diretório<br>
 **Branch de execução:** `ev2/fase-14-ia-transacional-controlada`<br>
 **Branch documental preservado:** `ev2/fase-0-documentacao-e-planejamento`
@@ -81,10 +81,10 @@ as decisões EV2 do build para um manifesto runtime individual e fail-closed. A 
 foi aprovado sem promoção do staging estável e está pronto para revisão independente REV-01.
 Produção, dados/domínios reais, ativação global e Gate G12 permanecem bloqueados.
 
-Na EV2.14, a fundação da F-016 foi implementada localmente em um gateway separado e provider-off.
-A migration candidata `0054`, a função `cms-ai-execute`, a tela de execução, cinco tools sintéticas,
-aprovação vinculada a hash/versão, segregação, retry idempotente, locks ordenados e compensação
-monotônica reautorizável estão prontas para validação. O Gate G14 continua em `pause`:
-PostgreSQL/pgTAP, rehearsal, deploy no alias isolado, canary com dois usuários MFA, resíduo zero e
-revisão independente ainda precisam ser comprovados no mesmo SHA. Nenhuma alteração de staging ou
-produção foi realizada nesta fase local.
+Na EV2.14, o REV-01 aprovou o SHA `64cea11e…`, a migration `0054` e `cms-ai-execute` permaneceram
+restritas a staging e o build foi publicado somente no alias `ev2-g14-canary`. O canary final passou
+35/35 verificações com dois usuários MFA, segregação, concorrência, idempotência, compensação,
+100% de disponibilidade na sonda ampliada, zero chamada externa, zero dado real e zero resíduo. O
+G14 foi aprovado apenas para o sandbox sintético. As flags seguem default-off; produção,
+dados/domínios reais, provider externo, ativação global, merge, promoção do staging estável e o
+Gate G12 continuam bloqueados.
