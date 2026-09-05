@@ -1,9 +1,9 @@
 # EV2.15 — Fechamento técnico e integração segura
 
-**Estado:** qualificação e integração concluídas; limites de produção preservados<br>
+**Estado:** qualificação, reprodutibilidade e integração concluídas; limites de produção preservados<br>
 **Data-base:** 5 de setembro de 2026<br>
 **Branch de código consolidada:** `ev2/desenvolvimento-fases-1-a-12`<br>
-**Branch documental:** `docs/ev2-fase-15-fechamento-operacional`<br>
+**Branch documental final:** `docs/ev2-fase-15-reprodutibilidade`<br>
 **Produção, dados reais e staging estável:** inalterados
 
 ## Objetivo
@@ -25,6 +25,10 @@ G14.
   API composta deliberada;
 - duas regressões de componente foram adicionadas para proteger as correções visuais e de
   acessibilidade.
+- o hash do dataset G14 passou a normalizar finais de linha antes do SHA-256 e ganhou regressão
+  LF/CRLF, preservando o valor aprovado em Linux e Windows;
+- o repositório de código passou a identificar sua documentação interna como espelho operacional e
+  apontar `Vnd93/gaiatec-documentacao` como fonte canônica.
 
 ## Critérios de qualificação
 
@@ -36,6 +40,7 @@ G14.
 | Navegador                     | suíte Playwright aprovada                                             |
 | Build                         | build de produção reproduzível e orçamento de bundle aprovado         |
 | Dependências                  | zero vulnerabilidade no nível configurado de auditoria                |
+| Reprodutibilidade G14         | mesmo SHA-256 do dataset em checkouts LF e CRLF                       |
 | Preview                       | SHA exato em URL efêmera, não indexável, com smoke HTTP aprovado      |
 | Integração                    | PRs empilhados consolidados em ordem e sem conflito                   |
 
@@ -44,9 +49,10 @@ G14.
 1. código EV2.13, PR `Vnd93/gaiatec-cms#6` — integrado;
 2. código EV2.14, PR `Vnd93/gaiatec-cms#7` — integrado;
 3. hardening final, PR `Vnd93/gaiatec-cms#8` — integrado;
-4. documentação EV2.13, PR `Vnd93/gaiatec-documentacao#5` — integrada;
-5. documentação EV2.14, PR `Vnd93/gaiatec-documentacao#6` — integrada;
-6. fechamento documental, PR `Vnd93/gaiatec-documentacao#7` — integrado.
+4. reprodutibilidade e fonte canônica, PR `Vnd93/gaiatec-cms#9` — integrado;
+5. documentação EV2.13, PR `Vnd93/gaiatec-documentacao#5` — integrada;
+6. documentação EV2.14, PR `Vnd93/gaiatec-documentacao#6` — integrada;
+7. fechamento documental, PRs `Vnd93/gaiatec-documentacao#7` e `#8` — integrado.
 
 Cada PR posterior deve ser reposicionado para a base consolidada somente depois da integração do
 anterior. Uma validação remota verde não autoriza publicação em produção.
@@ -55,11 +61,16 @@ anterior. Uma validação remota verde não autoriza publicação em produção.
 
 - [Relatório de qualificação final](RELATORIO_QUALIFICACAO_FINAL_2026-09-05.md)
 - [PR de código #8](https://github.com/Vnd93/gaiatec-cms/pull/8)
+- [PR de código #9](https://github.com/Vnd93/gaiatec-cms/pull/9)
 - [CI de push do candidato](https://github.com/Vnd93/gaiatec-cms/actions/runs/33976345138)
 - [CI do PR do candidato](https://github.com/Vnd93/gaiatec-cms/actions/runs/33976383770)
 - [Preview efêmero validado](https://ev2-final-rc.gaiatec-cms-staging.pages.dev)
 - [CI do ramo consolidado](https://github.com/Vnd93/gaiatec-cms/actions/runs/33977119188)
+- [CI do candidato reprodutível](https://github.com/Vnd93/gaiatec-cms/actions/runs/33978403863)
+- [CI final do ramo consolidado](https://github.com/Vnd93/gaiatec-cms/actions/runs/33978694434)
 - [PR documental #7](https://github.com/Vnd93/gaiatec-documentacao/pull/7)
+- [PR documental #8](https://github.com/Vnd93/gaiatec-documentacao/pull/8)
+- [PR documental #9](https://github.com/Vnd93/gaiatec-documentacao/pull/9)
 
 ## Limites remanescentes
 
