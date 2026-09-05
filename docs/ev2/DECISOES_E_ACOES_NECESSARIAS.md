@@ -22,7 +22,7 @@ Não há decisão organizacional pendente que impeça a abertura da EV2.0.
 | EV2-O01 | Configurar e validar provedor e destinatário de e-mail reais.                                                                  | DevOps/Marketing     | Antes de produção             | Pendente                                                                                           |
 | EV2-S01 | Analisar relatórios CSP e aprovar plano de migração de `Report-Only` para enforcement.                                         | Security/Frontend    | Antes de produção             | Pendente                                                                                           |
 | EV2-P01 | Executar code splitting dos bundles de Excel/PDF.                                                                              | Frontend             | EV2.6 ou anterior             | Concluído no candidato EV2.6; orçamento automatizado comprova ambos fora do grafo inicial          |
-| EV2-Q01 | Reduzir os 46 avisos de lint sem misturar a limpeza com funcionalidades.                                                       | Tech lead            | Backlog contínuo              | Backlog                                                                                            |
+| EV2-Q01 | Reduzir os 46 avisos de lint sem misturar a limpeza com funcionalidades.                                                       | Tech lead            | Backlog contínuo              | Concluído na EV2.15; lint 0/0 e regras elevadas a erro no CI                                       |
 
 ## Decisões condicionais futuras
 
