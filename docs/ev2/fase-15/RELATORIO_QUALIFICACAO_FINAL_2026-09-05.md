@@ -16,6 +16,9 @@ passivo mecânico mensurável encontrado era um conjunto de 46 avisos de lint. A
 identificou três comportamentos concretos: liberação inconsistente do observador, um divisor visual
 que ignorava suas cores e texto de carregamento não exposto a tecnologia assistiva.
 
+O item `EV2-Q01` foi encerrado no registro mestre, e o risco `MED-04` da especificação passou a
+apontar para os controles permanentes de lazy loading e lint 0/0 no CI.
+
 ## Resultado local do candidato
 
 | Controle                        | Resultado                                        |

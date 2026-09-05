@@ -70,7 +70,7 @@ Fontes principais: Manual do Usuário - Plano Consolidado de Melhorias do CMS GA
 
 ## 1. Resumo Executivo
 
-O CMS atual possui uma fundação operacional madura e deve ser evoluído, não substituído. A arquitetura comprovada combina React/Vite/TypeScript no frontend, Supabase/Postgres/Storage, Edge Functions, contratos Zod, autorização server-side, RLS, MFA/AAL2, conteúdo versionado, preview tokenizado, projeções públicas e rotinas de rollback. O check local executado nesta análise concluiu com sucesso: formatação, typecheck, 75 testes Vitest, 74 testes Node das fases 1 a 11 e build de produção; permaneceram 46 avisos de lint e dois chunks acima de 600 kB.
+O CMS atual possui uma fundação operacional madura e deve ser evoluído, não substituído. A arquitetura comprovada combina React/Vite/TypeScript no frontend, Supabase/Postgres/Storage, Edge Functions, contratos Zod, autorização server-side, RLS, MFA/AAL2, conteúdo versionado, preview tokenizado, projeções públicas e rotinas de rollback. No baseline desta análise, o check local concluiu com sucesso: formatação, typecheck, 75 testes Vitest, 74 testes Node das fases 1 a 11 e build de produção; permaneceram 46 avisos de lint e dois chunks acima de 600 kB. O fechamento posterior está registrado na atualização EV2.15 ao fim deste documento.
 
 O objetivo de EV2 é reduzir o esforço do operador e ampliar a expressividade do produto sem quebrar contratos v1. A sequência correta é: segurança de mudança e release bundle; rascunho livre e UX operacional; PIM/SKU e dados mestres; busca/qualidade; Estúdio Visual; multisite; IA assistiva; somente depois IA transacional.
 
@@ -120,7 +120,7 @@ O diagnóstico usa o manual como fonte de intenção e o repositório como fonte
 | MED-01 | Médio                | Mídia precisa de upload contextual, focal point, dedupe perceptual, coleções e rights expiry.                            |
 | MED-02 | Médio                | Busca administrativa não é unificada e a busca técnica não opera faixas/unidades normalizadas.                           |
 | MED-03 | Médio                | Não há inbox editorial, tarefas, comentários ancorados, filtros salvos ou calendário de releases.                        |
-| MED-04 | Médio                | 46 avisos de lint permanecem e os chunks Excel/PDF excedem 600 kB.                                                       |
+| MED-04 | Médio                | Baseline com 46 avisos e chunks Excel/PDF acima de 600 kB; mitigado por lazy loading na EV2.6 e lint 0/0 na EV2.15.      |
 | EXT-01 | Externo              | Entrega real de e-mail, aceite DPO, CSP enforcement e autorização de produção seguem pendentes.                          |
 
 <a id="4-arquitetura-atual"></a>
@@ -1742,11 +1742,13 @@ Caminho crítico: Baseline -> Fundação/release -> UX/drafts -> Dados mestres -
 | Operação    | Configurar e validar e-mail real                     | DevOps/Marketing     | Antes de produção            |
 | Web         | Analisar CSP Report-Only e plano de enforcement      | Security/Frontend    | Antes de produção            |
 | Performance | Code splitting de Excel/PDF                          | Frontend             | Fase 6 ou anterior           |
-| Qualidade   | Reduzir 46 avisos de lint sem misturar com features  | Tech lead            | Backlog contínuo             |
+| Qualidade   | Manter lint 0/0 e impedir regressão por regra de CI  | Tech lead            | Controle contínuo            |
 | Futuro      | Experimentos A/B e personalização não sensível       | Product/Marketing    | Após estabilidade EV2        |
 | Futuro      | Engine de busca dedicada                             | Search/Architecture  | Somente se SLO/volume exigir |
 
 > **RESOLUÇÕES DA EV2.0** Os owners interinos, o lote de 20 produtos/8 tarefas e a estratégia de multisite foram definidos em 1 de setembro de 2026. Consulte [Lote piloto EV2.0](LOTE_PILOTO_EV2_0.md), [Decisões e ações necessárias](DECISOES_E_ACOES_NECESSARIAS.md) e [ADR-015](../adr/ADR-015-multisite-preparado-e-ativacao-posterior.md).
+
+> **ATUALIZAÇÃO EV2.15** O risco MED-04 foi mitigado: Excel/PDF permanecem fora dos quatro chunks iniciais sob orçamento automatizado, os 46 avisos foram eliminados e as regras de dependências de hooks, código não usado e fronteiras Fast Refresh agora falham o CI. Consulte [EV2.15 — fechamento técnico e integração segura](fase-15/README.md).
 
 > **CONCLUSÃO** A especificação transforma o plano consolidado em uma evolução executável e governada. O primeiro compromisso é preservar o que funciona; o segundo é remover fricção do operador; o terceiro é ampliar automação somente após evidência de segurança, integridade, usabilidade e rollback.
 
