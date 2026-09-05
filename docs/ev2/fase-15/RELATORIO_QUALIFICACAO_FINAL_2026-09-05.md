@@ -1,0 +1,85 @@
+# Relatório de qualificação final — EV2.15
+
+**Data:** 5 de setembro de 2026<br>
+**Base G14:** `64cea11e196bc3889dc6ea7ab1b6b151f64b0220`<br>
+**Candidato:** `36c5cae3ff565f4b10974a84f021d6491d248931`<br>
+**Head integrado:** `69aef81ce3b7f0431245bfa442cf5e5a17bbd4f8`<br>
+**PR de código:** [Vnd93/gaiatec-cms#8](https://github.com/Vnd93/gaiatec-cms/pull/8)<br>
+**PR documental:** [Vnd93/gaiatec-documentacao#7](https://github.com/Vnd93/gaiatec-documentacao/pull/7)<br>
+**Produção:** não alterada
+
+## Escopo avaliado
+
+A revisão final percorreu o diff da EV2.14, o estado dos PRs empilhados, a configuração de CI, os
+testes de banco e navegador, o build, o orçamento de bundle e a auditoria de dependências. O único
+passivo mecânico mensurável encontrado era um conjunto de 46 avisos de lint. A correção também
+identificou três comportamentos concretos: liberação inconsistente do observador, um divisor visual
+que ignorava suas cores e texto de carregamento não exposto a tecnologia assistiva.
+
+## Resultado local do candidato
+
+| Controle                        | Resultado                                        |
+| ------------------------------- | ------------------------------------------------ |
+| `npm run format:check`          | aprovado                                         |
+| ESLint                          | aprovado; 0 erros e 0 avisos                     |
+| TypeScript estrito e compatível | aprovado                                         |
+| Vitest                          | 51 arquivos e 168/168 testes aprovados           |
+| EV2.0–EV2.14                    | todos os testes e evals aprovados                |
+| Fases legadas e integração      | todas aprovadas                                  |
+| Build                           | aprovado                                         |
+| Orçamento de bundle             | 4 chunks iniciais, 761.138 bytes; Excel/PDF lazy |
+| `npm audit --audit-level=high`  | 0 vulnerabilidades                               |
+| `git diff --check`              | aprovado                                         |
+
+O aviso informativo do Vite para chunks lazy de Excel/PDF não representa regressão do carregamento
+inicial: os dois pacotes permanecem fora dos quatro chunks iniciais e o orçamento automatizado foi
+aprovado.
+
+## Resultado remoto
+
+| Execução                                                                                   | Estado                                             |
+| ------------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| [CI de push 33976345138](https://github.com/Vnd93/gaiatec-cms/actions/runs/33976345138)    | aprovado: qualidade, banco e navegador             |
+| [CI do PR 33976383770](https://github.com/Vnd93/gaiatec-cms/actions/runs/33976383770)      | aprovado: qualidade, banco e navegador             |
+| [Preview do PR 33976383828](https://github.com/Vnd93/gaiatec-cms/actions/runs/33976383828) | aprovado; artefato preservado, sem secret de Pages |
+| [CI integrado 33977119188](https://github.com/Vnd93/gaiatec-cms/actions/runs/33977119188)  | aprovado: qualidade, banco e navegador             |
+
+O artefato imutável do CI de push possui digest
+`sha256:6ea5cbadb957e711db099d43ad9a57e6dd9288bbe39b4e89d37e00dc9276c9c9`.
+O artefato do head integrado possui digest
+`sha256:4bfb36286c077e250ee9073c168d4b1f050f7f2b7d92d395dd830262ead3be95`.
+
+O build de staging foi refeito localmente com `VITE_RELEASE` fixado no SHA candidato e gerou um
+manifesto de 1.457 arquivos com digest
+`af7bb5d0646faf042cce8747e4648d04edae4a493809f11150ded1c847e28fe1`. O mesmo diretório foi
+publicado pelo Wrangler autenticado somente no branch Pages `ev2-final-rc`:
+
+- URL imutável: `https://6acbb74a.gaiatec-cms-staging.pages.dev`;
+- alias isolado: [ev2-final-rc](https://ev2-final-rc.gaiatec-cms-staging.pages.dev);
+- `/healthz`: HTTP 200, `ready`, ambiente `staging` e release exata;
+- `/release-manifest.json`: HTTP 200, 1.457 arquivos e release exata;
+- smoke HTTP: 6/6 cenários aprovados, incluindo 404 reais e rota privada `no-store`;
+- `x-robots-tag`: `noindex, nofollow, noarchive` nos contratos e nas páginas avaliadas.
+
+Nenhuma migration, Edge Function, flag, identidade ou dado foi criado ou alterado nesta validação.
+O alias G14 e o staging estável não foram tocados.
+
+## Integração
+
+Os PRs de código [#6](https://github.com/Vnd93/gaiatec-cms/pull/6),
+[#7](https://github.com/Vnd93/gaiatec-cms/pull/7) e
+[#8](https://github.com/Vnd93/gaiatec-cms/pull/8) foram reposicionados e integrados, nessa ordem,
+em `ev2/desenvolvimento-fases-1-a-12`. O head consolidado contém tanto o SHA aprovado do G14 quanto
+o SHA do hardening final. Os PRs documentais
+[#5](https://github.com/Vnd93/gaiatec-documentacao/pull/5) e
+[#6](https://github.com/Vnd93/gaiatec-documentacao/pull/6) também foram integrados em `main` nessa
+ordem. O PR documental [#7](https://github.com/Vnd93/gaiatec-documentacao/pull/7) consolida este
+relatório e o índice final no mesmo branch canônico.
+
+## Decisão final
+
+Não há bloqueador P0 ou P1 conhecido no escopo validado. O código está qualificado e integrado no
+ramo de desenvolvimento EV2, e o CI do head consolidado aprovou qualidade, banco e navegador. Isto
+não equivale a garantia absoluta contra defeitos futuros nem autoriza produção. O Gate G12,
+dados/domínios reais, provider externo, ativação global e promoção do staging estável permanecem
+independentes e bloqueados.
