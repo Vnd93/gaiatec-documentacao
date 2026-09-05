@@ -18,12 +18,13 @@
 - backup externo cifra antes do upload e restaura o mesmo ciphertext em ambiente efêmero;
 - provider check vincula domínio e entrega sintética ao SHA;
 - proteção exige PR de `@Vnd93`, CODEOWNERS exclusivo e checks reais no SHA;
-- G12 approval schema v2 exige DPO/legal, quatro owners, todos os controles e autorização com SHA.
+- G12 approval schema v2 exige DPO/legal, governança solo aceita, evidência para as quatro
+  responsabilidades, todos os controles e autorização com SHA.
 
 Validação local do candidato:
 
 - `npm run test:ev2:phase12`: 10/10;
-- `npm run test:ev2:phase16`: 5/5;
+- `npm run test:ev2:phase16`: 6/6;
 - `npm run check`: 51 arquivos/168 testes Vitest, todos os testes EV2 e legados, typecheck, lint,
   formatação, build e orçamento de bundle aprovados;
 - `npm audit --audit-level=high`: zero vulnerabilidades.
@@ -59,7 +60,7 @@ nenhum limite foi aumentado e nenhuma tentativa reprovada foi descrita como apro
 
 ## Evidências ainda inexistentes
 
-Não foram fabricados: ruleset/proteção efetiva, backup real, restore real,
-parecer DPO/legal, chave Resend de produção, entrega sintética produtiva, preview CSP do SHA final de
-produção, quatro identidades operacionais ou autorização de produção. Esses itens continuam
-bloqueando G12.
+Não foram fabricados: ruleset/proteção efetiva, backup real, restore real, confirmação cadastral do
+encarregado, chave Resend de produção, entrega sintética produtiva, preview CSP do SHA final de
+produção ou autorização literal do SHA final. O modelo solo e o risco foram registrados; esses itens
+externos continuam bloqueando G12.
