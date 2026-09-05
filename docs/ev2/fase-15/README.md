@@ -69,6 +69,8 @@ anterior. Uma validação remota verde não autoriza publicação em produção.
 - [CI do candidato reprodutível](https://github.com/Vnd93/gaiatec-cms/actions/runs/33978403863)
 - [CI final do ramo consolidado](https://github.com/Vnd93/gaiatec-cms/actions/runs/33978694434)
 - [PR documental #7](https://github.com/Vnd93/gaiatec-documentacao/pull/7)
+- [PR documental #8](https://github.com/Vnd93/gaiatec-documentacao/pull/8)
+- [PR documental #9](https://github.com/Vnd93/gaiatec-documentacao/pull/9)
 
 ## Limites remanescentes
 

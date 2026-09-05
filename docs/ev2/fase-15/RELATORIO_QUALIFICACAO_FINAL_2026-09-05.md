@@ -7,7 +7,9 @@
 **Head integrado final:** `e92632c4faf0d488b5d62c316f8d165f8e02aff9`<br>
 **PRs de código:** [#8](https://github.com/Vnd93/gaiatec-cms/pull/8) e
 [#9](https://github.com/Vnd93/gaiatec-cms/pull/9)<br>
-**PR documental:** [Vnd93/gaiatec-documentacao#7](https://github.com/Vnd93/gaiatec-documentacao/pull/7)<br>
+**PRs documentais:** [#7](https://github.com/Vnd93/gaiatec-documentacao/pull/7),
+[#8](https://github.com/Vnd93/gaiatec-documentacao/pull/8) e
+[#9](https://github.com/Vnd93/gaiatec-documentacao/pull/9)<br>
 **Produção:** não alterada
 
 ## Escopo avaliado
@@ -92,8 +94,10 @@ em `ev2/desenvolvimento-fases-1-a-12`. O head consolidado contém tanto o SHA ap
 o SHA do hardening final e sua correção de reprodutibilidade. Os PRs documentais
 [#5](https://github.com/Vnd93/gaiatec-documentacao/pull/5) e
 [#6](https://github.com/Vnd93/gaiatec-documentacao/pull/6) também foram integrados em `main` nessa
-ordem. O PR documental [#7](https://github.com/Vnd93/gaiatec-documentacao/pull/7) consolida este
-relatório e o índice final no mesmo branch canônico.
+ordem. Os PRs documentais [#7](https://github.com/Vnd93/gaiatec-documentacao/pull/7),
+[#8](https://github.com/Vnd93/gaiatec-documentacao/pull/8) e
+[#9](https://github.com/Vnd93/gaiatec-documentacao/pull/9) consolidam o relatório, encerram o
+backlog de qualidade e registram a correção de reprodutibilidade no branch canônico.
 
 ## Decisão final
 
