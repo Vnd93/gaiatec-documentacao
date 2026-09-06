@@ -1,4 +1,5 @@
 # Mantenedor humano único definido para a documentação GAIATEC.
 * @Vnd93
 /.github/workflows/** @Vnd93
-/docs/ev2/fase-12/approvals/** @Vnd93
+/docs/60-qualidade-auditoria/** @Vnd93
+/docs/80-evolucao/ev2/** @Vnd93

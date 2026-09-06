@@ -1,0 +1,51 @@
+{
+  "generated_at_utc": "2026-09-06T20:40:59.7040492Z",
+  "record_count": 1104,
+  "source_hash_or_size_mismatches": 0,
+  "unresolved_destinations": 0,
+  "restricted_paths_processed": 0,
+  "archive_rows_required": 58,
+  "archive_rows_hash_identical": 58,
+  "exact_destination_rows": 933,
+  "transformed_successor_rows": 215,
+  "by_execution_status": [
+    {
+      "status": "consolidado-com-historico-preservado",
+      "count": 68,
+      "bytes": 2103927
+    },
+    {
+      "status": "copia-arquivada-validada-origem-retida",
+      "count": 50,
+      "bytes": 644266006
+    },
+    {
+      "status": "mantido-no-repositorio-alvo",
+      "count": 23,
+      "bytes": 7347506
+    },
+    {
+      "status": "movido-ou-migrado-no-alvo",
+      "count": 155,
+      "bytes": 575611
+    },
+    {
+      "status": "preservado-fora-da-migracao",
+      "count": 585,
+      "bytes": 127178436
+    },
+    {
+      "status": "substituido-por-fonte-canonica",
+      "count": 223,
+      "bytes": 3400593
+    }
+  ],
+  "safety": {
+    "source_files_retained": true,
+    "archive_hashes_validated": true,
+    "secrets_read": false,
+    "codex_worktrees_moved_or_inspected": false,
+    "deploy_executed": false,
+    "staging_or_production_touched": false
+  }
+}

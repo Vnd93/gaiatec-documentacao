@@ -1,53 +1,60 @@
+---
+id: gaiatec-documentacao-readme
+titulo: Documentacao GAIATEC Sistemas
+status: ativo
+tipo: indice-principal
+area: governanca-documental
+fase: transversal
+ambiente: todos
+responsavel: Vnd93
+data_criacao: 2026-09-04
+ultima_revisao: 2026-09-06
+fonte_canonica: gaiatec-documentacao
+substitui: []
+relacionados:
+  - docs/00-indice/mapa-documental.md
+  - docs/00-indice/status-atual.md
+  - docs/00-indice/catalogo-documentos.md
+---
+
 # Documentação GAIATEC Sistemas
 
-Fonte oficial da documentação técnica, funcional, operacional e de governança do projeto
-**website_gaiatecsistemas**.
+Fonte canônica da documentação técnica, funcional, operacional, de produto, governança e evolução
+do site e do CMS GAIATEC.
 
-O código executável é mantido separadamente no repositório privado
-[`Vnd93/gaiatec-cms`](https://github.com/Vnd93/gaiatec-cms).
+O código executável, a infraestrutura, os testes, os workflows, as fixtures e os controles
+operacionais ficam no repositório
+[`Vnd93/gaiatec-cms`](https://github.com/Vnd93/gaiatec-cms). O CMS mantém apenas índices curtos para
+esta fonte; não replica a árvore documental.
 
-## Evolução do CMS — EV2
+## Comece aqui
 
-- [Índice e visão geral da EV2](docs/ev2/README.md)
-- [Especificação técnica, funcional e plano de implementação](docs/ev2/ESPECIFICACAO_TECNICA_FUNCIONAL_E_PLANO_DE_IMPLEMENTACAO.md)
-- [Decisões e ações necessárias](docs/ev2/DECISOES_E_ACOES_NECESSARIAS.md)
-- [Gate de prontidão](docs/ev2/GATE_DE_PRONTIDAO.md)
-- [Fase 12 — implantação controlada](docs/ev2/fase-12/README.md)
-- [Fase 13 — hardening e elegibilidade runtime](docs/ev2/fase-13/README.md)
-- [Fase 16 — controles vinculantes de prontidão para produção](docs/ev2/fase-16/README.md)
-- [Relatório do canary G13](docs/ev2/fase-13/RELATORIO_CANARY_STAGING_2026-09-04.md)
-- [Pacote de revisão independente REV-01](docs/ev2/fase-13/PACOTE_REVISAO_REV01_2026-09-04.md)
-- [Estado da infraestrutura produtiva](docs/ev2/fase-12/EVIDENCIAS_INFRAESTRUTURA_PRODUCAO_2026-09-04.md)
-- [Migração do repositório executável](docs/ev2/fase-12/MIGRACAO_REPOSITORIO_EXECUTAVEL_2026-09-04.md)
+- [Status atual](docs/00-indice/status-atual.md)
+- [Mapa documental](docs/00-indice/mapa-documental.md)
+- [Catálogo de documentos](docs/00-indice/catalogo-documentos.md)
+- [Mapa de repositórios](docs/00-indice/mapa-repositorios.md)
+- [Glossário](docs/00-indice/glossario.md)
+- [Política de ciclo de vida](docs/00-indice/politica-ciclo-de-vida-documental.md)
 
-## Arquitetura e auditoria
+## Áreas
 
-- [Registros de decisões arquiteturais](docs/adr/)
-- [Relatório da auditoria CMS de 2026-09-01](docs/auditoria-cms-2026-09-01/RELATORIO.md)
-- [Matriz da auditoria CMS de 2026-09-01](docs/auditoria-cms-2026-09-01/MATRIZ.md)
+- [Produto e requisitos](docs/10-produto-requisitos/indice.md)
+- [Arquitetura e segurança](docs/20-arquitetura-seguranca/indice.md)
+- [CMS e Manual do Usuário](docs/30-cms/indice.md)
+- [Site público](docs/40-site-publico/indice.md)
+- [Operação e entrega](docs/50-operacao-entrega/indice.md)
+- [Qualidade e auditoria](docs/60-qualidade-auditoria/indice.md)
+- [Governança e legal](docs/70-governanca-legal/indice.md)
+- [Evolução EV2](docs/80-evolucao/indice.md)
+- [Histórico](docs/90-historico/indice.md)
+- [Modelos](docs/99-modelos/indice.md)
 
-## Documentos
+## Rastreabilidade da reorganização
 
-- [Auditoria e arquitetura recomendada para o site](documentacao-original/Analise%20e%20Arquitetura%20do%20Site%20-%20GAIATEC%20SISTEMAS.md)
-- [Auditoria do site atual e arquitetura recomendada para o CMS](documentacao-original/AUDITORIA_CMS_GAIATEC.md)
-- [Complemento técnico-operacional da auditoria do CMS](documentacao-original/COMPLEMENTO_TECNICO_OPERACIONAL_AUDITORIA_CMS_GAIATEC.md)
-- [Procedimento de ajustes e desenvolvimento do painel administrativo](documentacao-original/PROCEDIMENTO_AJUSTES_E_DESENVOLVIMENTO_PAINEL_ADMINISTRATIVO_GAIATEC.md)
-- [Delta da auditoria do site V2](documentacao-original/AUDIT-DELTA.md)
-- [Prompts para geração de imagens](documentacao-original/PROMPTS-IMAGENS.md)
-- [Banco de imagens V2](documentacao-original/PROMPTS-IMAGENS-V2.md)
-- [Diretrizes gerais](documentacao-original/guidelines/Guidelines.md)
-- [Atribuições](documentacao-original/ATTRIBUTIONS.md)
-- [README original do projeto](documentacao-original/README_PROJETO_ORIGINAL.md)
+- [Manifesto de migração documental](docs/00-indice/manifesto-migracao-documental.md)
+- [Tabela de resolução das 24 divergências](docs/60-qualidade-auditoria/tabela-resolucao-duplicidades.md)
+- [Origem e proveniência](docs/70-governanca-legal/origem.md)
+- [Controles dos repositórios](docs/70-governanca-legal/controles-repositorio.md)
 
-## Origem e governança
-
-Os arquivos em `documentacao-original/` foram copiados integralmente do branch `main` do repositório
-de origem. As árvores `docs/ev2/`, `docs/adr/` e `docs/auditoria-cms-2026-09-01/` foram importadas do
-branch de desenvolvimento EV2 no commit qualificado registrado em [ORIGEM.md](ORIGEM.md).
-
-Este é o repositório principal para manutenção da documentação. Alterações futuras devem ser feitas
-aqui por branches e pull requests, seguindo [GOVERNANCA.md](GOVERNANCA.md). Código executável,
-workflows de implantação e secrets de runtime continuam fora deste repositório documental, no
-repositório privado `Vnd93/gaiatec-cms`.
-
-Estado dos controles técnicos: [CONTROLES_REPOSITORIO.md](CONTROLES_REPOSITORIO.md).
+Alterações usam branch, validação e pull request para `main`. Nenhum segredo de runtime deve ser
+adicionado a este repositório.

@@ -1,2 +1,9 @@
 # Two trailing spaces are valid Markdown hard line breaks.
 *.md whitespace=-blank-at-eol
+
+# Evidencias e binarios devem manter os bytes exatos em todos os checkouts.
+docs/**/evidencias/*.json -text whitespace=cr-at-eol
+docs/**/evidencias/**/*.json -text whitespace=cr-at-eol
+*.docx binary
+*.pdf binary
+*.png binary
