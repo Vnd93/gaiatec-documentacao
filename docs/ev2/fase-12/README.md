@@ -1,8 +1,8 @@
 # EV2.12 — implantação controlada
 
-**Estado:** candidato final `e52b25d…` qualificado; canary controlado G12 em staging concluído<br>
-**Gate:** prontidão técnica concluída; autorização literal de produção pendente<br>
-**Produção:** não alterada
+**Estado:** release produtiva concluída e verificada<br>
+**Gate:** G12 aprovado e encerrado para o SHA `e52b25d9…`<br>
+**Produção:** promovida em 6 de setembro de 2026 pelo workflow protegido
 
 ## Objetivo
 
@@ -51,9 +51,9 @@ produção.
 - [Modelo de aprovação](G12_APPROVAL.template.json)
 - [Controles finais EV2.16](../fase-16/README.md)
 
-## Próxima decisão
+## Encerramento da implantação
 
-O canary final, as proteções GitHub, o backup/restore externo, o aceite DPO/legal, a entrega sintética
-de e-mail e a CSP em enforcement estão comprovados para o candidato `e52b25d…`. A próxima etapa é
-receber a autorização literal do SHA completo e formar o registro G12 v2 dentro da janela de mudança.
-Nenhuma evidência parcial substitui essa autorização específica de produção.
+O workflow `Deploy production` run `34039654304` concluiu todos os gates e promoveu o candidato
+imutável `e52b25d903251cf538918d89049a58524c3c9911`. O probe pós-promoção passou, o rollback não foi
+acionado e as rotas reais foram verificadas no Edge. A evidência está em
+[EVIDENCIAS_PRODUCAO_G12_2026-09-06.md](EVIDENCIAS_PRODUCAO_G12_2026-09-06.md).
