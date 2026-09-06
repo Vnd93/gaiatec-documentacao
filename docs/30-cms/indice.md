@@ -19,5 +19,8 @@ relacionados:
 
 - [Manual do Usuário](manual-do-usuario/README.md)
 - [Referência da API](api.md)
+- [Design system administrativo](design-system-admin-gaiatec.md)
+- [Inventário de telas e componentes](inventario-telas-e-componentes.md)
+- [Matriz de rotas do CMS](matriz-rotas-cms.md)
 - [Evolução EV2](../80-evolucao/ev2/README.md)
 - [Procedimento do painel administrativo](../50-operacao-entrega/procedimento-ajustes-desenvolvimento-painel-administrativo-gaiatec.md)
