@@ -1,4 +1,7 @@
 node_modules
 .git
-documentacao-original
-docs/fase-1
+.secrets
+.codex-worktrees
+docs/90-historico/fase-1
+docs/90-historico/cms-fases-0-a-11
+docs/80-evolucao/ev2/fase-16/evidencias/originais-artifacts
