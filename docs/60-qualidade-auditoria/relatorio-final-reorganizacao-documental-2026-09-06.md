@@ -34,6 +34,10 @@ A reorganizacao nao sobrescreveu a fase 17. O worktree do CMS parte de
 exclusivo de reconciliacao, mas a mesma arvore Git, portanto nenhum conteudo exclusivo foi
 descartado.
 
+A estrutura documental foi registrada em
+`bf03cbefc2e9d6ac343270530920c1ff83f0ae33`; o saneamento do CMS foi registrado em
+`6cb3f737115624afcd9793531fa36a8b6252203b`. Os PRs 21 e 36 permanecem abertos e sem merge.
+
 O repositorio legado, as origens externas, o worktree G6 com alteracoes locais e o historico Git
 permanecem preservados. Nenhum merge, deploy, migration, publicacao, staging ou producao integrou
 esta operacao.
@@ -153,24 +157,27 @@ de narrativa documental e saidas reproduziveis passaram a `outputs/`.
 - `.codex-artifacts`: somente resultados encerrados/evidencias necessarias foram copiados; os
   intermediarios permanecem nao canonicos.
 
-## 8. Resultado das validacoes — pendente de fechamento pos-commit
+## 8. Resultado das validacoes — concluido localmente
 
-| Validacao                                               | Resultado                                                                                                         |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| 1.104 origens, hashes, tamanhos e destinos              | PASS — zero divergencia e zero destino nao resolvido                                                              |
-| Arquivo historico e clone legado                        | PASS — hashes ou HEAD/tree identicos; `git fsck` aprovado                                                         |
-| Tabela das 24 divergencias                              | PASS — 24 de 24 decisoes materializadas                                                                           |
-| Taxonomia, frontmatter ativo, links e padroes sensiveis | PENDENTE — rodada final apos formatacao                                                                           |
-| Prettier e `git diff --check` documental                | PENDENTE — rodada final                                                                                           |
-| Testes e build completos do CMS                         | PENDENTE — rodada final apos pin documental                                                                       |
-| Sintaxe estatica dos workflows                          | PENDENTE — rodada final; workflows nao serao executados                                                           |
-| Codigo funcional                                        | PASS preliminar — zero arquivo em `src/`, `supabase/functions/`, `supabase/migrations/` ou `cloudflare/` alterado |
-| DOCX e PDF canonicos                                    | PASS — 37/37 paginas, texto e renderizacao equivalentes; metadados pessoais removidos                             |
-| Staging e producao                                      | PASS — nenhum comando ou API de deploy/migration/publicacao executado                                             |
+| Validacao                                               | Resultado                                                                                                                                                         |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.104 origens, hashes, tamanhos e destinos              | PASS — zero divergencia de origem, zero destino nao resolvido e 58/58 linhas historicas com hash identico                                                         |
+| Arquivo historico e clone legado                        | PASS — hashes ou HEAD/tree identicos; `git fsck` aprovado                                                                                                         |
+| Tabela das 24 divergencias                              | PASS — 24 de 24 decisoes materializadas                                                                                                                           |
+| Taxonomia, frontmatter ativo, links e padroes sensiveis | PASS — `DOCS_CHECK_PASS`; 278 Markdown, 373 links locais e zero padrao sensivel                                                                                   |
+| Prettier e `git diff --check` documental                | PASS                                                                                                                                                              |
+| Testes e build completos do CMS                         | PASS — `npm run check`; 51/51 arquivos e 168/168 testes Vitest, todas as fases/evals e build de 3.436 modulos                                                     |
+| Testes adversariais G12/G16                             | PASS — 25/25; CSP, `CODEOWNERS`, DPO, nome SHA e caminhos de manifesto falham fechados                                                                            |
+| Fronteira documental do CMS                             | PASS — oito arquivos documentais explicitamente permitidos e zero violacao                                                                                        |
+| Sintaxe estatica dos workflows                          | PASS — parse do Prettier e revisao da diff; nenhum `workflow_dispatch` foi acionado e o workflow de deploy nao foi executado                                      |
+| Segredos e dados pessoais                               | PASS — zero padrao secreto na diff; zero CPF/telefone; e-mails limitados aos dominios corporativos e de teste/provedor revisados; `.secrets` excluido sem leitura |
+| Codigo funcional                                        | PASS — zero arquivo em `src/`, `public/`, `supabase/` ou `cloudflare/` alterado                                                                                   |
+| DOCX e PDF canonicos                                    | PASS — 37/37 paginas, texto e renderizacao equivalentes; metadados pessoais removidos                                                                             |
+| Staging e producao                                      | PASS — nenhum comando ou API de deploy, migration ou publicacao executado                                                                                         |
 
 Scripts, testes e um workflow foram ajustados para a nova fronteira; isso e tooling operacional, nao
-runtime da aplicacao. O resultado definitivo desta secao sera atualizado no mesmo PR antes de pedir
-merge.
+runtime da aplicacao. Uma revisao adversarial independente encontrou cinco casos fail-closed antes do
+commit do CMS; todos foram corrigidos, cobertos por testes negativos e revalidados antes do push.
 
 ## 9. Plano de rollback — concluido
 
@@ -188,14 +195,16 @@ merge.
    `.codex-worktrees` ou o G6 manualmente.
 8. Nao ha rollback de staging/producao porque esses ambientes nao foram tocados.
 
-## 10. Dois PRs separados, sem merge — pendente de URLs
+## 10. Dois PRs separados, sem merge — concluido
 
-- Documentacao: `docs/reorganizacao-documental` para `main`.
-- CMS: `chore/saneamento-documentacao` inicialmente para `ev2/fase-17-cms-operacional`, evitando
-  misturar os nove commits da fase 17; apos o merge do PR 35, retarget para `main` e revalide.
+- Documentacao: [PR 21](https://github.com/Vnd93/gaiatec-documentacao/pull/21),
+  `docs/reorganizacao-documental` para `main`.
+- CMS: [PR 36](https://github.com/Vnd93/gaiatec-cms/pull/36),
+  `chore/saneamento-documentacao` para `ev2/fase-17-cms-operacional`, evitando misturar os nove
+  commits da fase 17; apos o merge do PR 35, retarget para `main` e revalide.
 
-Os PRs nao devem ser mesclados antes da apresentacao deste relatorio e da aprovacao humana. Os URLs
-serao registrados aqui depois do push e da criacao dos PRs.
+Ambos estao abertos e nao mesclados. Nao devem ser mesclados antes da apresentacao deste relatorio e
+da aprovacao humana.
 
 ## 11. Recomendacao sobre a branch padrao do CMS — concluido
 
@@ -203,15 +212,16 @@ Recomendacao objetiva: mudar a branch padrao do CMS para `main`, mas **nao agora
 continua apontando para `ev2/desenvolvimento-fases-1-a-12`, que esta em commit antigo e sem a mesma
 protecao reportada para `main`.
 
-A mudanca deve ocorrer somente depois de integrar o PR 35, confirmar de forma autenticada rulesets,
-checks, environments, integracoes e agendas na nova default, e validar que os fluxos de manutencao
-partem de `main`. A configuracao atual foi apenas diagnosticada; nao foi efetivada nenhuma mudanca.
+A mudanca deve ocorrer somente depois de integrar o PR 35 e o PR 36 em `main`, confirmar de forma
+autenticada rulesets, checks, environments, integracoes e agendas na nova default, e validar que os
+fluxos de manutencao partem de `main`. A configuracao atual foi apenas diagnosticada; nao foi
+efetivada nenhuma mudanca.
 
 ## 12. Acoes manuais realmente indispensaveis — pendente de aprovacao humana
 
-1. Revisar e aprovar os dois PRs; mesclar primeiro documentacao e depois CMS, sem bypass.
-2. Integrar primeiro o PR 35 ou decidir explicitamente outra base para a fase 17; em seguida,
-   retargetar o PR do CMS para `main`.
+1. Revisar e aprovar os PRs 21 e 36; nenhum deles foi mesclado por esta operacao.
+2. Apos aprovacao, integrar o PR documental 21 e o PR 35 da fase 17, sem bypass; em seguida,
+   retargetar o PR 36 do CMS para `main`, revalidar os checks e somente entao mescla-lo.
 3. Confirmar em sessao autenticada rulesets, checks, environments, integracoes, plano Free/Pro e
    permissoes administrativas. Protecao de branch nao prova por si so o plano da conta.
 4. Depois dessas confirmacoes, alterar a default branch do CMS para `main` pela configuracao do
