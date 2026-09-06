@@ -1,8 +1,8 @@
 # EV2.12 — implantação controlada
 
-**Estado:** candidato qualificado; canary controlado G12 em staging concluído<br>
-**Gate:** G12 não aprovado para produção<br>
-**Produção:** bloqueada por controles técnicos e aprovações ausentes
+**Estado:** candidato final `e52b25d…` qualificado; canary controlado G12 em staging concluído<br>
+**Gate:** prontidão técnica concluída; autorização literal de produção pendente<br>
+**Produção:** não alterada
 
 ## Objetivo
 
@@ -39,6 +39,7 @@ produção.
 ## Documentos operacionais
 
 - [Evidências do canary G12 em staging](EVIDENCIAS_CANARY_G12_2026-09-04.md)
+- [Evidências do canary G12 final no SHA e52b25d](EVIDENCIAS_CANARY_G12_E52B25D_2026-09-05.md)
 - [Evidências da implementação local](EVIDENCIAS_IMPLEMENTACAO_LOCAL_2026-09-04.md)
 - [Evidências da infraestrutura produtiva](EVIDENCIAS_INFRAESTRUTURA_PRODUCAO_2026-09-04.md)
 - [Gate G12](GATE_G12.md)
@@ -52,6 +53,7 @@ produção.
 
 ## Próxima decisão
 
-O canary de staging está concluído. A próxima etapa é eliminar os bloqueios produtivos, validar os
-controles com evidências por responsabilidade e formar o registro de aprovação por SHA. Nenhuma preparação ou
-evidência parcial substitui a autorização específica de produção.
+O canary final, as proteções GitHub, o backup/restore externo, o aceite DPO/legal, a entrega sintética
+de e-mail e a CSP em enforcement estão comprovados para o candidato `e52b25d…`. A próxima etapa é
+receber a autorização literal do SHA completo e formar o registro G12 v2 dentro da janela de mudança.
+Nenhuma evidência parcial substitui essa autorização específica de produção.
