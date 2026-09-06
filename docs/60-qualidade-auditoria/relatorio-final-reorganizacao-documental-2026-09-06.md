@@ -159,21 +159,22 @@ de narrativa documental e saidas reproduziveis passaram a `outputs/`.
 
 ## 8. Resultado das validacoes — concluido localmente
 
-| Validacao                                               | Resultado                                                                                                                                                         |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.104 origens, hashes, tamanhos e destinos              | PASS — zero divergencia de origem, zero destino nao resolvido e 58/58 linhas historicas com hash identico                                                         |
-| Arquivo historico e clone legado                        | PASS — hashes ou HEAD/tree identicos; `git fsck` aprovado                                                                                                         |
-| Tabela das 24 divergencias                              | PASS — 24 de 24 decisoes materializadas                                                                                                                           |
-| Taxonomia, frontmatter ativo, links e padroes sensiveis | PASS — `DOCS_CHECK_PASS`; 278 Markdown, 373 links locais e zero padrao sensivel                                                                                   |
-| Prettier e `git diff --check` documental                | PASS                                                                                                                                                              |
-| Testes e build completos do CMS                         | PASS — `npm run check`; 51/51 arquivos e 168/168 testes Vitest, todas as fases/evals e build de 3.436 modulos                                                     |
-| Testes adversariais G12/G16                             | PASS — 25/25; CSP, `CODEOWNERS`, DPO, nome SHA e caminhos de manifesto falham fechados                                                                            |
-| Fronteira documental do CMS                             | PASS — oito arquivos documentais explicitamente permitidos e zero violacao                                                                                        |
-| Sintaxe estatica dos workflows                          | PASS — parse do Prettier e revisao da diff; nenhum `workflow_dispatch` foi acionado e o workflow de deploy nao foi executado                                      |
-| Segredos e dados pessoais                               | PASS — zero padrao secreto na diff; zero CPF/telefone; e-mails limitados aos dominios corporativos e de teste/provedor revisados; `.secrets` excluido sem leitura |
-| Codigo funcional                                        | PASS — zero arquivo em `src/`, `public/`, `supabase/` ou `cloudflare/` alterado                                                                                   |
-| DOCX e PDF canonicos                                    | PASS — 37/37 paginas, texto e renderizacao equivalentes; metadados pessoais removidos                                                                             |
-| Staging e producao                                      | PASS — nenhum comando ou API de deploy, migration ou publicacao executado                                                                                         |
+| Validacao                                               | Resultado                                                                                                                                                                |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1.104 origens, hashes, tamanhos e destinos              | PASS — zero divergencia de origem, zero destino nao resolvido e 58/58 linhas historicas com hash identico                                                                |
+| Arquivo historico e clone legado                        | PASS — hashes ou HEAD/tree identicos; `git fsck` aprovado                                                                                                                |
+| Tabela das 24 divergencias                              | PASS — 24 de 24 decisoes materializadas                                                                                                                                  |
+| Taxonomia, frontmatter ativo, links e padroes sensiveis | PASS — `DOCS_CHECK_PASS`; 278 Markdown, 373 links locais e zero padrao sensivel                                                                                          |
+| Prettier e `git diff --check` documental                | PASS                                                                                                                                                                     |
+| Testes e build completos do CMS                         | PASS — `npm run check`; 51/51 arquivos e 168/168 testes Vitest, todas as fases/evals e build de 3.436 modulos                                                            |
+| Testes adversariais G12/G16                             | PASS — 25/25; CSP, `CODEOWNERS`, DPO, nome SHA e caminhos de manifesto falham fechados                                                                                   |
+| Fronteira documental do CMS                             | PASS — oito arquivos documentais explicitamente permitidos e zero violacao                                                                                               |
+| Sintaxe estatica dos workflows                          | PASS — parse do Prettier e revisao da diff; nenhum `workflow_dispatch` foi acionado e o workflow de deploy nao foi executado                                             |
+| Checks automaticos dos PRs                              | PASS — documentacao: `quality`; CMS: `quality`, `database`, `browser` e `preview`                                                                                        |
+| Segredos e dados pessoais                               | PASS — zero padrao secreto na diff; zero CPF/telefone; e-mails limitados aos dominios corporativos e de teste/provedor revisados; `.secrets` excluido sem leitura        |
+| Codigo funcional                                        | PASS — zero arquivo em `src/`, `public/`, `supabase/` ou `cloudflare/` alterado                                                                                          |
+| DOCX e PDF canonicos                                    | PASS — 37/37 paginas, texto e renderizacao equivalentes; metadados pessoais removidos                                                                                    |
+| Staging e producao                                      | PASS — nenhum deploy, migration ou publicacao; no check `preview`, o artefato foi salvo e as etapas Cloudflare/smoke/comentario foram ignoradas por falta de credenciais |
 
 Scripts, testes e um workflow foram ajustados para a nova fronteira; isso e tooling operacional, nao
 runtime da aplicacao. Uma revisao adversarial independente encontrou cinco casos fail-closed antes do
