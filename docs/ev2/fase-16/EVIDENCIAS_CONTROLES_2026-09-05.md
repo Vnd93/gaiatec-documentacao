@@ -32,7 +32,7 @@
 Validação local do candidato:
 
 - `npm run test:ev2:phase12`: 10/10;
-- `npm run test:ev2:phase16`: 6/6;
+- `npm run test:ev2:phase16`: 7/7;
 - `npm run check`: 51 arquivos/168 testes Vitest, todos os testes EV2 e legados, typecheck, lint,
   formatação, build e orçamento de bundle aprovados;
 - `npm audit --audit-level=high`: zero vulnerabilidades.
@@ -66,7 +66,7 @@ aquecimento (p95 1.608,260 ms e 1.510,146 ms), seguidas por uma janela aprovada 
 canary de navegador sem violações. O achado originou aquecimento explícito e testado no workflow;
 nenhum limite foi aumentado e nenhuma tentativa reprovada foi descrita como aprovação.
 
-## Backup e restore drill — primeira tentativa preservada
+## Backup e restore drill — tentativas preservadas e aprovação
 
 O [workflow `33995606426`](https://github.com/Vnd93/gaiatec-cms/actions/runs/33995606426),
 executado em `main` no SHA `09b6fcd774fd840a987459e097d5847fc752af25`, validou configuração,
@@ -93,9 +93,58 @@ sessão independente `SET log_min_messages`. O drill permaneceu fail-closed, rem
 não publicou artefato. A terceira correção adiciona somente esse parâmetro à lista explícita de GUCs
 gerenciados; `SET search_path` e os demais comandos de sessão continuam preservados e testados.
 
+O [workflow `33997628222`](https://github.com/Vnd93/gaiatec-cms/actions/runs/33997628222),
+no SHA `d037b88342445e40937171a4126bd154144dc806`, confirmou que a representação restante usa
+uma atribuição de sessão de `log_min_messages` que o filtro anterior não reconheceu. A execução
+voltou a falhar fechada, removeu todo o texto puro e não publicou artefato. A quarta correção reconhece somente
+`log_min_messages` nas formas `SET`, `SET SESSION`, `SET LOCAL` e `pg_catalog.set_config`; os outros
+ajustes de sessão e todo o restante do restore continuam preservados e sob `ON_ERROR_STOP=1`.
+
+O [workflow `33998278506`](https://github.com/Vnd93/gaiatec-cms/actions/runs/33998278506),
+no SHA `333643f74d22456cdc70012b6d59e44e9245c8dd`, preservou a sexta tentativa. O relatório do
+sanitizador mostrou três atribuições de role removidas e nenhuma atribuição de sessão reconhecida,
+enquanto o PostgreSQL ainda bloqueou `log_min_messages`. Isso reduz o caso restante a uma atribuição
+vinculada ao banco. A correção seguinte trata exclusivamente `ALTER DATABASE ... SET
+log_min_messages`, preserva outros parâmetros de banco e mantém a restauração estrita. O texto puro
+foi removido e nenhum artefato incompleto foi publicado.
+
+O [workflow `33998761317`](https://github.com/Vnd93/gaiatec-cms/actions/runs/33998761317),
+no SHA `7c87634e4204a8f93188f2a87dc581d1d82a0299`, mostrou contadores zero tanto para a forma de
+sessão quanto para a forma de banco, apesar do erro inequívoco no mesmo GUC. Em vez de continuar
+inferindo a sintaxe, o sanitizador passa a remover qualquer instrução SQL terminada por `;` que
+contenha o identificador exato `log_min_messages`, preservando comentários, metacomandos de proteção
+do dump e todas as instruções sem esse identificador. A execução falhou fechada, limpou o texto puro
+e não publicou artefato.
+
+O [workflow `33999303916`](https://github.com/Vnd93/gaiatec-cms/actions/runs/33999303916),
+no SHA `804382ab10d54fc675b0de8ac22e9af9c6330658`, comprovou o avanço: roles e schema foram
+restaurados, e a carga de dados percorreu as tabelas até `storage.buckets_vectors`. Essa tabela
+interna, mantida pela plataforma, rejeitou escrita mesmo vazia (`COPY 0`). A correção exclui
+somente `storage.buckets_vectors` do dump de dados; todos os dados da aplicação e as demais tabelas
+continuam incluídos e sob restauração estrita. A tentativa limpou o texto puro e não publicou
+artefato incompleto.
+
+O [workflow `33999766926`](https://github.com/Vnd93/gaiatec-cms/actions/runs/33999766926),
+no SHA `e908e9a3364317f09327547ac96725211b6a1826`, avançou além de `buckets_vectors` e falhou
+fechado na outra tabela do mesmo recurso, `storage.vector_indexes`. A
+[migração oficial do Supabase Storage](https://github.com/supabase/storage/blob/master/migrations/tenant/0045-vector-buckets.sql)
+confirma que o recurso Vector Storage cria esse par de tabelas internas. Ambas ficam excluídas do
+dump de dados restaurável; `storage.buckets`, `storage.objects`, autenticação, dados do CMS e todas
+as outras tabelas permanecem incluídos. O texto puro foi limpo e nenhum artefato incompleto foi
+publicado.
+
+O [workflow `34000214134`](https://github.com/Vnd93/gaiatec-cms/actions/runs/34000214134),
+executado em `main` no SHA `7613c1b11a60a50ff9be5547624c79662602e09a`, concluiu com sucesso:
+dump lógico, cifragem AES-256, decriptação, restauração em Supabase local efêmero, comparação do
+inventário e das contagens de linhas públicas, limpeza do texto puro, manifesto e upload externo.
+O artefato `supabase-production-backup-34000214134` tem digest GitHub
+`sha256:e346901092477cda2c489e25ab8a47b7a8cd5ccedcfeff859ab1ed73d1565ed6`, tamanho 3,9 KB e
+retenção efetiva de 30 dias. O workflow passa a declarar os mesmos 30 dias permitidos pelo
+repositório, eliminando o aviso de redução automática sem alterar o backup aprovado.
+
 ## Evidências ainda inexistentes
 
-Não foram fabricados: backup real, restore real, chave Resend de produção, entrega sintética
-produtiva, preview CSP do SHA final de produção ou autorização literal do SHA final. Proteções,
-ambientes, DPO/legal, governança solo, risco e credenciais Supabase foram comprovados; os itens
+Não foram fabricados: chave Resend de produção, entrega sintética produtiva, preview CSP do SHA
+final de produção ou autorização literal do SHA final. Proteções, ambientes, DPO/legal, governança
+solo, risco, credenciais Supabase, backup externo e restore drill foram comprovados; os itens
 restantes continuam bloqueando G12.
