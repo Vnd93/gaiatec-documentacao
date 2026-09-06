@@ -201,7 +201,9 @@ digest GitHub `sha256:204dfffe0e25c5a1e7f699a8ac73b35575820bd672f965e6005324b526
 Em conjunto com o estado `delivered` observado no painel autenticado do Resend para o mesmo ID,
 destinatário e assunto, a entrega sintética fica comprovada sem ampliar o privilégio da credencial.
 
-## Evidência ainda inexistente
+## Encerramento do G12 em produção
 
-Não foi fabricada a autorização literal vinculada ao SHA final. Nenhum deploy, migration, função,
-dado real, domínio real ou promoção de produção foi executado.
+O deploy protegido foi concluído em 6 de setembro de 2026 pelo run `34039654304`, controlado pelo SHA
+`aee6d8d55bd1bb4abc8e9495811affd2e36490e9` de `main` e promovendo exclusivamente o candidato
+`e52b25d903251cf538918d89049a58524c3c9911`. O probe produtivo passou e o rollback não foi acionado.
+A evidência detalhada está em `docs/ev2/fase-12/EVIDENCIAS_PRODUCAO_G12_2026-09-06.md`.
