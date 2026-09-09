@@ -152,6 +152,44 @@ utilidade diagnostica das evidencias anteriores, mas nao autoriza usa-las para a
   `sha256:0fbe235ec17345f73969eed26f6d5529dda43265b4494fb5ee8acc8fc2c0a786`.
 - Esse e um build CI de staging; **nao** e o artefato final unico selado para staging e producao.
 
+## Ponte de compatibilidade legacy-f48 do candidato `b6ed084`
+
+Run [`34395203818`](https://github.com/Vnd93/gaiatec-cms/actions/runs/34395203818), tentativa 1,
+`success`. Baseline esperado `4b9184b3616b4df64b55037029b8dd02d2751e1b`, confirmado pelo probe
+antes de qualquer mutacao.
+
+Sequencia da troca temporaria, com os relatorios no artifact `10121627840`,
+`staging-cms-public-legacy-34395203818-1`:
+
+| Fase    | Estado   | Versao viva de `cms-public` | Observacao                                                         |
+| ------- | -------- | --------------------------- | ------------------------------------------------------------------ |
+| prepare | prepared | 56 capturada                | `remoteMutated: false`; plano de restauracao selado antes do lease |
+| engage  | engaged  | 57                          | `cms-public` do `f48bb453` publicado sob lease exclusivo           |
+| restore | restored | 58                          | `contractProbe: public-v2`, `internalIdentifiersExposed: false`    |
+
+Digests de fonte vinculados: candidato
+`sha256:658a28aa3b7e8c352777b4d9aafb0b8a372808490f6c3fbeae0704d31d9bba3b`; legado
+`sha256:8f0b894bbabd2914a03fce438b796f7c568e4b1d0a93e1a115cef9466f2e3b02`. A restauracao foi
+provada contra o formulario sintetico `qa-bridge-b6ed0847-c4251cd6`, que ainda existia porque o
+restore roda antes do cleanup canonico.
+
+Evidencia imutavel `10121626071`,
+`staging-frontend-bridge-b6ed08476267699d05c06162561083a826d6bfa6`, schemaVersion 3. Os dois
+canarios headless, preview e canonico, registram `contract: legacy-f48`, pagina, campanha e
+formulario renderizados, Turnstile solicitado com falha de rede observada,
+`backendMutationRequests: 0`, `cleanupStatus: cleaned`, `residueStatus: passed` e
+`auditRetained: true`. O escopo permanece `compatibility-only`, com
+`positiveBrowserRequiredAfterFullCandidateDeploy: true`.
+
+Verificacao independente apos o run: a variavel `G12_STAGING_CMS_PUBLIC_LEGACY_RECOVERY` nao
+existe, o alias canonico serve `b6ed08476267699d05c06162561083a826d6bfa6` e o `page-by-path` vivo
+responde entre 0,53 e 0,94 s.
+
+Estado de backend a reconciliar: staging ficou com inventario misto. As 33 demais Edge Functions
+seguem em `4b9184b` e `cms-public` esta em `b6ed084` versao 58, porque o restore do bridge
+reimplanta o `cms-public` do candidato, como o proprio handoff exigia. O deploy integral de
+staging deve reconciliar todo o inventario no SHA final.
+
 ## Workflows e gates remotos
 
 | Run / tentativa                                                                    | Workflow e SHA                             | Estado  | Resultado ou observacao                                                                     |
@@ -440,7 +478,7 @@ A matriz deve ser regenerada depois de qualquer correcao e antes da homologacao 
   `test:qa` 66/66, `test:ev2:phase12` 266 aprovados/3 skip, `eval:ev2:phase12` `G12_RULES_PASS`,
   prettier, eslint, typecheck, documentation-boundary e build.
 
-### Bloqueio atual ainda nao corrigido
+### Corrigido e comprovado no candidato `b6ed084`
 
 - Rota/acao: `promote-staging-frontend-bridge.yml`, passo `Prove live alias is the expected
 old-backend baseline`, que roda antes de qualquer mutacao.
@@ -487,12 +525,17 @@ scripts/prepare-cloudflare-worker.mjs` e vazio. Portanto a degradacao esta no pr
   tornando a consulta trabalho morto para essas rotas, mas nao recusa `/blog`, que tambem esta em
   `STATIC_PUBLIC_ROUTES`. Antecipar o atalho mudaria a precedencia de `/blog` e exige revisao
   propria.
-- Impasse de ordenacao identificado e ainda aberto: apenas `deploy-staging.yml` e
+- Resultado: bridge `34395203818`, tentativa 1, `success`, 42 de 42 passos, com a compensacao de
+  frontend corretamente `skipped`. O probe de baseline passou com a amostragem corrigida e a
+  latencia do `page-by-path` medida depois do restore caiu para 0,53 a 0,94 s, contra 0,86 a
+  1,37 s antes.
+- Impasse de ordenacao, agora resolvido pela passagem do bridge: apenas `deploy-staging.yml` e
   `rollback-staging.yml` implantam funcoes em staging, e `deploy-staging.yml` exige
   `frontend_bridge_run_id` validado por `verify-staging-frontend-bridge-run.mjs`, que so aceita um
   run que produziu o artefato de evidencia do bridge. Enquanto o bridge nao passar, o `cms-public`
-  corrigido nao chega a staging pelo caminho desenhado. A correcao de amostragem existe para
-  quebrar esse ciclo sem contornar gate algum.
+  corrigido nao chegaria a staging pelo caminho desenhado. A correcao de amostragem quebrou esse
+  ciclo sem contornar gate algum, e o bridge `34395203818` produziu o artefato que
+  `verify-staging-frontend-bridge-run.mjs` exige.
 
 ### Bloqueio anterior, agora enderecado
 
@@ -546,33 +589,24 @@ scripts/prepare-cloudflare-worker.mjs` e vazio. Portanto a degradacao esta no pr
 
 ## Proxima acao exata
 
-A correcao do bridge legacy-f48 esta implementada e publicada em `cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`.
-O proximo escritor deve, nesta ordem:
+A ponte de compatibilidade legacy-f48 esta implementada, publicada e comprovada em
+`b6ed08476267699d05c06162561083a826d6bfa6`. O proximo escritor deve, nesta ordem:
 
-1. ~~Confirmar o CI do SHA exato~~ — feito: run `34389231706`, tentativa 1, `success`.
-2. ~~Despachar o bridge~~ — feito duas vezes, `34390011038` e `34390937569`, ambos `failure` no
-   probe de baseline por latencia, sem qualquer mutacao remota. Nao redespachar sem antes
-   resolver a latencia do caminho publico: um terceiro run reprovaria pelo mesmo motivo.
-3. Decidir como tratar a latencia do caminho publico antes de qualquer novo despacho do bridge.
-   As opcoes levantadas, com a consequencia de cada uma, estao registradas abaixo. A escolha nao
-   e tecnica apenas: altera a ordem dos gates ou o custo de infraestrutura.
-   - Corrigir `cms-public` para restaurar o tempo de `page-by-path` e implantar em staging. E a
-     unica opcao que muda o numero medido pelo passo bloqueante, mas exige implantar backend antes
-     do bridge, invertendo a ordem prevista e mexendo justamente na funcao que o bridge troca.
-   - Mover o atalho `isPublicRoute` para antes da consulta `page-by-path` no Worker. Elimina um
-     round trip desperdicado por requisicao em toda rota publica estatica e e correto por si so,
-     mas nao desbloqueia o passo, porque o baseline medido continua sendo `4b9184b`.
-   - Rever a amostragem do probe. Com `EV2_G12_SAMPLE_COUNT: 5` o p95 e na pratica o maximo de
-     cinco amostras. Aumentar a amostragem mede percentil de verdade sem tocar no orcamento de
-     1500 ms, mas altera o comportamento de um gate e exige autorizacao explicita.
-   - Elevar a capacidade do projeto Supabase de staging. Decisao de custo, externa a este repo.
-     Nao adotar reducao do orcamento `publicP95Ms` como saida.
-4. Ao final do run, provar pelos relatorios `staging-cms-public-legacy-*` que o `cms-public` do
-   candidato voltou, que a variavel `G12_STAGING_CMS_PUBLIC_LEGACY_RECOVERY` foi liberada e que o
-   residuo das fixtures e zero. Se a variavel permanecer, o backend legado pode ainda estar no ar:
-   deixar o watchdog `restore-legacy-public-backend` concluir antes de qualquer novo disparo.
-5. Seguir para o deploy integral de staging, o artefato unico selado e os gates subsequentes ja
-   listados em "Pendentes e bloqueantes".
+1. ~~Confirmar o CI do SHA exato~~ — feito: run `34394525418`, tentativa 1, `success`.
+2. ~~Resolver a latencia do caminho publico que bloqueava o probe de baseline~~ — feito em
+   `b6ed084`, paralelizando as tres consultas de `page-by-path` e corrigindo a amostragem do
+   probe, sem tocar no orcamento `publicP95Ms`.
+3. ~~Executar o staging frontend bridge contra o baseline canonico `4b9184b`~~ — feito: run
+   `34395203818`, tentativa 1, `success`, com restauracao provada e lease liberado.
+4. Despachar `deploy-staging.yml` com `git_ref=b6ed08476267699d05c06162561083a826d6bfa6`,
+   `rollback_ref=4b9184b3616b4df64b55037029b8dd02d2751e1b`,
+   `frontend_bridge_run_id=34395203818` e `ev2_draft_v2_candidate=false`. Esse run reconcilia o
+   inventario misto de Edge Functions, aplica e verifica migrations, executa o canario
+   idempotente de migration e RLS e produz o artefato do candidato.
+5. Selar o artefato final unico e seguir os gates ja listados em "Pendentes e bloqueantes".
+6. Nao tratar os canarios headless do bridge como homologacao. A homologacao positiva continua
+   exigindo Microsoft Edge real, sessao autenticada, MFA e backend real, e o proprio artefato do
+   bridge registra `positiveBrowserRequiredAfterFullCandidateDeploy: true`.
 
 A troca temporaria em staging e serializada por um lease exclusivo, sintetica, auditada e possui
 restauracao fail-safe tanto dentro do run quanto por watchdog dedicado quando o runner e perdido.
