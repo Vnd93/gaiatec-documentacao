@@ -122,8 +122,15 @@ utilidade diagnostica das evidencias anteriores, mas nao autoriza usa-las para a
   <https://github.com/Vnd93/gaiatec-cms/actions/runs/34399505896>. Jobs aprovados: quality
   `102627577683`, database `102627577734`, browser `102627577531`. Artefato CI `10123017527`,
   nome `site-524787f38497a5473c3064fde7dfd7683d8d5ec7`, nao expirado.
-- Bridge e deploy de staging precisam ser reexecutados para este SHA. A evidencia de `b6ed084`,
-  inclusive o bridge `34395203818`, esta invalidada.
+- Bridge [`34400103842`](https://github.com/Vnd93/gaiatec-cms/actions/runs/34400103842), tentativa
+  1, `success`, com `expected_baseline_sha=b6ed08476267699d05c06162561083a826d6bfa6`, que era o
+  SHA servido pelo alias apos o bridge anterior. Sequencia da troca: versao viva 58 capturada,
+  legado publicado como 59 e candidato restaurado como 60, com `contractProbe: public-v2` e
+  `internalIdentifiersExposed: false`.
+- As tres sondagens do run mediram 100,00% de disponibilidade e 0,00% de 5xx em 20 amostras cada,
+  com `/produtos` em p95 de 502, 469 e 391 ms. Antes das duas correcoes esse mesmo indicador
+  estava em 2.005 ms com 80% de disponibilidade, o que confirma o efeito de ambas.
+- A evidencia de `b6ed084`, inclusive o bridge `34395203818`, esta invalidada.
 
 ### Candidato anterior `b6ed08476267699d05c06162561083a826d6bfa6` (evidencia superada)
 
