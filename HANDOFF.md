@@ -11,13 +11,25 @@
 - Nenhuma operacao local atomica estava em andamento.
 - A partir da publicacao deste handoff, Codex Desktop permanece somente leitura ate o claim explicito
   pelo Claude Code ou a devolucao/cancelamento explicito do handoff.
+- Claim executado por Claude Code em `2026-09-09T17:58:05.187Z`. Codex Desktop permanece somente
+  leitura ate a devolucao ou o cancelamento explicito deste lease.
+- Revalidacao imediatamente anterior ao claim: perfil GitHub `Vnd93`; codigo em `main` com HEAD e
+  `origin/main` iguais a `0ab1fa84eec65c762644ed9368bfcfb213402b17` e checkout limpo; documentacao em
+  `docs/g12-production-release` igual a `2e29771c7df6eda8b13314c34601ec827f0f3b96`; nenhum run
+  `queued` ou `in_progress` nos 100 mais recentes; `/healthz` de staging servindo `4b9184b3...` e o de
+  producao servindo `f48bb453...`; Supabase staging `glcqsosxwgmlhzgcsnzv` com 34 Edge Functions,
+  `cms-public` em 56 deployments e migrations `0001`-`0088`; Supabase production
+  `chfuhctnhqgyjowkvllv` `Healthy` com ultima migration `cms_audit_identity_detach`.
+- Limitacao observada na revalidacao: a lista de Edge Functions do projeto de producao nao renderiza
+  no dashboard Supabase; o inventario de funcoes de producao deve ser confirmado pelo pipeline final.
 
 ```yaml
-writerState: READY_FOR_CLAIM
+writerState: CLAIMED
+currentWriter: CLAUDE_CODE
 previousWriter: CODEX_DESKTOP
-intendedWriter: CLAUDE_CODE
 codeCandidateSha: 0ab1fa84eec65c762644ed9368bfcfb213402b17
 capturedAt: 2026-09-09T17:20:20.684Z
+claimedAt: 2026-09-09T17:58:05.187Z
 ```
 
 ## Objetivo integral e criterio de conclusao
