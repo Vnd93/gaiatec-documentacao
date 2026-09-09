@@ -27,7 +27,8 @@
 writerState: CLAIMED
 currentWriter: CLAUDE_CODE
 previousWriter: CODEX_DESKTOP
-codeCandidateSha: 0ab1fa84eec65c762644ed9368bfcfb213402b17
+codeCandidateSha: cde606fb4c5eb882f3650d677fdc0bb1d1c2a377
+previousCodeCandidateSha: 0ab1fa84eec65c762644ed9368bfcfb213402b17
 capturedAt: 2026-09-09T17:20:20.684Z
 claimedAt: 2026-09-09T17:58:05.187Z
 ```
@@ -76,11 +77,11 @@ analise estatica ou canario parcial nao substituem prova de persistencia, audito
 | Perfil GitHub                        | `Vnd93`                                                                             |
 | Codigo                               | `Vnd93/gaiatec-cms`                                                                 |
 | Branch do codigo                     | `main`                                                                              |
-| HEAD do codigo                       | `0ab1fa84eec65c762644ed9368bfcfb213402b17`                                          |
-| `origin/main`                        | `0ab1fa84eec65c762644ed9368bfcfb213402b17`                                          |
+| HEAD do codigo                       | `cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`                                          |
+| `origin/main`                        | `cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`                                          |
 | Checkout do codigo                   | limpo                                                                               |
-| Candidato vigente                    | `0ab1fa84eec65c762644ed9368bfcfb213402b17`                                          |
-| Candidato anterior                   | `63c1b563b3fb685e445960545fbabcaee84437bb`                                          |
+| Candidato vigente                    | `cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`                                          |
+| Candidato anterior                   | `0ab1fa84eec65c762644ed9368bfcfb213402b17`                                          |
 | Documentacao                         | `Vnd93/gaiatec-documentacao`                                                        |
 | Branch documental                    | `docs/g12-production-release`                                                       |
 | Base documental antes do handoff     | `641889875e8d425f7902474e9f5e0700a4e8b5dc`                                          |
@@ -93,16 +94,17 @@ O checkpoint inicialmente esperado, `63c1b563b3fb685e445960545fbabcaee84437bb`, 
 
 Todos os commits abaixo foram enviados sem force para `origin/main`:
 
-| SHA curto | Commit                                      | Motivo                                                                                                               |
-| --------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `0ab1fa8` | `fix(qa): bind production evidence names`   | Vincula o manifesto terminal aos nomes reais dos arquivos de evidencia de producao e adiciona validacao fail-closed. |
-| `63c1b56` | `fix(release): accept SQL created response` | Aceita HTTP 200 ou 201 apenas no preflight SQL do migration canary; o helper geral continua fail-closed.             |
-| `4b9184b` | `fix(release): stabilize bridge gates`      | Estabiliza controles do bridge e originou o atual frontend canonico de staging.                                      |
-| `b02263c` | `align staging database gates`              | Alinha gates do banco de staging.                                                                                    |
-| `ff01b9d` | `verify idempotent deploys`                 | Verifica idempotencia de deploy.                                                                                     |
-| `a4c5ea9` | `bind command idempotency`                  | Vincula idempotencia de comandos.                                                                                    |
-| `58b6b29` | `canonicalize function inventory`           | Canonicaliza o inventario de funcoes.                                                                                |
-| `5802338` | `tolerate variable visibility lag`          | Trata atraso de visibilidade de variavel sem enfraquecer o gate.                                                     |
+| SHA curto | Commit                                                      | Motivo                                                                                                                              |
+| --------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `cde606f` | `fix(release): bridge the legacy public backend on staging` | Serve o contrato legacy-f48 real em staging durante a ponte, com lease exclusivo, restauracao amarrada a digest e watchdog proprio. |
+| `0ab1fa8` | `fix(qa): bind production evidence names`                   | Vincula o manifesto terminal aos nomes reais dos arquivos de evidencia de producao e adiciona validacao fail-closed.                |
+| `63c1b56` | `fix(release): accept SQL created response`                 | Aceita HTTP 200 ou 201 apenas no preflight SQL do migration canary; o helper geral continua fail-closed.                            |
+| `4b9184b` | `fix(release): stabilize bridge gates`                      | Estabiliza controles do bridge e originou o atual frontend canonico de staging.                                                     |
+| `b02263c` | `align staging database gates`                              | Alinha gates do banco de staging.                                                                                                   |
+| `ff01b9d` | `verify idempotent deploys`                                 | Verifica idempotencia de deploy.                                                                                                    |
+| `a4c5ea9` | `bind command idempotency`                                  | Vincula idempotencia de comandos.                                                                                                   |
+| `58b6b29` | `canonicalize function inventory`                           | Canonicaliza o inventario de funcoes.                                                                                               |
+| `5802338` | `tolerate variable visibility lag`                          | Trata atraso de visibilidade de variavel sem enfraquecer o gate.                                                                    |
 
 A ultima correcao alterou apenas o materializador da matriz terminal e seu teste. Entre `4b9184b` e
 `0ab1fa8` nao ha alteracao em `src`, `supabase/functions` ou `supabase/migrations`; isso preserva a
@@ -110,7 +112,19 @@ utilidade diagnostica das evidencias anteriores, mas nao autoriza usa-las para a
 
 ## Testes locais e CI do SHA exato
 
-### Candidato `0ab1fa84eec65c762644ed9368bfcfb213402b17`
+### Candidato `cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`
+
+- Validacao local integral: `npm run check` aprovado, incluindo 168 arquivos/1.052 testes vitest,
+  `test:qa` 66/66, `test:ev2:phase12` 266 aprovados e 3 skip, `eval:ev2:phase12` `G12_RULES_PASS`,
+  prettier, eslint, typecheck, documentation-boundary e build de staging.
+- CI run `34389231706`, tentativa 1, `success`, evento `push`:
+  <https://github.com/Vnd93/gaiatec-cms/actions/runs/34389231706>.
+- Jobs aprovados: quality `102593141829`, database `102593141844`, browser `102593141735`.
+- Artefato CI `10119128163`, nome `site-cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`, 157.741.870
+  bytes, nao expirado. Build CI de staging; **nao** e o artefato final unico selado.
+- Nenhum deployment, migration ou evidencia de runtime existe para este SHA.
+
+### Candidato anterior `0ab1fa84eec65c762644ed9368bfcfb213402b17` (evidencia superada)
 
 - Validacao focada da ultima correcao: 21/21 testes, Prettier, ESLint e diff check aprovados.
 - CI run `34377871781`, tentativa 1, `success`:
@@ -390,7 +404,31 @@ A matriz deve ser regenerada depois de qualquer correcao e antes da homologacao 
   aceitava somente 200.
 - Correcao `63c1b56`: aceitar 200/201 apenas nesse preflight, com regressao e helper geral intacto.
 
-### Bloqueio atual ainda nao corrigido
+### Corrigido no candidato `cde606f`
+
+- Erro: `QA_CMS_PUBLIC_BRIDGE_LEGACY_FORM_CONTRACT_NOT_LIVE` no run `34374494260`.
+- Causa raiz: o deploy de staging anterior levou `cms-public` para `public-v2`, que remove `formId`,
+  `versionId`, `slaMinutes`, `retentionDays` e `status`, enquanto o gate exige deliberadamente o shape
+  legacy-f48 ainda servido por producao.
+- Correcao: a ponte passou a servir o contrato legado real em vez de aceitar os dois shapes. O workflow
+  faz checkout do release exato `f48bb4530566456a0090a98cd39caf1cacb51b09`, planeja a troca sem mutar
+  nada, toma um lease exclusivo sobre esse plano (`staging-cms-public-legacy`) e so entao implanta o
+  `cms-public` legado no projeto de staging. Os bytes do candidato sao reimplantados em qualquer
+  desfecho, antes do cleanup canonico, para que o retorno a `public-v2` seja provado contra um
+  formulario ainda existente e sem UUID no payload. O lease so e liberado apos essa restauracao, e um
+  run que engajou o backend legado sem restaurar falha.
+- Ambos os sentidos sao amarrados a digest de fonte: a troca recusa arvore legada divergente e a
+  restauracao recusa implantar qualquer coisa que nao seja a arvore candidata registrada no plano.
+  Ambiente e projeto ficam fixos em staging e `glcqsosxwgmlhzgcsnzv`.
+- Lacuna adicional fechada: o `if: always()` nao cobre perda do runner. O watchdog ganhou o job
+  independente `restore-legacy-public-backend`, que le o lease selado, faz checkout do release
+  candidato que o proprio lease registra, restaura, libera o lease e falha fechado quando havia lease
+  e a restauracao nao teve sucesso.
+- Validacao local integral do SHA: `npm run check` aprovado, 168 arquivos/1.052 testes vitest,
+  `test:qa` 66/66, `test:ev2:phase12` 266 aprovados/3 skip, `eval:ev2:phase12` `G12_RULES_PASS`,
+  prettier, eslint, typecheck, documentation-boundary e build.
+
+### Bloqueio anterior, agora enderecado
 
 - Rota/acao: staging frontend bridge, setup de fixture publica do formulario.
 - Esperado: provar o frontend candidato contra o contrato real legacy-f48 ainda servido em producao.
@@ -417,10 +455,13 @@ A matriz deve ser regenerada depois de qualquer correcao e antes da homologacao 
 
 ### Pendentes e bloqueantes para aprovacao operacional
 
-1. Corrigir minimamente o bridge para oferecer backend legacy-f48 isolado/temporario e restaurar
-   `cms-public public-v2` em `finally`, com regressao e evidencia de zero residuo.
-2. Como essa correcao mudara o SHA, gerar novo candidato e revalidar todos os gates vinculados.
-3. Executar novo staging frontend bridge contra o SHA final e o baseline canonico `4b9184b`.
+1. ~~Corrigir minimamente o bridge para oferecer backend legacy-f48 temporario e restaurar
+   `cms-public public-v2` em qualquer desfecho~~ — feito em `cde606f`, com regressao, lease
+   exclusivo, amarracao por digest e watchdog dedicado. Falta a evidencia de runtime.
+2. ~~Gerar novo candidato apos a correcao~~ — feito: `cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`.
+   Toda evidencia vinculada a `0ab1fa84eec65c762644ed9368bfcfb213402b17` esta invalidada.
+3. Confirmar o CI do SHA exato e executar novo staging frontend bridge contra `cde606f` usando o
+   baseline canonico `4b9184b`.
 4. Executar deploy integral de staging, migration/RLS canary idempotente, inventario de funcoes e
    gerar/selar o unico artefato final.
 5. Resolver a revisao documental canonica e regenerar a matriz integral do SHA final.
@@ -438,28 +479,22 @@ A matriz deve ser regenerada depois de qualquer correcao e antes da homologacao 
 
 ## Proxima acao exata
 
-Sem iniciar novo deploy ou migration, o proximo escritor deve:
+A correcao do bridge legacy-f48 esta implementada e publicada em `cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`.
+O proximo escritor deve, nesta ordem:
 
-1. Fazer claim explicito do lease e verificar novamente GitHub/profile, `main`, HEAD/origin, checkout
-   e runs ativos.
-2. Implementar uma correcao minima no workflow/script do bridge que:
-   - capture versao/digest atuais de `cms-public` no staging;
-   - publique temporariamente **somente** `cms-public` do SHA historico
-     `f48bb4530566456a0090a98cd39caf1cacb51b09` no projeto staging
-     `glcqsosxwgmlhzgcsnzv`;
-   - confirme que apenas o contrato publico de formulario corresponde a legacy-f48;
-   - execute fixtures sinteticas sem tocar producao;
-   - restaure em `finally` somente o `cms-public` do candidato atual, mesmo em falha;
-   - prove `public-v2`, ausencia de UUID/metadados internos, zero residuo e estado de recovery limpo;
-   - inclua teste de regressao e concorrencia exclusiva para impedir dois bridges simultaneos.
-3. Executar os testes focados, commit/push direto em `main`, obter o novo SHA e invalidar/revincular
-   toda evidencia dependente do SHA.
-4. Somente depois, despachar um novo `promote-staging-frontend-bridge.yml` para o novo SHA, usando
-   `4b9184b3616b4df64b55037029b8dd02d2751e1b` como baseline esperado. Nao reexecutar o run `63c1`.
+1. ~~Confirmar o CI do SHA exato~~ — feito: run `34389231706`, tentativa 1, `success`.
+2. Despachar um novo `promote-staging-frontend-bridge.yml` com `candidate_sha=cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`
+   e `expected_baseline_sha=4b9184b3616b4df64b55037029b8dd02d2751e1b`. Nao reexecutar o run
+   `34374494260` nem qualquer run terminal anterior.
+3. Ao final do run, provar pelos relatorios `staging-cms-public-legacy-*` que o `cms-public` do
+   candidato voltou, que a variavel `G12_STAGING_CMS_PUBLIC_LEGACY_RECOVERY` foi liberada e que o
+   residuo das fixtures e zero. Se a variavel permanecer, o backend legado pode ainda estar no ar:
+   deixar o watchdog `restore-legacy-public-backend` concluir antes de qualquer novo disparo.
+4. Seguir para o deploy integral de staging, o artefato unico selado e os gates subsequentes ja
+   listados em "Pendentes e bloqueantes".
 
-Se houver infraestrutura isolada disponivel para o backend legacy, ela e preferivel. Caso contrario,
-a troca temporaria em staging deve ser serializada, sintetica, auditada e possuir restauracao
-fail-safe independente do resultado do bridge.
+A troca temporaria em staging e serializada por um lease exclusivo, sintetica, auditada e possui
+restauracao fail-safe tanto dentro do run quanto por watchdog dedicado quando o runner e perdido.
 
 ## Autorizacoes literais e validade
 
@@ -475,7 +510,8 @@ fail-safe independente do resultado do bridge.
 
 ## NAO REPETIR
 
-- Nao rerodar CI `34377871781` nem qualquer run ja terminal apenas para outro formato de relatorio.
+- Nao rerodar CI `34377871781`, o CI do candidato atual nem qualquer run ja terminal apenas para
+  outro formato de relatorio.
 - Nao reutilizar artefato/evidencia de SHA anterior para aprovar o SHA final.
 - Nao reexecutar `34374494260`; criar novo run somente depois da correcao do baseline legacy.
 - Nao reaplicar/resetar migrations `0001`-`0088` nem redeployar manualmente as 34 funcoes para
@@ -499,13 +535,16 @@ fail-safe independente do resultado do bridge.
 
 ## Limitacoes reais abertas
 
-- `0ab1fa8` nao esta live em staging nem producao.
-- O bloqueio imediato e a incompatibilidade deliberadamente detectada entre o baseline legacy-f48
-  exigido pelo bridge e o `public-v2` atualmente servido em staging.
+- `cde606f` nao esta live em staging nem producao, e nao possui CI confirmado nem artefato.
+- A incompatibilidade entre o baseline legacy-f48 exigido pelo bridge e o `public-v2` servido em
+  staging deixou de ser um bloqueio: a ponte agora serve o contrato legado real durante a janela e
+  restaura o candidato em qualquer desfecho. Falta executa-la e produzir a evidencia.
 - A matriz terminal runtime do SHA final ainda nao existe.
 - O artefato final unico canario-producao ainda nao foi selado.
 - Operador/MFA production, backup/restore, integracoes e ciclo Edge final ainda nao foram aprovados.
 - Producao `f48` esta saudavel, mas nao e o candidato atual e nao fundamenta aprovacao operacional.
+- A lista de Edge Functions do projeto de producao nao renderiza no dashboard Supabase; o inventario
+  de funcoes de producao deve ser confirmado pelo pipeline final, nao pela interface.
 
 O unico bloqueio para iniciar a proxima etapa e implementar com seguranca a ponte de compatibilidade
 legacy em staging com restauracao fail-safe. Todos os demais itens acima sao gates subsequentes, nao
