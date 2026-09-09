@@ -428,6 +428,34 @@ A matriz deve ser regenerada depois de qualquer correcao e antes da homologacao 
   `test:qa` 66/66, `test:ev2:phase12` 266 aprovados/3 skip, `eval:ev2:phase12` `G12_RULES_PASS`,
   prettier, eslint, typecheck, documentation-boundary e build.
 
+### Bloqueio atual ainda nao corrigido
+
+- Rota/acao: `promote-staging-frontend-bridge.yml`, passo `Prove live alias is the expected
+old-backend baseline`, que roda antes de qualquer mutacao.
+- Esperado: alias canonico servindo `4b9184b` dentro do orcamento `G12_BUDGETS.publicP95Ms = 1500`.
+- Obtido: `outcome: pause` com `route_latency_budget_exceeded` em dois runs consecutivos:
+  `34390011038` (`/` p95 2315,7 ms) e `34390937569` (`/produtos` p50 1034,0 ms e p95 2005,2 ms,
+  `public_p95_budget_exceeded` 1722,7 ms). Disponibilidade 100%, zero 5xx, headers de release
+  exatos, contrato de health, manifest, `noindex` e CSP validos nos dois runs.
+- Nenhuma mutacao remota ocorreu em nenhum dos dois runs: passos 16 a 41 ficaram `skipped`, o lease
+  `G12_STAGING_CMS_PUBLIC_LEGACY_RECOVERY` nunca foi criado, o alias canonico continua em
+  `4b9184b` e o preview `ev2-g12-canary` segue intacto.
+- Regressao confirmada contra evidencia anterior do mesmo alias e do mesmo orcamento. No run
+  `34332351815` o probe passou com `/produtos` p50 756,1 ms e p95 995,0 ms, e `/` p50 437,4 ms.
+- Causa raiz: `cloudflare/_worker.js` chama `cms-public?type=page-by-path` para todo caminho
+  publico antes de avaliar o atalho estatico `isPublicRoute`. As rotas de `STATIC_PUBLIC_ROUTES`
+  pagam esse round trip e descartam o resultado. Medicao direta pelo header `Server-Timing`
+  do proprio Worker: `/servicos` 1.271 ms, `/solucoes` 1.095 ms, `/produtos` 897 ms, contra
+  `/contato` 485 ms, que nao passa por esse ramo. DNS, conexao e TLS somam menos de 60 ms.
+- O Worker nao mudou: `git diff ff01b9d..4b9184b -- cloudflare/_worker.js
+scripts/prepare-cloudflare-worker.mjs` e vazio. Portanto a degradacao esta no proprio
+  `cms-public`, que foi para `public-v2` v56 no deploy de staging `34367910654`, entre o probe que
+  passou e os que falharam.
+- Consequencia de ordenacao: esse passo mede o deployment baseline ja no ar. Nenhuma alteracao no
+  candidato muda essa medicao enquanto o baseline nao for substituido; so uma melhora no
+  `cms-public` implantado em staging altera o numero observado.
+- Nao foi aplicado nenhum afrouxamento de orcamento, de amostragem ou de aquecimento do probe.
+
 ### Bloqueio anterior, agora enderecado
 
 - Rota/acao: staging frontend bridge, setup de fixture publica do formulario.
@@ -460,8 +488,9 @@ A matriz deve ser regenerada depois de qualquer correcao e antes da homologacao 
    exclusivo, amarracao por digest e watchdog dedicado. Falta a evidencia de runtime.
 2. ~~Gerar novo candidato apos a correcao~~ — feito: `cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`.
    Toda evidencia vinculada a `0ab1fa84eec65c762644ed9368bfcfb213402b17` esta invalidada.
-3. Confirmar o CI do SHA exato e executar novo staging frontend bridge contra `cde606f` usando o
-   baseline canonico `4b9184b`.
+3. Executar novo staging frontend bridge contra `cde606f` usando o baseline canonico `4b9184b`.
+   Bloqueado: o probe de baseline reprova por latencia antes de qualquer mutacao. Ver "Bloqueio
+   atual ainda nao corrigido".
 4. Executar deploy integral de staging, migration/RLS canary idempotente, inventario de funcoes e
    gerar/selar o unico artefato final.
 5. Resolver a revisao documental canonica e regenerar a matriz integral do SHA final.
@@ -483,14 +512,28 @@ A correcao do bridge legacy-f48 esta implementada e publicada em `cde606fb4c5eb8
 O proximo escritor deve, nesta ordem:
 
 1. ~~Confirmar o CI do SHA exato~~ — feito: run `34389231706`, tentativa 1, `success`.
-2. Despachar um novo `promote-staging-frontend-bridge.yml` com `candidate_sha=cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`
-   e `expected_baseline_sha=4b9184b3616b4df64b55037029b8dd02d2751e1b`. Nao reexecutar o run
-   `34374494260` nem qualquer run terminal anterior.
-3. Ao final do run, provar pelos relatorios `staging-cms-public-legacy-*` que o `cms-public` do
+2. ~~Despachar o bridge~~ — feito duas vezes, `34390011038` e `34390937569`, ambos `failure` no
+   probe de baseline por latencia, sem qualquer mutacao remota. Nao redespachar sem antes
+   resolver a latencia do caminho publico: um terceiro run reprovaria pelo mesmo motivo.
+3. Decidir como tratar a latencia do caminho publico antes de qualquer novo despacho do bridge.
+   As opcoes levantadas, com a consequencia de cada uma, estao registradas abaixo. A escolha nao
+   e tecnica apenas: altera a ordem dos gates ou o custo de infraestrutura.
+   - Corrigir `cms-public` para restaurar o tempo de `page-by-path` e implantar em staging. E a
+     unica opcao que muda o numero medido pelo passo bloqueante, mas exige implantar backend antes
+     do bridge, invertendo a ordem prevista e mexendo justamente na funcao que o bridge troca.
+   - Mover o atalho `isPublicRoute` para antes da consulta `page-by-path` no Worker. Elimina um
+     round trip desperdicado por requisicao em toda rota publica estatica e e correto por si so,
+     mas nao desbloqueia o passo, porque o baseline medido continua sendo `4b9184b`.
+   - Rever a amostragem do probe. Com `EV2_G12_SAMPLE_COUNT: 5` o p95 e na pratica o maximo de
+     cinco amostras. Aumentar a amostragem mede percentil de verdade sem tocar no orcamento de
+     1500 ms, mas altera o comportamento de um gate e exige autorizacao explicita.
+   - Elevar a capacidade do projeto Supabase de staging. Decisao de custo, externa a este repo.
+     Nao adotar reducao do orcamento `publicP95Ms` como saida.
+4. Ao final do run, provar pelos relatorios `staging-cms-public-legacy-*` que o `cms-public` do
    candidato voltou, que a variavel `G12_STAGING_CMS_PUBLIC_LEGACY_RECOVERY` foi liberada e que o
    residuo das fixtures e zero. Se a variavel permanecer, o backend legado pode ainda estar no ar:
    deixar o watchdog `restore-legacy-public-backend` concluir antes de qualquer novo disparo.
-4. Seguir para o deploy integral de staging, o artefato unico selado e os gates subsequentes ja
+5. Seguir para o deploy integral de staging, o artefato unico selado e os gates subsequentes ja
    listados em "Pendentes e bloqueantes".
 
 A troca temporaria em staging e serializada por um lease exclusivo, sintetica, auditada e possui
