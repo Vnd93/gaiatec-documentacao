@@ -27,8 +27,8 @@
 writerState: CLAIMED
 currentWriter: CLAUDE_CODE
 previousWriter: CODEX_DESKTOP
-codeCandidateSha: cde606fb4c5eb882f3650d677fdc0bb1d1c2a377
-previousCodeCandidateSha: 0ab1fa84eec65c762644ed9368bfcfb213402b17
+codeCandidateSha: b6ed08476267699d05c06162561083a826d6bfa6
+previousCodeCandidateSha: cde606fb4c5eb882f3650d677fdc0bb1d1c2a377
 capturedAt: 2026-09-09T17:20:20.684Z
 claimedAt: 2026-09-09T17:58:05.187Z
 ```
@@ -77,11 +77,11 @@ analise estatica ou canario parcial nao substituem prova de persistencia, audito
 | Perfil GitHub                        | `Vnd93`                                                                             |
 | Codigo                               | `Vnd93/gaiatec-cms`                                                                 |
 | Branch do codigo                     | `main`                                                                              |
-| HEAD do codigo                       | `cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`                                          |
-| `origin/main`                        | `cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`                                          |
+| HEAD do codigo                       | `b6ed08476267699d05c06162561083a826d6bfa6`                                          |
+| `origin/main`                        | `b6ed08476267699d05c06162561083a826d6bfa6`                                          |
 | Checkout do codigo                   | limpo                                                                               |
-| Candidato vigente                    | `cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`                                          |
-| Candidato anterior                   | `0ab1fa84eec65c762644ed9368bfcfb213402b17`                                          |
+| Candidato vigente                    | `b6ed08476267699d05c06162561083a826d6bfa6`                                          |
+| Candidato anterior                   | `cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`                                          |
 | Documentacao                         | `Vnd93/gaiatec-documentacao`                                                        |
 | Branch documental                    | `docs/g12-production-release`                                                       |
 | Base documental antes do handoff     | `641889875e8d425f7902474e9f5e0700a4e8b5dc`                                          |
@@ -94,17 +94,18 @@ O checkpoint inicialmente esperado, `63c1b563b3fb685e445960545fbabcaee84437bb`, 
 
 Todos os commits abaixo foram enviados sem force para `origin/main`:
 
-| SHA curto | Commit                                                      | Motivo                                                                                                                              |
-| --------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `cde606f` | `fix(release): bridge the legacy public backend on staging` | Serve o contrato legacy-f48 real em staging durante a ponte, com lease exclusivo, restauracao amarrada a digest e watchdog proprio. |
-| `0ab1fa8` | `fix(qa): bind production evidence names`                   | Vincula o manifesto terminal aos nomes reais dos arquivos de evidencia de producao e adiciona validacao fail-closed.                |
-| `63c1b56` | `fix(release): accept SQL created response`                 | Aceita HTTP 200 ou 201 apenas no preflight SQL do migration canary; o helper geral continua fail-closed.                            |
-| `4b9184b` | `fix(release): stabilize bridge gates`                      | Estabiliza controles do bridge e originou o atual frontend canonico de staging.                                                     |
-| `b02263c` | `align staging database gates`                              | Alinha gates do banco de staging.                                                                                                   |
-| `ff01b9d` | `verify idempotent deploys`                                 | Verifica idempotencia de deploy.                                                                                                    |
-| `a4c5ea9` | `bind command idempotency`                                  | Vincula idempotencia de comandos.                                                                                                   |
-| `58b6b29` | `canonicalize function inventory`                           | Canonicaliza o inventario de funcoes.                                                                                               |
-| `5802338` | `tolerate variable visibility lag`                          | Trata atraso de visibilidade de variavel sem enfraquecer o gate.                                                                    |
+| SHA curto | Commit                                                      | Motivo                                                                                                                                 |
+| --------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `b6ed084` | `perf(public): resolve a public path in one round trip`     | Emite as tres consultas de resolucao de caminho publico em paralelo e corrige a amostragem do probe do bridge, sem tocar no orcamento. |
+| `cde606f` | `fix(release): bridge the legacy public backend on staging` | Serve o contrato legacy-f48 real em staging durante a ponte, com lease exclusivo, restauracao amarrada a digest e watchdog proprio.    |
+| `0ab1fa8` | `fix(qa): bind production evidence names`                   | Vincula o manifesto terminal aos nomes reais dos arquivos de evidencia de producao e adiciona validacao fail-closed.                   |
+| `63c1b56` | `fix(release): accept SQL created response`                 | Aceita HTTP 200 ou 201 apenas no preflight SQL do migration canary; o helper geral continua fail-closed.                               |
+| `4b9184b` | `fix(release): stabilize bridge gates`                      | Estabiliza controles do bridge e originou o atual frontend canonico de staging.                                                        |
+| `b02263c` | `align staging database gates`                              | Alinha gates do banco de staging.                                                                                                      |
+| `ff01b9d` | `verify idempotent deploys`                                 | Verifica idempotencia de deploy.                                                                                                       |
+| `a4c5ea9` | `bind command idempotency`                                  | Vincula idempotencia de comandos.                                                                                                      |
+| `58b6b29` | `canonicalize function inventory`                           | Canonicaliza o inventario de funcoes.                                                                                                  |
+| `5802338` | `tolerate variable visibility lag`                          | Trata atraso de visibilidade de variavel sem enfraquecer o gate.                                                                       |
 
 A ultima correcao alterou apenas o materializador da matriz terminal e seu teste. Entre `4b9184b` e
 `0ab1fa8` nao ha alteracao em `src`, `supabase/functions` ou `supabase/migrations`; isso preserva a
@@ -112,7 +113,18 @@ utilidade diagnostica das evidencias anteriores, mas nao autoriza usa-las para a
 
 ## Testes locais e CI do SHA exato
 
-### Candidato `cde606fb4c5eb882f3650d677fdc0bb1d1c2a377`
+### Candidato `b6ed08476267699d05c06162561083a826d6bfa6`
+
+- Validacao local integral: `npm run check` aprovado, 168 arquivos e 1.053 testes vitest,
+  `eval:ev2:phase12` `G12_RULES_PASS`, prettier, eslint, typecheck, documentation-boundary e build.
+- CI run `34394525418`, tentativa 1, `success`, evento `push`:
+  <https://github.com/Vnd93/gaiatec-cms/actions/runs/34394525418>.
+- Jobs aprovados: quality `102610805561`, database `102610805760`, browser `102610805893`.
+- Artefato CI `10121122640`, nome `site-b6ed08476267699d05c06162561083a826d6bfa6`, nao expirado.
+  Build CI de staging; **nao** e o artefato final unico selado.
+- Nenhum deployment, migration ou evidencia de runtime existe para este SHA.
+
+### Candidato anterior `cde606fb4c5eb882f3650d677fdc0bb1d1c2a377` (evidencia superada)
 
 - Validacao local integral: `npm run check` aprovado, incluindo 168 arquivos/1.052 testes vitest,
   `test:qa` 66/66, `test:ev2:phase12` 266 aprovados e 3 skip, `eval:ev2:phase12` `G12_RULES_PASS`,
@@ -454,7 +466,33 @@ scripts/prepare-cloudflare-worker.mjs` e vazio. Portanto a degradacao esta no pr
 - Consequencia de ordenacao: esse passo mede o deployment baseline ja no ar. Nenhuma alteracao no
   candidato muda essa medicao enquanto o baseline nao for substituido; so uma melhora no
   `cms-public` implantado em staging altera o numero observado.
-- Nao foi aplicado nenhum afrouxamento de orcamento, de amostragem ou de aquecimento do probe.
+- Correcao aplicada em `b6ed084`, em duas partes, ambas com teste de regressao:
+  1. `supabase/functions/cms-public/index.ts` passou a emitir as tres consultas de
+     `page-by-path` em paralelo, mantendo precedencia e tratamento fail-closed identicos.
+     Medicao direta contra staging: caminho invalido que nao toca o banco responde em ~300 ms,
+     uma consulta indexada isolada em ~680 ms e o fallback de tres consultas entre 840 e 1.370 ms,
+     o que situa cada ida-e-volta em torno de 380 ms e descarta varredura sequencial como causa.
+  2. As tres sondagens do bridge passaram de `EV2_G12_SAMPLE_COUNT` 5 para 20. Com
+     `percentile(v,95) = sorted[ceil(0,95*n)-1]`, `n=5` faz o p95 relatado ser o proprio maximo
+     das cinco amostras, de modo que uma unica resposta fria decide o gate. O valor 20 e o que
+     `deploy-production.yml` ja usa nas janelas de saude.
+- O orcamento nao foi tocado: `G12_BUDGETS.publicP95Ms` continua em 1500 e ha teste que trava isso.
+  Aquecimento tambem nao foi alterado.
+- Risco residual assumido: com `n=20` o p95 ainda e a 19a de 20 amostras. Se a cauda de
+  `/servicos` persistir, o proximo passo nao e ajustar numero de gate, e sim levar o `cms-public`
+  corrigido ao staging pelo deploy integral.
+- Follow-up deliberadamente fora deste commit: `cloudflare/_worker.js` continua consultando
+  `page-by-path` antes de avaliar o atalho `isPublicRoute`. A migration `0026` recusa paginas
+  gerenciadas sob `produtos`, `servicos`, `industrias`, `aplicacoes`, `solucoes` e `busca`,
+  tornando a consulta trabalho morto para essas rotas, mas nao recusa `/blog`, que tambem esta em
+  `STATIC_PUBLIC_ROUTES`. Antecipar o atalho mudaria a precedencia de `/blog` e exige revisao
+  propria.
+- Impasse de ordenacao identificado e ainda aberto: apenas `deploy-staging.yml` e
+  `rollback-staging.yml` implantam funcoes em staging, e `deploy-staging.yml` exige
+  `frontend_bridge_run_id` validado por `verify-staging-frontend-bridge-run.mjs`, que so aceita um
+  run que produziu o artefato de evidencia do bridge. Enquanto o bridge nao passar, o `cms-public`
+  corrigido nao chega a staging pelo caminho desenhado. A correcao de amostragem existe para
+  quebrar esse ciclo sem contornar gate algum.
 
 ### Bloqueio anterior, agora enderecado
 
