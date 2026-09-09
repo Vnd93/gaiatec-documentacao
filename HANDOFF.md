@@ -599,10 +599,26 @@ A ponte de compatibilidade legacy-f48 esta implementada, publicada e comprovada 
 3. ~~Executar o staging frontend bridge contra o baseline canonico `4b9184b`~~ — feito: run
    `34395203818`, tentativa 1, `success`, com restauracao provada e lease liberado.
 4. Despachar `deploy-staging.yml` com `git_ref=b6ed08476267699d05c06162561083a826d6bfa6`,
-   `rollback_ref=4b9184b3616b4df64b55037029b8dd02d2751e1b`,
+   `rollback_ref=b6ed08476267699d05c06162561083a826d6bfa6`,
    `frontend_bridge_run_id=34395203818` e `ev2_draft_v2_candidate=false`. Esse run reconcilia o
    inventario misto de Edge Functions, aplica e verifica migrations, executa o canario
    idempotente de migration e RLS e produz o artefato do candidato.
+
+   Semantica de `rollback_ref`, aprendida por engano no run `34396972791`: o passo `Resolve and
+verify the exact staging candidate` executa `test "$ROLLBACK_REF" = "$candidate_sha"`, ou
+   seja, `rollback_ref` tem de ser igual a `git_ref`. A descricao do input fala em frontend
+   atualmente aprovado, e depois do bridge o frontend aprovado e servido pelo alias passa a ser o
+   proprio candidato. Passar o baseline anterior `4b9184b` reprova o run no passo 5, antes de
+   qualquer mutacao. O run anterior `34367910654` confirma a leitura: passou nesse passo com
+   `git_ref` e `rollback_ref` ambos em `4b9184b`.
+
+   O run `34396972791` reprovou exatamente ali, sem mutacao alguma. As falhas subsequentes
+   `Clear the single-use staging browser rendezvous variables`, com
+   `G12_REAL_BROWSER_STORE_ARGUMENTS_REFUSED`, e o upload de artefato sao consequencia de o passo
+   5 nao ter escrito `sha` em `GITHUB_OUTPUT`; nao ha variavel de rendezvous pendente e o
+   environment `staging` mantem apenas `STAGING_SUPABASE_PROJECT_REF`. Alias canonico intacto em
+   `b6ed084` e nenhuma variavel `G12_*_RECOVERY` presente.
+
 5. Selar o artefato final unico e seguir os gates ja listados em "Pendentes e bloqueantes".
 6. Nao tratar os canarios headless do bridge como homologacao. A homologacao positiva continua
    exigindo Microsoft Edge real, sessao autenticada, MFA e backend real, e o proprio artefato do
