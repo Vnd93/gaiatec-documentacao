@@ -27,8 +27,8 @@
 writerState: CLAIMED
 currentWriter: CLAUDE_CODE
 previousWriter: CODEX_DESKTOP
-codeCandidateSha: 524787f38497a5473c3064fde7dfd7683d8d5ec7
-previousCodeCandidateSha: b6ed08476267699d05c06162561083a826d6bfa6
+codeCandidateSha: b925052da0f0901157ff79c48aa30354bc40f888
+previousCodeCandidateSha: 5710401cac22fecc8d5bf74b20f4161a961bacf6
 capturedAt: 2026-09-09T17:20:20.684Z
 claimedAt: 2026-09-09T17:58:05.187Z
 ```
@@ -77,11 +77,11 @@ analise estatica ou canario parcial nao substituem prova de persistencia, audito
 | Perfil GitHub                        | `Vnd93`                                                                             |
 | Codigo                               | `Vnd93/gaiatec-cms`                                                                 |
 | Branch do codigo                     | `main`                                                                              |
-| HEAD do codigo                       | `524787f38497a5473c3064fde7dfd7683d8d5ec7`                                          |
-| `origin/main`                        | `524787f38497a5473c3064fde7dfd7683d8d5ec7`                                          |
+| HEAD do codigo                       | `b925052da0f0901157ff79c48aa30354bc40f888`                                          |
+| `origin/main`                        | `b925052da0f0901157ff79c48aa30354bc40f888`                                          |
 | Checkout do codigo                   | limpo                                                                               |
-| Candidato vigente                    | `524787f38497a5473c3064fde7dfd7683d8d5ec7`                                          |
-| Candidato anterior                   | `b6ed08476267699d05c06162561083a826d6bfa6`                                          |
+| Candidato vigente                    | `b925052da0f0901157ff79c48aa30354bc40f888`                                          |
+| Candidato anterior                   | `5710401cac22fecc8d5bf74b20f4161a961bacf6`                                          |
 | Documentacao                         | `Vnd93/gaiatec-documentacao`                                                        |
 | Branch documental                    | `docs/g12-production-release`                                                       |
 | Base documental antes do handoff     | `641889875e8d425f7902474e9f5e0700a4e8b5dc`                                          |
@@ -114,7 +114,21 @@ utilidade diagnostica das evidencias anteriores, mas nao autoriza usa-las para a
 
 ## Testes locais e CI do SHA exato
 
-### Candidato `524787f38497a5473c3064fde7dfd7683d8d5ec7`
+### Candidato `b925052da0f0901157ff79c48aa30354bc40f888`
+
+Cadeia de candidatos desde o handoff recebido, cada um invalidando a evidencia do anterior:
+`0ab1fa8` recebido, `cde606f` ponte legacy-f48, `b6ed084` latencia do caminho publico e amostragem
+do probe, `524787f` disponibilidade de rota estatica, `29281a0` observabilidade do canario,
+`e7b629b` janela de convergencia do bridge, `d36cb70` amostragem no deploy de staging e watchdog,
+`5710401` pagina gerenciada em paralelo, `b925052` identidade da rejeicao de MFA e retry real.
+
+- Validacao local integral do SHA vigente: `npm run check` aprovado, 169 arquivos e 1.057 testes
+  vitest, `eval:ev2:phase12` `G12_RULES_PASS`, prettier, eslint, typecheck, documentation-boundary
+  e build.
+- CI remoto do SHA exato: registrar run, tentativa e resultado antes de qualquer despacho.
+- Bridge e deploy de staging precisam ser reexecutados para este SHA.
+
+### Candidato anterior `524787f38497a5473c3064fde7dfd7683d8d5ec7` (evidencia superada)
 
 - Validacao local integral: `npm run check` aprovado, 169 arquivos e 1.056 testes vitest,
   `eval:ev2:phase12` `G12_RULES_PASS`, prettier, eslint, typecheck, documentation-boundary e build.
@@ -198,6 +212,61 @@ Descartada a hipotese de que a paralelizacao de `b6ed084` tivesse causado instab
 amostras sequenciais e 30 concorrentes em tres rajadas responderam 200 com maximo de 1,09 s, e o
 bridge `34395203818` mediu 60 amostras em CI com zero 5xx e `/produtos` p95 de 759 ms. O 5xx e raro
 e ambiental, mas o orcamento de 99,9% de disponibilidade existe justamente para nao tolera-lo.
+
+## Bloqueio atual: verificacao de MFA sintetica no canario de migrations
+
+O deploy [`34413801628`](https://github.com/Vnd93/gaiatec-cms/actions/runs/34413801628) chegou ao
+passo 26 e reprovou. Com os campos de identidade de falha ja publicados em `29281a0`, o relatorio
+finalmente nomeia a causa em vez do sintoma:
+
+```
+failureStage    : operation-and-cleanup
+operationFailure: G12_STAGING_SYNTHETIC_MFA_VERIFY_FAILED
+cleanupFailure  : G12_STAGING_MIGRATION_CANARY_FAILED:immutable_audit_retained
+```
+
+Correcao de diagnostico registrada explicitamente: a hipotese anterior, de que o canario falhava ao
+criar o segundo ator sintetico, estava errada. A falha ocorre na verificacao TOTP dentro de
+`createActor`, depois do `actors.push`. Por isso `retainedSyntheticActors` era 1, `operator` ficava
+indefinido, as consultas de auditoria guardadas por `operator ?` eram puladas e
+`immutable_audit_retained` reprovava em cascata. A auditoria nunca esteve comprometida: consulta
+direta ao banco mostrou 58 eventos no periodo, todos com `actor_id` preenchido e nenhum destacado.
+
+Sequencia comprovada dentro de `createActor`: criacao do usuario, `actors.push`, lease, perfil,
+papel, `signInWithPassword` e `mfa.enroll` todos bem-sucedidos, porque cada um deles lanca codigo
+proprio. A rejeicao esta no `mfa.verify`, tres vezes.
+
+Duas correcoes aplicadas em `b925052`, ambas no caminho da falha:
+
+1. O `verified.error` era descartado. Agora a falha carrega `status` HTTP e `code` do servico de
+   auth, como `G12_STAGING_SYNTHETIC_MFA_VERIFY_FAILED:<status>:<code>`. Um slug com prefixo de
+   credencial e recusado, porque forma de slug nao e garantia suficiente para algo que entra em
+   artefato de evidencia publicado.
+2. As tres tentativas esperavam 1 e 2 segundos contra uma janela TOTP de 30 segundos, entao as
+   tres enviavam codigo identico e o retry nao distinguia codigo rejeitado de falha transitoria.
+   Agora espera a virada do contador.
+
+A segunda correcao pode resolver o bloqueio por si so, se a causa for limite de janela. Se nao
+resolver, o proximo relatorio traz `status` e `code` e o diagnostico deixa de ser hipotese.
+
+## Defeito sistemico de amostragem ainda presente fora do caminho critico
+
+`percentile(v, 95)` retorna `sorted[ceil(0,95*n)-1]`, entao com `n=5` o p95 relatado e o proprio
+maximo de cinco amostras e uma unica resposta fria decide um gate. Corrigido em
+`promote-staging-frontend-bridge.yml`, `deploy-staging.yml` e `deploy-staging-watchdog.yml`.
+
+Permanece em 13 pontos, deliberadamente nao alterados para nao ampliar o raio do candidato
+congelado. Os dois primeiros bloquearao os gates de producao e devem ser corrigidos antes deles:
+
+| Workflow                                       | Ocorrencias |
+| ---------------------------------------------- | ----------: |
+| `deploy-production.yml`                        |           2 |
+| `promote-production-frontend-bridge.yml`       |           1 |
+| `rollback-staging.yml`                         |           3 |
+| `rollback-staging-watchdog.yml`                |           1 |
+| `promote-staging-frontend-bridge-watchdog.yml` |           1 |
+| `preview-ev2-phase12/13/14/16.yml`             |           4 |
+| `provision-production-operator.yml`            |           1 |
 
 ## Ponte de compatibilidade legacy-f48 do candidato `b6ed084` (evidencia superada)
 
