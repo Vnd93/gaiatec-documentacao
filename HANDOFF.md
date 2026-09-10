@@ -24,14 +24,86 @@
   no dashboard Supabase; o inventario de funcoes de producao deve ser confirmado pelo pipeline final.
 
 ```yaml
-writerState: CLAIMED
-currentWriter: CLAUDE_CODE
-previousWriter: CODEX_DESKTOP
-codeCandidateSha: b925052da0f0901157ff79c48aa30354bc40f888
-previousCodeCandidateSha: 5710401cac22fecc8d5bf74b20f4161a961bacf6
+writerState: RELEASED
+currentWriter: NONE
+previousWriter: CLAUDE_CODE
+releaseReason: movimentacao do diretorio de trabalho local para fora do OneDrive
+codeCandidateSha: ff2238df23ba00854b9e9c401376b3edcdc93f46
+previousCodeCandidateSha: c59232da6ceea85ea797be7f606022a6e70c6504
 capturedAt: 2026-09-09T17:20:20.684Z
 claimedAt: 2026-09-09T17:58:05.187Z
+releasedAt: 2026-09-10T21:36:12.000Z
 ```
+
+## Parada controlada para movimentacao do diretorio local
+
+Captura local `2026-09-10T18:36:12-03:00` (`America/Sao_Paulo`), UTC `2026-09-10T21:36:12.000Z`.
+O lease de escrita foi devolvido para permitir mover o diretorio de trabalho para fora do OneDrive.
+Nenhuma operacao nova foi iniciada apos o pedido de parada; apenas o trabalho ja em voo foi concluido.
+
+### Checkpoint
+
+| Item                                   | Estado verificado                                                             |
+| -------------------------------------- | ----------------------------------------------------------------------------- |
+| Perfil GitHub ativo                    | `Vnd93`                                                                       |
+| HEAD do codigo                         | `ff2238df23ba00854b9e9c401376b3edcdc93f46`                                    |
+| `origin/main` do codigo                | `ff2238df23ba00854b9e9c401376b3edcdc93f46`                                    |
+| Checkout do codigo                     | limpo, diretamente em `main`, sem worktree                                    |
+| Candidato invalidado por este commit   | `c59232da6ceea85ea797be7f606022a6e70c6504`                                    |
+| HEAD da documentacao antes deste commit | `eee967801cbcdf4db617b85f8b04eb636cb392c8`                                    |
+| Branch documental                      | `docs/g12-production-release`                                                 |
+| Runs remotos nao terminais             | nenhum nos dois repositorios                                                  |
+| CI do candidato vigente                | run `34532870546`, `success`, jobs `quality`, `database` e `browser` verdes   |
+| `/healthz` staging candidato           | `ev2-g12-canary` e `ev2-g17-canary` servem `c59232da6cee...`, `status: ready` |
+| `/healthz` staging estavel             | `gaiatec-cms-staging.pages.dev` responde HTTP 404, contrato legacy            |
+| `/healthz` producao                    | `f48bb4530566456a0090a98cd39caf1cacb51b09`, `status: ready`                   |
+| Supabase                               | nao capturado nesta parada, ver limitacao abaixo                              |
+| Lease de QA ativo                      | nenhum criado nesta sessao; nenhum exige heartbeat                            |
+
+Os dois aliases de staging ainda servem `c59232da`, e nao o novo `ff2238df`: o commit de parada nao
+foi publicado em lugar nenhum. Toda evidencia amarrada a `c59232da` fica invalidada para fins de
+aprovacao pelo proprio commit, conforme a regra de novo candidato.
+
+### Limitacao declarada: estado do Supabase nao capturado
+
+O ambiente local nao tem a CLI do Supabase nem `SUPABASE_ACCESS_TOKEN` exportado, e as chamadas de
+leitura a partir da aba autenticada do dashboard responderam HTTP 401 nesta captura. O estado do
+Supabase de staging e de producao nao foi verificado agora e nao deve ser presumido a partir do
+checkpoint anterior. A ultima evidencia valida do banco de staging e a do deploy `34528923953`, do
+candidato `c59232da`, cujas etapas de migrations, RLS, Storage, Vault, modos de Function e cenarios
+sinteticos pos-baseline foram todas `success`.
+
+### O que este commit de codigo resolveu
+
+O canario G11 escolhia qualquer formulario corporativo publicado para capturar o lead sintetico. O
+predicado de escopo da `0072` so deixa um chamador com lease de QA alcancar um formulario que
+pertenca a um ator com lease do mesmo run, e a `0072` copia a provenienca de QA do lead a partir
+desse formulario. Um formulario corporativo nunca satisfaz o predicado: o proprio operador que
+acabara de criar a fixture nao a encontrava, e reprocessar a entrega respondia
+`CMS_LEAD_DELIVERY_NOT_FOUND` enquanto anonimizar respondia `CMS_LEAD_NOT_FOUND`, ambos com 404.
+
+Agora o run cria, versiona e publica o proprio formulario pelos mesmos comandos `save_form` e
+`publish_form` que o painel expoe, como o operador que depois tem de encerrar a fixture, e afirma que
+a linha gravada pertence ao run antes de capturar qualquer coisa. Com isso a `0084` aceita para esse
+formulario exatamente uma origem: a fonte `qa_fixture` em `/qa-cms-final/<run tag em minusculas>`,
+sem campanha e sem produto. O encerramento do lease ja aposenta todo formulario do run, entao a prova
+de residuo passou a contar formularios vivos do run, e a contagem de tombstone retido passou a ser
+chaveada pelo run tag em vez de uma origem em texto livre que nao existe mais.
+
+### Proxima acao exata para retomar
+
+Depois da movimentacao do diretorio, com o candidato `ff2238df23ba00854b9e9c401376b3edcdc93f46`:
+
+1. Reivindicar o lease de escrita neste bloco de estado, voltando a `writerState: CLAIMED`.
+2. Confirmar `main` limpa, `HEAD` e `origin/main` iguais a `ff2238df`, perfil `Vnd93`, caminho sem
+   `.claude/worktrees`.
+3. Executar o ciclo remoto para `ff2238df`: `ci.yml`, depois
+   `promote-staging-frontend-bridge.yml`, depois `deploy-staging.yml`.
+4. Ler o resultado das duas etapas que reprovaram no candidato anterior: `Run three healthy G12
+   windows and inherited system assurance` e `Revoke the rollback compatibility actor and verify zero
+   active residue`.
+5. Gates ainda em aberto depois disso: artefato unico selado, drill de backup e restore, rollback
+   comprovado e homologacao no Google Chrome real com a sessao autenticada e MFA do operador.
 
 ## Objetivo integral e criterio de conclusao
 
@@ -77,11 +149,11 @@ analise estatica ou canario parcial nao substituem prova de persistencia, audito
 | Perfil GitHub                        | `Vnd93`                                                                             |
 | Codigo                               | `Vnd93/gaiatec-cms`                                                                 |
 | Branch do codigo                     | `main`                                                                              |
-| HEAD do codigo                       | `2bd50fc2984f69cead162da6ad5a362c69d3ff33`                                          |
-| `origin/main`                        | `2bd50fc2984f69cead162da6ad5a362c69d3ff33`                                          |
+| HEAD do codigo                       | `ff2238df23ba00854b9e9c401376b3edcdc93f46`                                          |
+| `origin/main`                        | `ff2238df23ba00854b9e9c401376b3edcdc93f46`                                          |
 | Checkout do codigo                   | limpo                                                                               |
-| Candidato vigente                    | `2bd50fc2984f69cead162da6ad5a362c69d3ff33`                                          |
-| Candidato anterior                   | `c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a`                                          |
+| Candidato vigente                    | `ff2238df23ba00854b9e9c401376b3edcdc93f46`                                          |
+| Candidato anterior                   | `c59232da6ceea85ea797be7f606022a6e70c6504`                                          |
 | Documentacao                         | `Vnd93/gaiatec-documentacao`                                                        |
 | Branch documental                    | `docs/g12-production-release`                                                       |
 | Base documental antes do handoff     | `641889875e8d425f7902474e9f5e0700a4e8b5dc`                                          |
