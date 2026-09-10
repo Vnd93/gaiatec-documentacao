@@ -57,7 +57,7 @@ A conclusao exige, no minimo:
   consumidores classificados e aprovados, sem elemento nao testado nem `N/A` indevido;
 - nenhuma operacao cotidiana dependente de JSON, UUID, slug, schema ou identificador tecnico;
 - uma fonte canonica para produto/PIM, sem dual-write divergente e com reconciliacao v1/v2;
-- Microsoft Edge real, sessao autenticada, MFA e backend real, inclusive duas sessoes para conflito;
+- Google Chrome real, sessao autenticada, MFA e backend real, inclusive duas sessoes para conflito;
 - testes positivos e negativos de AAL/RLS/IDOR/XSS/injecao/CORS/rate limit/replay/payload alterado;
 - cobertura responsiva em `390x844`, `768x1024`, `1440x900` e `1920x1080`, teclado, foco, contraste,
   leitor de tela, reduced motion e zoom de 200%;
@@ -458,7 +458,8 @@ resolvem somente o gate de disponibilidade dessas credenciais. Variaveis publica
 
 ## Operador, MFA, CMS/RDO e auditoria
 
-- O operador corporativo de staging autenticou em Microsoft Edge e abriu `/admin/auditoria`; a
+- Registro historico, anterior a mudanca de navegador exigido: o operador corporativo de staging
+  autenticou em Microsoft Edge e abriu `/admin/auditoria`; a
   superficie autorizada de superadministracao CMS, menu e eventos de auditoria foram observados.
 - Nenhum e-mail, UUID de usuario, senha, segredo TOTP, cookie ou armazenamento da sessao foi copiado.
 - A conta corporativa nao deve ser usada para fixtures; testes destrutivos usam conta sintetica.
@@ -473,7 +474,9 @@ resolvem somente o gate de disponibilidade dessas credenciais. Variaveis publica
 
 ## Evidencias reais de navegador e seguranca
 
-- Navegador exigido: Microsoft Edge real, nao headless.
+- Navegador exigido: Google Chrome real, nao headless. A exigencia anterior de Microsoft Edge foi
+  substituida por decisao do responsavel pelo projeto; o criterio de fundo nao mudou, ou seja,
+  navegador real com sessao autenticada, MFA e backend real, nunca headless nem simulado.
 - Evidencia autenticada existente: staging `/admin/auditoria`, sidebar, papel CMS autorizado e eventos
   de auditoria; historica e insuficiente para aprovar `0ab1`.
 - Documento legado foi atestado limpo pelo Microsoft Defender, aprovado por segundo ator AAL2 no
@@ -737,7 +740,7 @@ verify the exact staging candidate` executa `test "$ROLLBACK_REF" = "$candidate_
 
 5. Selar o artefato final unico e seguir os gates ja listados em "Pendentes e bloqueantes".
 6. Nao tratar os canarios headless do bridge como homologacao. A homologacao positiva continua
-   exigindo Microsoft Edge real, sessao autenticada, MFA e backend real, e o proprio artefato do
+   exigindo Google Chrome real, sessao autenticada, MFA e backend real, e o proprio artefato do
    bridge registra `positiveBrowserRequiredAfterFullCandidateDeploy: true`.
 
 A troca temporaria em staging e serializada por um lease exclusivo, sintetica, auditada e possui
@@ -775,7 +778,7 @@ restauracao fail-safe tanto dentro do run quanto por watchdog dedicado quando o 
 
 - CI e checks, inventario/matrizes, build, manifest, seal, tree/archive digests e secret scan.
 - Migration/RLS canary, inventario/digests de Edge Functions e regressao RDO.
-- Bridge, canario, Microsoft Edge autenticado, MFA/AAL, quatro viewports e ciclo editorial.
+- Bridge, canario, Google Chrome autenticado, MFA/AAL, quatro viewports e ciclo editorial.
 - Autorizacao negativa, consumidores publicos, cache/SEO, Turnstile, Resend/outbox e OpenRouter.
 - Backup/restore, rollback, autorizacoes literais, deploy de producao, smoke/E2E/probes/janela de saude.
 - Cleanup dos sinteticos, auditoria preservada e relatorio final.

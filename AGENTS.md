@@ -39,7 +39,7 @@
   evidencias. Nunca tratar uma validacao de staging como mutacao ou aprovacao de producao.
 - Preservar MFA, AAL, RLS, auditoria imutavel, revogacao de sessao e a separacao de papeis, escopos e
   dados entre CMS e RDO. Nenhuma excecao temporaria de MFA pode permanecer ativa no release final.
-- Homologar com Microsoft Edge real, sessao autenticada e backend real do ambiente correspondente.
+- Homologar com Google Chrome real, sessao autenticada e backend real do ambiente correspondente.
   Nao substituir essa homologacao por mock, resposta simulada, analise estatica, simples renderizacao
   ou navegador headless.
 - Depois de congelado o candidato, aceitar somente correcoes minimas necessarias para falhas criticas
