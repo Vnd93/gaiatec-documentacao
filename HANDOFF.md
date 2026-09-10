@@ -602,6 +602,33 @@ real. Chegar ali custou tres correcoes, todas erros meus e todas pegas pelo CI:
 O teste pre-existente que fixava 119 minutos foi atualizado para 240 com a razao ao lado. A lease
 continua sendo um prazo fechado, apenas maior que a janela que ela cobre.
 
+## Tela de diagnosticos: a 0089 nao bastava, e a verificacao anterior foi incompleta
+
+Com a sessao autenticada real do operador, em Google Chrome, `aal2`, a leitura da lista responde
+`200` em 355 a 458 ms, cinco de cinco, com 50 linhas. Antes eram `500` com `57014` em 8.228 ms. Essa
+parte a 0089 resolveu.
+
+A tela, porem, continuava mostrando `Diagnostico indisponivel`. A verificacao que eu havia feito era
+incompleta: eu media a consulta sem o cabecalho de contagem, e a tela pede
+`count: "exact"`. Reproduzido duas vezes na mesma sessao, com a concorrencia exata da carga:
+
+| consulta                                  | resultado |
+| ----------------------------------------- | --------- |
+| eventos, `count: exact`                    | `500` em 8.468 ms e `500` em 8.362 ms |
+| fila de publicacao, `HEAD count: exact`    | `200` em 440 ms e 253 ms |
+| projecao de descoberta                     | `200` em 893 ms e 520 ms |
+
+A contagem exata avalia a autorizacao por linha em todo o acervo aberto, e nao apenas nas 50 linhas
+exibidas, entao ela estoura o `statement_timeout` mesmo com o indice parcial instalado. O `503` que eu
+tinha visto antes na fila de publicacao era outra coisa e nao se reproduziu em nenhuma das dezenas de
+tentativas seguintes, inclusive em rajada paralela de oito requisicoes, todas `200`.
+
+Decisao do responsavel pelo projeto, entre tres alternativas apresentadas: contagem limitada e
+honesta. A tela passa a pedir uma linha alem da pagina e a dizer `50+` quando ela vem, em vez de
+inventar um total ou exibir uma estimativa. A metrica continua verdadeira, a resposta e imediata e
+nenhuma nova migration e necessaria. A alternativa de uma RPC autoritativa que conte em SQL de
+conjunto fica registrada como melhoria possivel, com o risco de replicar a regra de escopo.
+
 ## Ponte de compatibilidade legacy-f48 do candidato `b6ed084` (evidencia superada)
 
 Run [`34395203818`](https://github.com/Vnd93/gaiatec-cms/actions/runs/34395203818), tentativa 1,
