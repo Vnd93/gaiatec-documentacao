@@ -660,6 +660,41 @@ Medicao independente feita entre os dois runs, com 60 amostras nas rotas publica
 de 200 e zero acima de 1,5 s. As janelas ruins sao curtas e nao se reproduzem sob demanda, o que e
 coerente com paradas isoladas no caminho de saida e nao com lentidao sistemica.
 
+## Varredura das superficies autenticadas na sessao real do operador
+
+Feita em Google Chrome, sessao `aal2` do operador corporativo, contra o staging servindo `d9e4199`.
+Rotas percorridas: visao geral, leads, produtos, cadastro em massa, descoberta, listas mestras, busca,
+paginas, editorial, midia, campanhas, formularios, estrutura do site, usuarios, auditoria e
+diagnosticos. Todas renderizam conteudo real, com filtros e paginacao onde existem.
+
+O defeito dominante nao esta em nenhuma tela: esta no portao de acesso.
+
+- Em duas rotas o painel se bloqueou sozinho, exibindo `Validacao de acesso temporariamente
+  indisponivel` depois de cerca de 13,5 segundos.
+- Medido na propria carga: tres resolucoes identicas do mesmo token partem com sete milissegundos de
+  diferenca e as tres estouram o prazo de 10 segundos, em 10.587, 10.578 e 10.577 ms.
+- Nas cargas que funcionam, as mesmas tres chamadas levam de 1,0 a 4,0 segundos cada e o portao espera
+  por todas, variando de 1,8 a 6,3 segundos.
+
+As tres chamadas vem de tres gatilhos independentes na montagem: a leitura inicial da sessao e dois
+eventos do proprio cliente de autenticacao. O guarda de requisicao ja descartava os resultados
+tardios, mas as requisicoes saiam mesmo assim e disputavam entre si.
+
+Correcoes no candidato `5a6bd4d`, todas com teste de regressao:
+
+- O painel emite uma unica chamada por token e acao. Enquanto uma esta em voo, as demais reaproveitam
+  a mesma promessa. Acao ou token diferentes continuam sendo chamada propria, a resposta continua
+  validada e amarrada ao usuario que a pediu, e cada chamador continua conferindo o proprio
+  identificador antes de aplicar o resultado.
+- `cms-session` passa a limitar cada chamada de saida em 3 segundos, com uma repeticao apenas para
+  leitura, cabendo duas vezes dentro dos 10 segundos que o painel concede.
+- `cms-public` passa a limitar cada leitura em 1.800 ms, com uma repeticao, cabendo duas vezes dentro
+  dos 5 segundos em que o Worker publico desiste.
+- A metrica de alertas abertos deixa de pedir contagem exata do acervo.
+
+Site publico conferido em paralelo: `/`, `/produtos`, `/contato`, `/servicos`, `/solucoes` e
+`/industrias` responderam `200` entre 0,57 e 0,86 s, com `sitemap.xml` e `robots.txt` em `200`.
+
 ## Ponte de compatibilidade legacy-f48 do candidato `b6ed084` (evidencia superada)
 
 Run [`34395203818`](https://github.com/Vnd93/gaiatec-cms/actions/runs/34395203818), tentativa 1,
