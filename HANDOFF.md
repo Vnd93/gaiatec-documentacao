@@ -760,6 +760,46 @@ contra o banco real dos dois ambientes passou a exigir o valor instalado, e nao 
 versao. Uma migration constar como aplicada nao prova que o efeito dela esta no banco. A consulta que
 revelou o problema foi comparar, no proprio staging, o texto instalado das duas funcoes.
 
+## Onde o deploy de staging chegou, e o que cada gate revelou
+
+Cada reprovacao apontou um defeito real e o run avancou. A sequencia importa mais que qualquer um dos
+itens isolados:
+
+| Candidato | Onde parou | Defeito revelado |
+| --------- | ---------- | ---------------- |
+| `e28d10c` | canario | neutralizacao pendurava 120 s, nenhuma I/O de saida tinha prazo |
+| `92b6c39` | canario | fence canonico de 0063 contra o fechamento de lease de 0061 |
+| `f4e87d3` | travessia de rollback | bloco lia um handoff que ninguem produzia |
+| `d9e4199` | provisionamento MFA | janela de override presa ao prazo antigo |
+| `f36ffd1` | janelas de saude | canario G11 criava lead com origem que 0084 recusa |
+| `fd63dd3` | ponte | conclusao de lease recusada sem dizer a causa |
+
+## Efeito colateral da lease estendida, registrado
+
+Estender a lease para 240 minutos tem uma consequencia operacional que precisa ser conhecida: uma
+lease abandonada agora permanece `active` por quatro horas antes de o watchdog varrer, em vez de duas.
+Observado no staging, com leases ainda ativas de candidatos de horas antes, entre elas `e28d10c7` e
+`5e7aab4c`.
+
+Isso nao bloqueia um run novo, porque a lease e por ator e por `run_tag`, e o proprio watchdog
+continua varrendo de minuto em minuto assim que o prazo vence. Mas a limpeza automatica de um run
+interrompido demora mais, e quem estiver investigando residuo precisa saber disso antes de concluir
+que algo ficou preso.
+
+## Verificar efeito, e nao registro de versao
+
+A consulta que revelou o estado meio aplicado da 0091 vale como metodo e fica registrada:
+
+```
+select p.oid::regprocedure::text,
+       position('241 minutes' in pg_get_functiondef(p.oid)) > 0
+from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+where n.nspname = 'private' and p.proname = 'cms_qa_override_window_is_valid';
+```
+
+Uma migration constar em `supabase_migrations.schema_migrations` prova apenas que a versao foi
+registrada. Para saber se o efeito esta no banco, compare o texto instalado da funcao ou da restricao.
+
 ## Ponte de compatibilidade legacy-f48 do candidato `b6ed084` (evidencia superada)
 
 Run [`34395203818`](https://github.com/Vnd93/gaiatec-cms/actions/runs/34395203818), tentativa 1,
