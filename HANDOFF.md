@@ -24,16 +24,80 @@
   no dashboard Supabase; o inventario de funcoes de producao deve ser confirmado pelo pipeline final.
 
 ```yaml
-writerState: RELEASED
-currentWriter: NONE
+writerState: CLAIMED
+currentWriter: CLAUDE_CODE_FAIXA_A
 previousWriter: CLAUDE_CODE
-releaseReason: movimentacao do diretorio de trabalho local para fora do OneDrive
+lane: A
+laneScope: release-critical
+laneTtlMinutes: 15
+laneHeartbeatAt: 2026-09-10T22:44:23.000Z
+workingDirectory: C:\dev\cms-site\gaiatec-cms-faixa-a
 codeCandidateSha: ff2238df23ba00854b9e9c401376b3edcdc93f46
 previousCodeCandidateSha: c59232da6ceea85ea797be7f606022a6e70c6504
 capturedAt: 2026-09-09T17:20:20.684Z
-claimedAt: 2026-09-09T17:58:05.187Z
-releasedAt: 2026-09-10T21:36:12.000Z
+claimedAt: 2026-09-10T22:44:23.000Z
+previousReleasedAt: 2026-09-10T21:36:12.000Z
 ```
+
+## Claim da Faixa A apos a migracao do diretorio local
+
+Captura local `2026-09-10T19:44:23-03:00` (`America/Sao_Paulo`), UTC `2026-09-10T22:44:23.000Z`.
+Candidato vigente `ff2238df23ba00854b9e9c401376b3edcdc93f46`.
+
+Esta sessao passa a operar como **Faixa A** da secao 9 da
+`INSTRUCAO_OTIMIZACAO_ENTREGA_CMS_GAIATEC.md` revisao 2, com o lease de escrita exclusivo. A
+instrucao complementa o `AGENTS.md` e nao revoga nada: em conflito vale a regra mais restritiva, e
+nenhum item dela autoriza verificar menos, encurtar homologacao, reaproveitar evidencia ou contornar
+gate.
+
+### Protocolo `claimFaixaA` cumprido, na ordem
+
+| # | Item | Resultado |
+| - | ---- | --------- |
+| 1 | Perfil GitHub `Vnd93` | confirmado, conta ativa |
+| 2 | `git fetch` | executado, sem erro e sem poda de worktree |
+| 3 | Checkout limpo | limpo, `git status` vazio |
+| 4 | `main` sincronizada por fast-forward | `HEAD` = `origin/main` = `ff2238df`, `0 0` ahead/behind |
+| 5 | Runs `queued` ou `in_progress` | nenhum, nos dois repositorios |
+| 6 | `/healthz` registrado | staging e producao, tabela abaixo |
+| 7 | Claim registrado neste `HANDOFF.md` | este bloco |
+
+| Origem | Resposta | SHA servido |
+| ------ | -------- | ----------- |
+| `gaiatec-cms-staging.pages.dev` | HTTP 404, contrato legacy | nao aplicavel |
+| `ev2-g12-canary` | `200 ready` | `c59232da6ceea85ea797be7f606022a6e70c6504` |
+| `ev2-g17-canary` | `200 ready` | `c59232da6ceea85ea797be7f606022a6e70c6504` |
+| `www.gaiatecsistemas.com.br` | `200 ready` | `f48bb4530566456a0090a98cd39caf1cacb51b09` |
+
+Os aliases de staging ainda servem `c59232da`: o candidato `ff2238df` nao foi publicado em lugar
+nenhum, e a evidencia amarrada a `c59232da` continua invalidada para fins de aprovacao.
+
+### Diretorio de trabalho da Faixa A
+
+A Faixa A saiu do OneDrive, conforme a trava 9.4.1. O diretorio
+`C:\dev\cms-site\gaiatec-cms` pertence a Faixa C, que esta com claim ativo, e duas faixas nao
+podem compartilhar arvore de trabalho porque a Faixa C entrega por branch e Pull Request. A Faixa A
+passou a operar em um clone novo do `origin`:
+
+- Caminho: `C:\dev\cms-site\gaiatec-cms-faixa-a`
+- `HEAD` = `origin/main` = `ff2238df23ba00854b9e9c401376b3edcdc93f46`, checkout limpo
+- Um unico worktree, o proprio; nenhum vinculo herdado com o OneDrive
+- `core.autocrlf=true`, igual ao clone da Faixa C e ao diretorio antigo, para nao divergir digest local
+- Node `22.23.2` e npm `10.9.8`, ativos pelo `nvm4w`, conforme o `.nvmrc`
+- `.env.local` provisionado por copia byte-identica e ignorado pelo git
+
+A copia congelada e o diretorio antigo do OneDrive permanecem intocados. Nenhum
+`git worktree repair` ou `git worktree prune` foi executado em qualquer um deles.
+
+### Ordem de trabalho adotada
+
+Blocos da secao 11 da instrucao, nesta ordem: `3.1` contrato fixture x schema, com integracao do Pull
+Request da Faixa C; `4` passe de diagnostico com a entrada `diagnostic_run` no `deploy-staging.yml`;
+`5` falha auto-descritiva em todo gate; `6` lease curto com heartbeat de 15 minutos.
+
+Para o candidato corrente vale o fluxo do Bloco 4: passe de diagnostico primeiro, colheita de todas
+as falhas em uma unica passada, correcao do lote inteiro em um unico SHA, e so entao o run canonico
+fail-fast. Nenhum artefato de diagnostico satisfaz gate, sela artefato ou entra em evidencia.
 
 ## Parada controlada para movimentacao do diretorio local
 
