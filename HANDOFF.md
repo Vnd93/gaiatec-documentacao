@@ -629,6 +629,37 @@ inventar um total ou exibir uma estimativa. A metrica continua verdadeira, a res
 nenhuma nova migration e necessaria. A alternativa de uma RPC autoritativa que conte em SQL de
 conjunto fica registrada como melhoria possivel, com o risco de replicar a regra de escopo.
 
+## A cauda de latencia tinha uma causa unica, e ela era o prazo de quem chama
+
+Dois runs reprovaram o orcamento com a mesma assinatura: mediana saudavel, por volta de 450 ms, e
+maximo cravado em quase exatamente 5.045 ms. Em um deles houve tambem 5xx e quebra de disponibilidade,
+sobre um preview recem publicado.
+
+Esse teto e do proprio chamador. `cloudflare/_worker.js` aborta a chamada a `cms-public` em 5 segundos
+e sintetiza um 503:
+
+```
+const timeout = setTimeout(() => controller.abort(), 5_000);
+```
+
+Ou seja, o maximo observado nao e uma leitura lenta, e o instante em que o pedido foi abandonado.
+Enquanto isso `cms-public` carregava o prazo compartilhado de 30 segundos nas chamadas de saida, muito
+alem da janela em que ela responde, entao uma leitura parada nunca conseguia voltar a tempo de ser
+util. Isso tambem explica os `503` isolados vistos na tela de diagnosticos e as chamadas PostgREST sem
+resposta na confirmacao de remocao: e o mesmo fenomeno, medido em superficies diferentes.
+
+Correcao em `c7c941d`: cada leitura de saida de `cms-public` passa a ter prazo de 1.800 ms e uma
+repeticao, o que cabe duas vezes dentro do teto do Worker com folga para o restante da requisicao. A
+repeticao vale apenas para `GET` e `HEAD`, porque repetir leitura nao tem efeito colateral, e nunca
+quando quem chamou foi que desistiu. Escrita nunca e repetida ali.
+
+Nenhum orcamento foi movido. A mesma parada passa a produzir falha codificada rapida, que o desvio ja
+existente do Worker serve, em vez de cinco segundos de espera.
+
+Medicao independente feita entre os dois runs, com 60 amostras nas rotas publicas: zero respostas fora
+de 200 e zero acima de 1,5 s. As janelas ruins sao curtas e nao se reproduzem sob demanda, o que e
+coerente com paradas isoladas no caminho de saida e nao com lentidao sistemica.
+
 ## Ponte de compatibilidade legacy-f48 do candidato `b6ed084` (evidencia superada)
 
 Run [`34395203818`](https://github.com/Vnd93/gaiatec-cms/actions/runs/34395203818), tentativa 1,
