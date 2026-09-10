@@ -77,11 +77,11 @@ analise estatica ou canario parcial nao substituem prova de persistencia, audito
 | Perfil GitHub                        | `Vnd93`                                                                             |
 | Codigo                               | `Vnd93/gaiatec-cms`                                                                 |
 | Branch do codigo                     | `main`                                                                              |
-| HEAD do codigo                       | `f4e87d3ac63f54d7e181919d083e3b50e3a31c3f`                                          |
-| `origin/main`                        | `f4e87d3ac63f54d7e181919d083e3b50e3a31c3f`                                          |
+| HEAD do codigo                       | `dd1cb69b67fde70e3451200e2c88d3815727aa4a`                                          |
+| `origin/main`                        | `dd1cb69b67fde70e3451200e2c88d3815727aa4a`                                          |
 | Checkout do codigo                   | limpo                                                                               |
-| Candidato vigente                    | `f4e87d3ac63f54d7e181919d083e3b50e3a31c3f`                                          |
-| Candidato anterior                   | `92b6c39becb9e8af1855fa10a44aeca8cb9dbb78`                                          |
+| Candidato vigente                    | `dd1cb69b67fde70e3451200e2c88d3815727aa4a`                                          |
+| Candidato anterior                   | `f4e87d3ac63f54d7e181919d083e3b50e3a31c3f`                                          |
 | Documentacao                         | `Vnd93/gaiatec-documentacao`                                                        |
 | Branch documental                    | `docs/g12-production-release`                                                       |
 | Base documental antes do handoff     | `641889875e8d425f7902474e9f5e0700a4e8b5dc`                                          |
@@ -511,6 +511,34 @@ dentro do bloco, o passo que cria as entidades pelo proprio frontend de rollback
 handoff e a prova mais forte: compatibilidade e o frontend anterior conseguir criar contra o backend
 novo, nao apenas ler o que outro criou. O handoff do rollback vai para arquivo proprio, para que as
 evidencias do rollback e do candidato nao se sobrescrevam, e a ordem esta travada por teste.
+
+## Onde o handoff de UI do bloco de rollback pode nascer
+
+O deploy `34448775259`, candidato `f4e87d3`, reprovou no passo que eu havia adicionado, com
+`A homologacao mutante recusou as origens HTTPS fixas do ambiente solicitado`. A recusa esta certa e e
+uma fronteira de seguranca: `mutatingConfiguration` compara `deployed.origin` com a origem fixada do
+ambiente e recusa qualquer outra, inclusive a URL efemera do proprio canario de rollback.
+
+Tentei entao mover o bloco autenticado de rollback para depois do ciclo mutante do candidato. Errado,
+por duas regras que o proprio repositorio ja declara:
+
+- `scripts/qa/cms-browser-fixture.test.mjs` exige exatamente um `cms-browser-fixture.mjs setup` entre
+  o setup e o cleanup do ator mutante, alem de prazo explicito em todo passo dessa janela e orcamento
+  total menor que a TTL da lease. O bloco de rollback traz o proprio ator, cujas evidencias de setup e
+  cleanup sao exigidas por `verify-staging-artifact.mjs`.
+- `scripts/ev2/phase12/authenticated-rollback-compatibility.test.mjs` fixa
+  `cleanup < candidateDeploy`, ou seja, a compatibilidade de rollback e provada antes de o candidato
+  ser publicado, nao depois.
+
+A forma correta mantem o bloco onde estava e cria as entidades na origem canonica de staging, que
+neste ponto do job ja serve o candidato promovido pelo bridge e corresponde ao mesmo SHA de
+`rollback_ref`. A travessia continua percorrendo a URL efemera do canario, que e somente leitura e por
+isso nao esta sujeita a regra de origem. O handoff vai para arquivo proprio, e ordem, origem e arquivo
+estao travados por teste.
+
+Erro proprio, registrado para nao repetir: empurrei `14940a0` com o `npm run check` local vermelho,
+porque coloquei a leitura do `EXIT` e o `git commit` no mesmo comando, sem condicionar um ao outro. A
+regra passa a ser ler `EXIT=` em chamada separada e so entao commitar.
 
 ## Ponte de compatibilidade legacy-f48 do candidato `b6ed084` (evidencia superada)
 
@@ -952,19 +980,20 @@ scripts/prepare-cloudflare-worker.mjs` e vazio. Portanto a degradacao esta no pr
 
 ## Proxima acao exata
 
-Candidato vigente `f4e87d3ac63f54d7e181919d083e3b50e3a31c3f`. Toda evidencia vinculada a
-`92b6c39becb9e8af1855fa10a44aeca8cb9dbb78` e anteriores esta invalidada, inclusive o CI
-`34444976419`, o bridge `34445377247` e o deploy `34446126387`.
+Candidato vigente `dd1cb69b67fde70e3451200e2c88d3815727aa4a`. Toda evidencia vinculada a
+`f4e87d3ac63f54d7e181919d083e3b50e3a31c3f` e anteriores esta invalidada, inclusive o CI
+`34447579829`, o bridge `34447913927` e o deploy `34448775259`. O SHA `14940a0` foi empurrado com
+o check local vermelho e esta superado por `dd1cb69`; nao use nenhuma evidencia dele.
 
 Na ordem, sem pular nenhum passo:
 
-1. Confirmar o CI do SHA exato `f4e87d3`. Run despachado automaticamente pelo push.
+1. Confirmar o CI do SHA exato `dd1cb69`. Run despachado automaticamente pelo push.
 2. Despachar `promote-staging-frontend-bridge.yml` com
-   `candidate_sha=f4e87d3ac63f54d7e181919d083e3b50e3a31c3f` e
-   `expected_baseline_sha=92b6c39becb9e8af1855fa10a44aeca8cb9dbb78`, que e o SHA realmente servido
+   `candidate_sha=dd1cb69b67fde70e3451200e2c88d3815727aa4a` e
+   `expected_baseline_sha` igual ao SHA realmente servido
    pelo alias `ev2-g17-canary` no momento, confirmado por `/healthz`.
-3. Despachar `deploy-staging.yml` com `git_ref=f4e87d3ac63f54d7e181919d083e3b50e3a31c3f`,
-   `rollback_ref=f4e87d3ac63f54d7e181919d083e3b50e3a31c3f`, `frontend_bridge_run_id` igual ao run do
+3. Despachar `deploy-staging.yml` com `git_ref=dd1cb69b67fde70e3451200e2c88d3815727aa4a`,
+   `rollback_ref=dd1cb69b67fde70e3451200e2c88d3815727aa4a`, `frontend_bridge_run_id` igual ao run do
    passo 2 e `ev2_draft_v2_candidate=false`. Esse run aplica a migration 0089, o que corrige a tela
    de diagnosticos no proprio staging, e executa o canario de migrations com o prazo de saida ja
    ativo nas Edge Functions.
