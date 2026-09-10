@@ -728,6 +728,38 @@ Verificado durante o diagnostico e registrado para nao ser reinvestigado: os qua
 especializados e `public.cms_runtime_capability_manifest` carregam, no staging, o desvio de janela que
 a 0061 injeta, entao a janela de override nunca foi a causa.
 
+## NAO EDITE UMA MIGRATION JA APLICADA
+
+Erro meu, e o mais caro da sessao: acrescentei o ajuste da janela de override dentro da `0091` depois
+que a `0091` ja tinha sido aplicada ao staging. `supabase db push` nao reexecuta uma versao ja
+registrada, entao o bloco novo nunca chegou ao banco. O resultado foi um estado meio aplicado:
+
+| Objeto                                    | Estado no staging |
+| ----------------------------------------- | ----------------- |
+| `private.cms_capture_qa_actor_lease`       | 240 minutos, veio na versao aplicada |
+| `private.cms_qa_override_window_is_valid`  | 120 minutos, o bloco novo nunca rodou |
+
+Com os dois em desacordo, o validador recusa a janela de 240 minutos, o manifesto de capacidades marca
+toda flag como indisponivel e o provisionamento do ator reprova com
+`QA_CMS_FIXTURE_SESSION_NOT_READY:200:granted:no_capabilities`, isto e, sessao valida, acesso concedido
+e nenhuma capacidade. Custou dois ciclos e uma explicacao errada minha pelo caminho: cheguei a atribuir
+a falha ao prazo de 3 segundos do `cms-session`, e ela persistiu identica com 6 segundos, o que ja
+descartava aquela hipotese.
+
+Correcao, na forma que o contrato de append-only exige:
+
+- `0091` restaurada byte a byte ao conteudo que o staging aplicou, digest
+  `2465fadfff8d3e2025ef1c24e49394241df48f1edb1c41f49cfddd435dd8f7f1`.
+- Mudanca isolada em `0092_cms_qa_override_window.sql`, digest
+  `1ea5459fdfb945a9686a8049d1b7727f296d91f8f03c7a80f5d36abf808f12d8`, onde ela pode de fato executar.
+- A sonda da `0092` falha fechada em tres frentes: se o ajuste nao pegou, se as guardas que amarram a
+  excecao a lease sintetica exata sumiram, ou se o privilegio abriu.
+
+Como verificar isso sem gastar um ciclo, e o que passou a existir por causa deste erro: a verificacao
+contra o banco real dos dois ambientes passou a exigir o valor instalado, e nao apenas o registro da
+versao. Uma migration constar como aplicada nao prova que o efeito dela esta no banco. A consulta que
+revelou o problema foi comparar, no proprio staging, o texto instalado das duas funcoes.
+
 ## Ponte de compatibilidade legacy-f48 do candidato `b6ed084` (evidencia superada)
 
 Run [`34395203818`](https://github.com/Vnd93/gaiatec-cms/actions/runs/34395203818), tentativa 1,
