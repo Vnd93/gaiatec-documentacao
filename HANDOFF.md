@@ -77,11 +77,11 @@ analise estatica ou canario parcial nao substituem prova de persistencia, audito
 | Perfil GitHub                        | `Vnd93`                                                                             |
 | Codigo                               | `Vnd93/gaiatec-cms`                                                                 |
 | Branch do codigo                     | `main`                                                                              |
-| HEAD do codigo                       | `92b6c39becb9e8af1855fa10a44aeca8cb9dbb78`                                          |
-| `origin/main`                        | `92b6c39becb9e8af1855fa10a44aeca8cb9dbb78`                                          |
+| HEAD do codigo                       | `f4e87d3ac63f54d7e181919d083e3b50e3a31c3f`                                          |
+| `origin/main`                        | `f4e87d3ac63f54d7e181919d083e3b50e3a31c3f`                                          |
 | Checkout do codigo                   | limpo                                                                               |
-| Candidato vigente                    | `92b6c39becb9e8af1855fa10a44aeca8cb9dbb78`                                          |
-| Candidato anterior                   | `92c15d41b1fea5704fb119faa55f94564d9559e3`                                          |
+| Candidato vigente                    | `f4e87d3ac63f54d7e181919d083e3b50e3a31c3f`                                          |
+| Candidato anterior                   | `92b6c39becb9e8af1855fa10a44aeca8cb9dbb78`                                          |
 | Documentacao                         | `Vnd93/gaiatec-documentacao`                                                        |
 | Branch documental                    | `docs/g12-production-release`                                                       |
 | Base documental antes do handoff     | `641889875e8d425f7902474e9f5e0700a4e8b5dc`                                          |
@@ -482,6 +482,35 @@ Observacao aberta, de plataforma e nao do produto: a chamada de confirmacao ao P
 resposta de forma reprodutivel nesse ponto do fluxo, depois das operacoes de Storage. O produto
 degrada corretamente agora, mas a causa da ausencia de resposta nao esta explicada e merece
 investigacao proprio se voltar a aparecer em outras superficies.
+
+## Canario de migrations aprovado de ponta a ponta
+
+Deploy `34446126387`, candidato `92b6c39`: `G12_STAGING_MIGRATIONS_CANARY_PASS`, 119 verificacoes,
+`failureStage: null`, `cleanupFailure: null`, `activeFixtures: 0`, `activeDocuments: 0`. O bloqueio
+que existia desde que o canario foi escrito esta resolvido.
+
+`documentNeutralizationMs: 61342`. Sessenta e um segundos e coerente com dois prazos de 30 segundos na
+confirmacao antes de devolver o desfecho agendado. Otimizacao aberta, nao bloqueante: como o fence
+recusa a escritura de qualquer forma dentro da janela, a confirmacao poderia ser pulada se a
+preparacao devolvesse `canonical_cleanup_not_before`, o que exigiria mudar a forma de retorno dessa
+RPC em uma nova migration.
+
+## Bloco de compatibilidade de rollback nao produzia o que ele mesmo le
+
+Com o canario aprovado, o deploy chegou pela primeira vez ao passo
+`Traverse the rollback frontend with an AAL2 session against the candidate backend`, que reprovou com
+`ENOENT` em `outputs/cms-ui-created-state.json`.
+
+A travessia autenticada consome o handoff das entidades nascidas na UI, e o bloco de rollback nunca
+produzia esse handoff: o arquivo so era escrito muito depois, pelo ciclo mutante do candidato. Esse
+gate, portanto, so podia reprovar. Nao era intermitencia nem ambiente.
+
+O bloco e projetado para ser autossuficiente, ele publica um canario isolado, sonda, provisiona o
+proprio ator MFA, percorre e limpa, tudo antes de o candidato ser publicado. A correcao adiciona,
+dentro do bloco, o passo que cria as entidades pelo proprio frontend de rollback, que alem de suprir o
+handoff e a prova mais forte: compatibilidade e o frontend anterior conseguir criar contra o backend
+novo, nao apenas ler o que outro criou. O handoff do rollback vai para arquivo proprio, para que as
+evidencias do rollback e do candidato nao se sobrescrevam, e a ordem esta travada por teste.
 
 ## Ponte de compatibilidade legacy-f48 do candidato `b6ed084` (evidencia superada)
 
@@ -923,20 +952,19 @@ scripts/prepare-cloudflare-worker.mjs` e vazio. Portanto a degradacao esta no pr
 
 ## Proxima acao exata
 
-Candidato vigente `92b6c39becb9e8af1855fa10a44aeca8cb9dbb78`. Toda evidencia vinculada a
-`92c15d41b1fea5704fb119faa55f94564d9559e3` e anteriores esta invalidada, inclusive o CI
-`34442701484`, o bridge `34443023436` e o deploy `34443812314`.
+Candidato vigente `f4e87d3ac63f54d7e181919d083e3b50e3a31c3f`. Toda evidencia vinculada a
+`92b6c39becb9e8af1855fa10a44aeca8cb9dbb78` e anteriores esta invalidada, inclusive o CI
+`34444976419`, o bridge `34445377247` e o deploy `34446126387`.
 
 Na ordem, sem pular nenhum passo:
 
-1. Confirmar o CI do SHA exato `92b6c39`. Run despachado automaticamente pelo push: `34444976419`,
-   `success`.
+1. Confirmar o CI do SHA exato `f4e87d3`. Run despachado automaticamente pelo push.
 2. Despachar `promote-staging-frontend-bridge.yml` com
-   `candidate_sha=92b6c39becb9e8af1855fa10a44aeca8cb9dbb78` e
-   `expected_baseline_sha=92c15d41b1fea5704fb119faa55f94564d9559e3`, que e o SHA realmente servido
+   `candidate_sha=f4e87d3ac63f54d7e181919d083e3b50e3a31c3f` e
+   `expected_baseline_sha=92b6c39becb9e8af1855fa10a44aeca8cb9dbb78`, que e o SHA realmente servido
    pelo alias `ev2-g17-canary` no momento, confirmado por `/healthz`.
-3. Despachar `deploy-staging.yml` com `git_ref=92b6c39becb9e8af1855fa10a44aeca8cb9dbb78`,
-   `rollback_ref=92b6c39becb9e8af1855fa10a44aeca8cb9dbb78`, `frontend_bridge_run_id` igual ao run do
+3. Despachar `deploy-staging.yml` com `git_ref=f4e87d3ac63f54d7e181919d083e3b50e3a31c3f`,
+   `rollback_ref=f4e87d3ac63f54d7e181919d083e3b50e3a31c3f`, `frontend_bridge_run_id` igual ao run do
    passo 2 e `ev2_draft_v2_candidate=false`. Esse run aplica a migration 0089, o que corrige a tela
    de diagnosticos no proprio staging, e executa o canario de migrations com o prazo de saida ja
    ativo nas Edge Functions.
