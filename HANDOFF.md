@@ -77,11 +77,11 @@ analise estatica ou canario parcial nao substituem prova de persistencia, audito
 | Perfil GitHub                        | `Vnd93`                                                                             |
 | Codigo                               | `Vnd93/gaiatec-cms`                                                                 |
 | Branch do codigo                     | `main`                                                                              |
-| HEAD do codigo                       | `dd1cb69b67fde70e3451200e2c88d3815727aa4a`                                          |
-| `origin/main`                        | `dd1cb69b67fde70e3451200e2c88d3815727aa4a`                                          |
+| HEAD do codigo                       | `c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a`                                          |
+| `origin/main`                        | `c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a`                                          |
 | Checkout do codigo                   | limpo                                                                               |
-| Candidato vigente                    | `dd1cb69b67fde70e3451200e2c88d3815727aa4a`                                          |
-| Candidato anterior                   | `f4e87d3ac63f54d7e181919d083e3b50e3a31c3f`                                          |
+| Candidato vigente                    | `c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a`                                          |
+| Candidato anterior                   | `dd1cb69b67fde70e3451200e2c88d3815727aa4a`                                          |
 | Documentacao                         | `Vnd93/gaiatec-documentacao`                                                        |
 | Branch documental                    | `docs/g12-production-release`                                                       |
 | Base documental antes do handoff     | `641889875e8d425f7902474e9f5e0700a4e8b5dc`                                          |
@@ -540,6 +540,44 @@ Erro proprio, registrado para nao repetir: empurrei `14940a0` com o `npm run che
 porque coloquei a leitura do `EXIT` e o `git commit` no mesmo comando, sem condicionar um ao outro. A
 regra passa a ser ler `EXIT=` em chamada separada e so entao commitar.
 
+## Conflito entre dois contratos do repositorio, e a decisao tomada
+
+O deploy `34452219396`, candidato `dd1cb69`, reprovou ao criar as entidades na origem canonica: a
+superficie de admin respondeu sem o campo `Titulo`. A razao e que, naquele ponto do job, o alias
+canonico ainda serve o build do bridge; o shell do candidato so e construido no passo
+`Build the staging shell from the same SHA`, bem depois. E o ciclo mutante recusa qualquer origem que
+nao seja a fixada do ambiente, o que exclui a URL efemera do canario de rollback.
+
+Somando as duas restricoes, os contratos do repositorio eram insatisfaziveis:
+
+- `authenticated-rollback-compatibility` exigia `cleanup < candidateDeploy`, isto e, a prova antes da
+  publicacao do candidato.
+- A travessia AAL2 exige o handoff das entidades nascidas na UI, que so podem nascer na origem
+  canonica depois de o candidato estar publicado, e que so existem ate a revogacao do ator mutante.
+
+A decisao foi do responsavel pelo projeto, entre tres alternativas apresentadas: mover a prova para
+depois do ciclo do candidato, preservando integralmente a forca das asercoes. Nenhuma asercao foi
+reduzida.
+
+Consequencias implementadas em `c43535b`:
+
+- A travessia do frontend de rollback, o cleanup do ator de rollback e sua repeticao passam para
+  dentro da janela autenticada, logo apos a travessia do candidato e antes da revogacao do ator
+  mutante, que e a unica janela em que as entidades existem. A prova continua no mesmo run e antes de
+  qualquer passo de producao.
+- O orcamento de prazos explicitos dessa janela sobe de 110 para 165 minutos. A regra que exige um
+  unico `cms-browser-fixture.mjs setup` por janela continua satisfeita, porque o ator de rollback e
+  provisionado antes dela.
+- `0091_cms_qa_actor_lease_window.sql`, digest
+  `a7d95d5ac9784d5ec7040945bc11f9369f1dd0ac9695d29068a2f8570ca2adad`, estende a lease do ator
+  sintetico de 119 para 240 minutos, que e o mesmo teto do job, para que a lease sobreviva a janela
+  inteira e o watchdog nao varra um ator ainda em uso. Gatilho, privilegios e varredor de leases
+  expiradas ficam provados inalterados, na propria migration e contra o banco real dos dois ambientes.
+- `QA_ACTOR_LEASE_TTL_MINUTES` acompanha em `scripts/qa/qa-actor-lease.mjs`, senao o payload da lease e
+  recusado como adulterado.
+- O teto de orcamento da janela em `cms-browser-fixture.test.mjs` sobe de 115 para 200 minutos, e o
+  teste continua exigindo que o orcamento seja menor que a lease.
+
 ## Ponte de compatibilidade legacy-f48 do candidato `b6ed084` (evidencia superada)
 
 Run [`34395203818`](https://github.com/Vnd93/gaiatec-cms/actions/runs/34395203818), tentativa 1,
@@ -980,20 +1018,20 @@ scripts/prepare-cloudflare-worker.mjs` e vazio. Portanto a degradacao esta no pr
 
 ## Proxima acao exata
 
-Candidato vigente `dd1cb69b67fde70e3451200e2c88d3815727aa4a`. Toda evidencia vinculada a
-`f4e87d3ac63f54d7e181919d083e3b50e3a31c3f` e anteriores esta invalidada, inclusive o CI
-`34447579829`, o bridge `34447913927` e o deploy `34448775259`. O SHA `14940a0` foi empurrado com
-o check local vermelho e esta superado por `dd1cb69`; nao use nenhuma evidencia dele.
+Candidato vigente `c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a`. Toda evidencia vinculada a
+`dd1cb69b67fde70e3451200e2c88d3815727aa4a` e anteriores esta invalidada, inclusive o CI
+`34450845565`, o bridge `34451310409` e o deploy `34452219396`. O SHA `14940a0` foi empurrado com
+o check local vermelho e esta superado; nao use nenhuma evidencia dele.
 
 Na ordem, sem pular nenhum passo:
 
-1. Confirmar o CI do SHA exato `dd1cb69`. Run despachado automaticamente pelo push.
+1. Confirmar o CI do SHA exato `c43535b`. Run despachado automaticamente pelo push.
 2. Despachar `promote-staging-frontend-bridge.yml` com
-   `candidate_sha=dd1cb69b67fde70e3451200e2c88d3815727aa4a` e
+   `candidate_sha=c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a` e
    `expected_baseline_sha` igual ao SHA realmente servido
    pelo alias `ev2-g17-canary` no momento, confirmado por `/healthz`.
-3. Despachar `deploy-staging.yml` com `git_ref=dd1cb69b67fde70e3451200e2c88d3815727aa4a`,
-   `rollback_ref=dd1cb69b67fde70e3451200e2c88d3815727aa4a`, `frontend_bridge_run_id` igual ao run do
+3. Despachar `deploy-staging.yml` com `git_ref=c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a`,
+   `rollback_ref=c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a`, `frontend_bridge_run_id` igual ao run do
    passo 2 e `ev2_draft_v2_candidate=false`. Esse run aplica a migration 0089, o que corrige a tela
    de diagnosticos no proprio staging, e executa o canario de migrations com o prazo de saida ja
    ativo nas Edge Functions.
