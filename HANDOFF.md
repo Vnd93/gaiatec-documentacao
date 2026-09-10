@@ -77,11 +77,11 @@ analise estatica ou canario parcial nao substituem prova de persistencia, audito
 | Perfil GitHub                        | `Vnd93`                                                                             |
 | Codigo                               | `Vnd93/gaiatec-cms`                                                                 |
 | Branch do codigo                     | `main`                                                                              |
-| HEAD do codigo                       | `c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a`                                          |
-| `origin/main`                        | `c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a`                                          |
+| HEAD do codigo                       | `2bd50fc2984f69cead162da6ad5a362c69d3ff33`                                          |
+| `origin/main`                        | `2bd50fc2984f69cead162da6ad5a362c69d3ff33`                                          |
 | Checkout do codigo                   | limpo                                                                               |
-| Candidato vigente                    | `c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a`                                          |
-| Candidato anterior                   | `dd1cb69b67fde70e3451200e2c88d3815727aa4a`                                          |
+| Candidato vigente                    | `2bd50fc2984f69cead162da6ad5a362c69d3ff33`                                          |
+| Candidato anterior                   | `c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a`                                          |
 | Documentacao                         | `Vnd93/gaiatec-documentacao`                                                        |
 | Branch documental                    | `docs/g12-production-release`                                                       |
 | Base documental antes do handoff     | `641889875e8d425f7902474e9f5e0700a4e8b5dc`                                          |
@@ -578,6 +578,30 @@ Consequencias implementadas em `c43535b`:
 - O teto de orcamento da janela em `cms-browser-fixture.test.mjs` sobe de 115 para 200 minutos, e o
   teste continua exigindo que o orcamento seja menor que a lease.
 
+## O que a 0091 exigiu, e os tres erros meus que o CI pegou
+
+A 0091 esta com digest `2465fadfff8d3e2025ef1c24e49394241df48f1edb1c41f49cfddd435dd8f7f1` e o CI
+`34478272711` aprovou os tres jobs, inclusive `database`, que aplica todas as migrations num Postgres
+real. Chegar ali custou tres correcoes, todas erros meus e todas pegas pelo CI:
+
+1. O prazo da lease nao vive so no gatilho: a tabela tem a restricao `cms_qa_actor_leases_check1`, que
+   e a barreira que recusa uma lease longa demais. Elevar apenas o gatilho fez os dois discordarem e
+   nenhuma lease pode ser gravada, o que derrubou todo teste pgTAP que cria um ator sintetico. A
+   restricao subiu junto e continua sendo limite superior fechado, exigindo `expires_at > created_at`.
+2. O Postgres normaliza literais de intervalo. Uma restricao escrita como `interval '241 minutes'` e
+   armazenada como `'04:01:00'::interval`, entao minha propria sonda fail-closed reprovou procurando as
+   palavras com que a restricao foi escrita. As tres verificacoes passaram a comparar pela forma
+   canonica.
+3. Eu havia reescrito o gatilho a partir do texto de 0061, mas 0086 ja o reparara depois disso,
+   trocando `statement_timestamp` por `transaction_timestamp` e endurecendo a guarda de metadados
+   sinteticos. Recriar o corpo antigo revertia os dois reparos em silencio, e 25 de 48 subtestes
+   cairam. A migration passou a fazer o que a propria 0086 faz: ler a definicao instalada, substituir
+   apenas o prazo e o valor auditado, e executar o resultado. Ela falha fechada se qualquer um dos
+   reparos sumir, e o pgTAP e a verificacao contra o banco real tambem exigem a presenca deles.
+
+O teste pre-existente que fixava 119 minutos foi atualizado para 240 com a razao ao lado. A lease
+continua sendo um prazo fechado, apenas maior que a janela que ela cobre.
+
 ## Ponte de compatibilidade legacy-f48 do candidato `b6ed084` (evidencia superada)
 
 Run [`34395203818`](https://github.com/Vnd93/gaiatec-cms/actions/runs/34395203818), tentativa 1,
@@ -1018,20 +1042,20 @@ scripts/prepare-cloudflare-worker.mjs` e vazio. Portanto a degradacao esta no pr
 
 ## Proxima acao exata
 
-Candidato vigente `c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a`. Toda evidencia vinculada a
-`dd1cb69b67fde70e3451200e2c88d3815727aa4a` e anteriores esta invalidada, inclusive o CI
-`34450845565`, o bridge `34451310409` e o deploy `34452219396`. O SHA `14940a0` foi empurrado com
-o check local vermelho e esta superado; nao use nenhuma evidencia dele.
+Candidato vigente `2bd50fc2984f69cead162da6ad5a362c69d3ff33`, com CI `34478272711` aprovado nos
+tres jobs. Toda evidencia vinculada a `c43535b` e anteriores esta invalidada. Os SHAs `14940a0`,
+`c43535b`, `f65f979`, `62baeaa` e `0bf3a82` sao intermediarios reprovados ou superados; nao use
+nenhuma evidencia deles.
 
 Na ordem, sem pular nenhum passo:
 
-1. Confirmar o CI do SHA exato `c43535b`. Run despachado automaticamente pelo push.
+1. ~~Confirmar o CI do SHA exato~~ feito: `34478272711`, `success` nos tres jobs.
 2. Despachar `promote-staging-frontend-bridge.yml` com
-   `candidate_sha=c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a` e
+   `candidate_sha=2bd50fc2984f69cead162da6ad5a362c69d3ff33` e
    `expected_baseline_sha` igual ao SHA realmente servido
    pelo alias `ev2-g17-canary` no momento, confirmado por `/healthz`.
-3. Despachar `deploy-staging.yml` com `git_ref=c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a`,
-   `rollback_ref=c43535b3da8aa4ced4dc9d0d5a9622d14c0f675a`, `frontend_bridge_run_id` igual ao run do
+3. Despachar `deploy-staging.yml` com `git_ref=2bd50fc2984f69cead162da6ad5a362c69d3ff33`,
+   `rollback_ref=2bd50fc2984f69cead162da6ad5a362c69d3ff33`, `frontend_bridge_run_id` igual ao run do
    passo 2 e `ev2_draft_v2_candidate=false`. Esse run aplica a migration 0089, o que corrige a tela
    de diagnosticos no proprio staging, e executa o canario de migrations com o prazo de saida ja
    ativo nas Edge Functions.
