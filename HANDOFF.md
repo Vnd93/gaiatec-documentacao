@@ -77,11 +77,11 @@ analise estatica ou canario parcial nao substituem prova de persistencia, audito
 | Perfil GitHub                        | `Vnd93`                                                                             |
 | Codigo                               | `Vnd93/gaiatec-cms`                                                                 |
 | Branch do codigo                     | `main`                                                                              |
-| HEAD do codigo                       | `b925052da0f0901157ff79c48aa30354bc40f888`                                          |
-| `origin/main`                        | `b925052da0f0901157ff79c48aa30354bc40f888`                                          |
+| HEAD do codigo                       | `86ea00a7144bd7dd20c026c1a46d6300554eb2f1`                                          |
+| `origin/main`                        | `86ea00a7144bd7dd20c026c1a46d6300554eb2f1`                                          |
 | Checkout do codigo                   | limpo                                                                               |
-| Candidato vigente                    | `b925052da0f0901157ff79c48aa30354bc40f888`                                          |
-| Candidato anterior                   | `5710401cac22fecc8d5bf74b20f4161a961bacf6`                                          |
+| Candidato vigente                    | `86ea00a7144bd7dd20c026c1a46d6300554eb2f1`                                          |
+| Candidato anterior                   | `e28d10c7edf822a85a88a258bda5aec74030f461`                                          |
 | Documentacao                         | `Vnd93/gaiatec-documentacao`                                                        |
 | Branch documental                    | `docs/g12-production-release`                                                       |
 | Base documental antes do handoff     | `641889875e8d425f7902474e9f5e0700a4e8b5dc`                                          |
@@ -249,14 +249,19 @@ Duas correcoes aplicadas em `b925052`, ambas no caminho da falha:
 A segunda correcao pode resolver o bloqueio por si so, se a causa for limite de janela. Se nao
 resolver, o proximo relatorio traz `status` e `code` e o diagnostico deixa de ser hipotese.
 
-## Defeito sistemico de amostragem ainda presente fora do caminho critico
+## Defeito sistemico de amostragem: corrigido na origem
 
 `percentile(v, 95)` retorna `sorted[ceil(0,95*n)-1]`, entao com `n=5` o p95 relatado e o proprio
-maximo de cinco amostras e uma unica resposta fria decide um gate. Corrigido em
-`promote-staging-frontend-bridge.yml`, `deploy-staging.yml` e `deploy-staging-watchdog.yml`.
+maximo de cinco amostras e uma unica resposta fria decide um gate. A correcao anterior era por
+chamada e alcancava apenas `promote-staging-frontend-bridge.yml`, `deploy-staging.yml` e
+`deploy-staging-watchdog.yml`, ou seja, 8 dos 33 pontos que invocam o probe.
 
-Permanece em 13 pontos, deliberadamente nao alterados para nao ampliar o raio do candidato
-congelado. Os dois primeiros bloquearao os gates de producao e devem ser corrigidos antes deles:
+Corrigido na origem em `scripts/ev2/phase12/rollout-probe.mjs`: o padrao de `EV2_G12_SAMPLE_COUNT`
+passou de `environment === "production" ? 20 : 5` para `20` em qualquer ambiente, e o padrao de
+`EV2_G12_WARMUP_SAMPLES_PER_ROUTE` passou de `3` para `8`. Todo ponto de chamada herda a medicao
+correta sem precisar declarar nada, inclusive os watchdogs, que medem exatamente quando as rotas
+estao frias. Os 13 pontos que ainda declaravam `"5"` explicitamente foram elevados a `"20"`, porque
+uma declaracao explicita sobrescreve o padrao:
 
 | Workflow                                       | Ocorrencias |
 | ---------------------------------------------- | ----------: |
@@ -267,6 +272,76 @@ congelado. Os dois primeiros bloquearao os gates de producao e devem ser corrigi
 | `promote-staging-frontend-bridge-watchdog.yml` |           1 |
 | `preview-ev2-phase12/13/14/16.yml`             |           4 |
 | `provision-production-operator.yml`            |           1 |
+
+`scripts/ev2/phase12/staging-canary.mjs` tambem declarava `"5"` e foi elevado.
+
+Os padroes de prontidao, `EV2_G12_READINESS_ATTEMPTS = 10` e `EV2_G12_READINESS_INTERVAL_MS = 1500`,
+foram deliberadamente mantidos: esperar mais so faz sentido para alvos que o proprio run acabou de
+publicar, e elevar o padrao faria um alias genuinamente quebrado demorar a reprovar.
+
+Travado por `scripts/ev2/phase12/rollout-probe-sampling.test.mjs`, que fixa os dois padroes, varre
+todos os workflows e scripts de fase 12 recusando qualquer `EV2_G12_SAMPLE_COUNT` abaixo de 20 ou
+`EV2_G12_WARMUP_SAMPLES_PER_ROUTE` abaixo de 8, exige um numero minimo de declaracoes inspecionadas
+para nao passar por vacuidade, e reafirma que os orcamentos `availabilityPercent: 99.9`,
+`http5xxRatePercent: 0.1` e `publicP95Ms: 1500` continuam intactos.
+
+## Superficie de diagnosticos reprovava com statement timeout, corrigida pela migration 0089
+
+Provado na sessao autenticada real do CMS de staging, em Google Chrome:
+`GET /rest/v1/cms_operational_events?select=...&resolved_at=is.null&order=created_at.desc&limit=50`
+respondia HTTP 500 com SQLSTATE 57014, `canceling statement due to statement timeout`. A tabela tinha
+1.107 linhas, entao volume nao era a causa. Controles: a mesma leitura com `limit 5` e sem ordenacao
+respondia 200 em 557 ms; com `order=created_at.desc` reprovava em 8.228 ms.
+
+Duas causas somadas. A politica instalada em 0076 usava
+`using (public.cms_system_operational_session_read_allowed(id))`, um unico predicado por linha que
+reavaliava, dentro dele, a linhagem de permissao e a permissao da sessao, nenhuma das quais depende
+de linha. Como todo o predicado dependia da linha, o planejador nao conseguia ica-las para fora do
+laco. A tabela tambem nao tinha indice alem da chave primaria, entao `order by ... limit` precisava
+varrer e ordenar tudo antes de o limite valer, levando o predicado caro as 1.107 linhas em vez das 50
+devolvidas.
+
+`0089_cms_operational_events_read_scale.sql` separa o predicado em uma metade de sessao e uma de
+linha, preservando a conjuncao autorizadora exatamente como estava, e cria
+`cms_operational_events_unresolved_recent_idx`, parcial em `resolved_at is null` e ordenado por
+`created_at desc`, mais `cms_operational_events_recent_idx` para leituras historicas. A migration
+falha fechada se a politica separada ou o indice nao existirem ao final da transacao.
+
+Registro obrigatorio completo: manifesto fixado com digest
+`bd6d418cd7271ed91d7e0d360c0100c7ad10998777ec27672ea4a6659fa22cad`, cobertura declarada no canario,
+mapa de compatibilidade progressiva com testes que existem e rodam no CI, teste pgTAP
+`supabase/tests/rls_cms_operational_events_read_scale.test.sql` e verificacao contra o banco real de
+staging e producao em `operational_events_read_scale_0089_semantics_exact`.
+
+Erro proprio registrado para nao repetir: o `npm run check` local reprovou por
+`0089: at least one database compatibility test required` e eu li o codigo de saida do invocador em
+vez do codigo do proprio comando, tratei como verde e empurrei `2db35fd`, que o CI reprovou. O
+criterio passa a ser ler `EXIT=` do log do comando, nunca a notificacao do invocador.
+
+## Canario de migrations pendurava 120 s: nenhuma chamada de saida das Edge Functions tinha prazo
+
+O run `34428190779` reprovou no passo 26 com
+`fixtureCloseFailures: [{"closer":"closeDocumentFixture","failure":"G12_STAGING_HTTP_TIMEOUT:POST:/functions/v1/cms-documents:120000"}]`
+e `operationFailure: None`. Consumir os 120 s inteiros significa pendurar, nao demorar: o
+`statement_timeout` do banco cancela um SQL lento em cerca de 8 s, entao a espera nao podia estar
+dentro do banco.
+
+A causa e que nenhuma chamada de saida tinha prazo. Os dois clientes criados em
+`supabase/functions/_shared/cms-auth.ts` usam o `fetch` global sem `signal`, entao PostgREST, Auth e
+Storage esperam para sempre, e uma conexao que trava fora do banco nunca falha, simplesmente nao
+responde. Storage e a primeira a aparecer por ser a unica dependencia desse handler sem teto proprio
+do lado servidor.
+
+`supabase/functions/_shared/cms-edge-fetch.ts` impoe teto de 30 s por chamada. Ele aborta a
+requisicao subjacente, liberando o socket, e ainda corre contra o prazo, de modo que a invocacao
+termina mesmo que um transporte ignore o sinal. Cancelamento vindo de quem chamou continua
+prevalecendo e nao e reportado como prazo nosso. A identidade que entra na mensagem de erro e apenas
+verbo e caminho; a query string carrega `apikey` e filtros de usuario e nunca e lida.
+
+`cms-documents` mapeia isso para 504 `CMS_EDGE_UPSTREAM_TIMEOUT` com o alvo, no lugar do 500 sem
+rotulo anterior, e o canario passa a anexar o codigo de erro do CMS a identidade codificada da falha,
+apenas slugs `CMS_[A-Z0-9_]+` fechados, nunca outro campo do corpo. O proximo run nomeia a dependencia
+travada em vez de apenas o orcamento consumido.
 
 ## Ponte de compatibilidade legacy-f48 do candidato `b6ed084` (evidencia superada)
 
@@ -708,40 +783,34 @@ scripts/prepare-cloudflare-worker.mjs` e vazio. Portanto a degradacao esta no pr
 
 ## Proxima acao exata
 
-A ponte de compatibilidade legacy-f48 esta implementada, publicada e comprovada em
-`b6ed08476267699d05c06162561083a826d6bfa6`. O proximo escritor deve, nesta ordem:
+Candidato vigente `86ea00a7144bd7dd20c026c1a46d6300554eb2f1`. Toda evidencia vinculada a
+`e28d10c7edf822a85a88a258bda5aec74030f461` e anteriores esta invalidada, inclusive o bridge
+`34427477249` e o deploy `34428190779`.
 
-1. ~~Confirmar o CI do SHA exato~~ — feito: run `34394525418`, tentativa 1, `success`.
-2. ~~Resolver a latencia do caminho publico que bloqueava o probe de baseline~~ — feito em
-   `b6ed084`, paralelizando as tres consultas de `page-by-path` e corrigindo a amostragem do
-   probe, sem tocar no orcamento `publicP95Ms`.
-3. ~~Executar o staging frontend bridge contra o baseline canonico `4b9184b`~~ — feito: run
-   `34395203818`, tentativa 1, `success`, com restauracao provada e lease liberado.
-4. Despachar `deploy-staging.yml` com `git_ref=b6ed08476267699d05c06162561083a826d6bfa6`,
-   `rollback_ref=b6ed08476267699d05c06162561083a826d6bfa6`,
-   `frontend_bridge_run_id=34395203818` e `ev2_draft_v2_candidate=false`. Esse run reconcilia o
-   inventario misto de Edge Functions, aplica e verifica migrations, executa o canario
-   idempotente de migration e RLS e produz o artefato do candidato.
+Na ordem, sem pular nenhum passo:
 
-   Semantica de `rollback_ref`, aprendida por engano no run `34396972791`: o passo `Resolve and
-verify the exact staging candidate` executa `test "$ROLLBACK_REF" = "$candidate_sha"`, ou
-   seja, `rollback_ref` tem de ser igual a `git_ref`. A descricao do input fala em frontend
-   atualmente aprovado, e depois do bridge o frontend aprovado e servido pelo alias passa a ser o
-   proprio candidato. Passar o baseline anterior `4b9184b` reprova o run no passo 5, antes de
-   qualquer mutacao. O run anterior `34367910654` confirma a leitura: passou nesse passo com
-   `git_ref` e `rollback_ref` ambos em `4b9184b`.
-
-   O run `34396972791` reprovou exatamente ali, sem mutacao alguma. As falhas subsequentes
-   `Clear the single-use staging browser rendezvous variables`, com
-   `G12_REAL_BROWSER_STORE_ARGUMENTS_REFUSED`, e o upload de artefato sao consequencia de o passo
-   5 nao ter escrito `sha` em `GITHUB_OUTPUT`; nao ha variavel de rendezvous pendente e o
-   environment `staging` mantem apenas `STAGING_SUPABASE_PROJECT_REF`. Alias canonico intacto em
-   `b6ed084` e nenhuma variavel `G12_*_RECOVERY` presente.
-
-5. Selar o artefato final unico e seguir os gates ja listados em "Pendentes e bloqueantes".
+1. Confirmar o CI do SHA exato `86ea00a`. Run despachado automaticamente pelo push.
+2. Despachar `promote-staging-frontend-bridge.yml` com
+   `candidate_sha=86ea00a7144bd7dd20c026c1a46d6300554eb2f1` e
+   `expected_baseline_sha=e28d10c7edf822a85a88a258bda5aec74030f461`, que e o SHA realmente servido
+   pelo alias `ev2-g17-canary` no momento, confirmado por `/healthz`.
+3. Despachar `deploy-staging.yml` com `git_ref=86ea00a7144bd7dd20c026c1a46d6300554eb2f1`,
+   `rollback_ref=86ea00a7144bd7dd20c026c1a46d6300554eb2f1`, `frontend_bridge_run_id` igual ao run do
+   passo 2 e `ev2_draft_v2_candidate=false`. Esse run aplica a migration 0089, o que corrige a tela
+   de diagnosticos no proprio staging, e executa o canario de migrations com o prazo de saida ja
+   ativo nas Edge Functions.
+4. Se o canario voltar a reprovar em `closeDocumentFixture`, ler a identidade codificada da falha: ela
+   agora nomeia a dependencia travada por meio de `CMS_EDGE_UPSTREAM_TIMEOUT` e do caminho. Com a
+   0089 aplicada, a tela `/admin/diagnosticos` tambem volta a responder e serve como instrumento.
+5. Selar o artefato final unico e seguir os gates listados em "Pendentes e bloqueantes".
 6. Nao tratar os canarios headless do bridge como homologacao. A homologacao positiva continua
    exigindo Google Chrome real, sessao autenticada, MFA e backend real, e o proprio artefato do
    bridge registra `positiveBrowserRequiredAfterFullCandidateDeploy: true`.
+
+Semantica de `rollback_ref`, aprendida por engano no run `34396972791`: o passo `Resolve and verify
+the exact staging candidate` executa `test "$ROLLBACK_REF" = "$candidate_sha"`, ou seja,
+`rollback_ref` tem de ser igual a `git_ref`. Passar o baseline anterior reprova o run no passo 5,
+antes de qualquer mutacao.
 
 A troca temporaria em staging e serializada por um lease exclusivo, sintetica, auditada e possui
 restauracao fail-safe tanto dentro do run quanto por watchdog dedicado quando o runner e perdido.
