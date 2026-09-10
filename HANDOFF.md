@@ -77,11 +77,11 @@ analise estatica ou canario parcial nao substituem prova de persistencia, audito
 | Perfil GitHub                        | `Vnd93`                                                                             |
 | Codigo                               | `Vnd93/gaiatec-cms`                                                                 |
 | Branch do codigo                     | `main`                                                                              |
-| HEAD do codigo                       | `cf6ecd8fbbab843e1d98103e33e3cb1edf29f745`                                          |
-| `origin/main`                        | `cf6ecd8fbbab843e1d98103e33e3cb1edf29f745`                                          |
+| HEAD do codigo                       | `92c15d41b1fea5704fb119faa55f94564d9559e3`                                          |
+| `origin/main`                        | `92c15d41b1fea5704fb119faa55f94564d9559e3`                                          |
 | Checkout do codigo                   | limpo                                                                               |
-| Candidato vigente                    | `cf6ecd8fbbab843e1d98103e33e3cb1edf29f745`                                          |
-| Candidato anterior                   | `5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`                                          |
+| Candidato vigente                    | `92c15d41b1fea5704fb119faa55f94564d9559e3`                                          |
+| Candidato anterior                   | `cf6ecd8fbbab843e1d98103e33e3cb1edf29f745`                                          |
 | Documentacao                         | `Vnd93/gaiatec-documentacao`                                                        |
 | Branch documental                    | `docs/g12-production-release`                                                       |
 | Base documental antes do handoff     | `641889875e8d425f7902474e9f5e0700a4e8b5dc`                                          |
@@ -414,6 +414,44 @@ Residuo deixado pelo run reprovado, esperado e auto-resolvido: duas leases `acti
 `QA-CMS-FINAL-20260910-5e7aab4c`, que o watchdog varre no TTL de 119 minutos, e um documento
 sintetico em `access_revoked` que o reconciliador de blobs conclui depois do fence. Leases sao por
 `run_tag`, entao nao bloqueiam o proximo run.
+
+## Confirmacao de remocao do documento: o que ja esta provado e o que falta nomear
+
+Deploy `34441157353`, candidato `cf6ecd8`: 118 verificacoes aprovadas, `operationFailure: null`, e
+falha em `closeDocumentFixture` com
+`G12_STAGING_HTTP_FAILED:POST:/functions/v1/cms-documents:503:CMS_DOCUMENT_BLOB_REMOVAL_PENDING`. A
+identidade enriquecida ja nomeou status e codigo, o que o run anterior nao fazia.
+
+Provado por leitura direta do banco de staging:
+
+- A funcao publicada no run era a nova: o corpo de `cms-documents` contem `canonicalCleanupScheduled`,
+  `CMS_DOCUMENT_CANONICAL_WRITE_FENCE_ACTIVE` e `CMS_EDGE_FETCH_TIMEOUT`, e foi publicada as
+  05:32:03Z, antes de o canario comecar as 05:32:55Z.
+- O `update` que a confirmacao executa realmente e recusado pelo fence: uma sondagem que aborta sem
+  commitar devolveu `40001 CMS_DOCUMENT_CANONICAL_WRITE_FENCE_ACTIVE`.
+- O documento do run ficou em `access_revoked` com `blob_cleanup_last_error_code =
+  'database_confirm_failed'`, `sha256` valido, `processing_status = 'neutralized'`, e nenhum recibo
+  de `neutralize_document` foi gravado, ou seja, a confirmacao nunca completou.
+- O documento do run anterior `e28d10c7` ja esta em `blob_disposition = 'removed'` e
+  `upload_disposition = 'removed'`, o que prova que o reconciliador de blobs do `cms-outbox-worker`
+  conclui a transicao depois que o fence expira.
+- `service_role` nao tem `rolconfig` proprio. O teto efetivo vem de `authenticator`, que fixa
+  `statement_timeout=8s` e `lock_timeout=8s`. `anon` tem 3s e `authenticated` tem 8s. Logo a
+  confirmacao nao pode gastar 30 segundos dentro do banco.
+
+Como o ramo do fence nao disparou mesmo com a funcao correta publicada, a causa nao e o fence e sim
+algo que chega em outra forma. O candidato `92c15d4` corrige tres defeitos que impediam nomear e
+sobreviver a isso:
+
+1. Um unico codigo para toda causa. A recusa da confirmacao passa a carregar a causa dentro do
+   proprio codigo, apenas em forma fechada: SQLSTATE de cinco caracteres, prazo de transporte, ou
+   desconhecido. Nada do corpo do erro trafega.
+2. O predicado do prazo nao casava com o caso que existe para tratar. O `postgrest-js` nao propaga a
+   rejeicao do fetch: devolve em `error` com a mensagem reescrita como `"<name>: <message>"`, entao
+   comparar por prefixo nunca casava. Passa a casar por conteudo, com teste da forma embrulhada.
+3. Um prazo de transporte era tratado como recusa. A confirmacao e idempotente por construcao, a
+   mesma chave devolve o recibo ja gravado, entao ela passa a ser repetida uma unica vez apos prazo
+   estourado. Recusa deliberada, como o fence, nunca e repetida.
 
 ## Ponte de compatibilidade legacy-f48 do candidato `b6ed084` (evidencia superada)
 
@@ -855,19 +893,19 @@ scripts/prepare-cloudflare-worker.mjs` e vazio. Portanto a degradacao esta no pr
 
 ## Proxima acao exata
 
-Candidato vigente `cf6ecd8fbbab843e1d98103e33e3cb1edf29f745`. Toda evidencia vinculada a
-`5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b` e anteriores esta invalidada, inclusive o CI
-`34437657179`, o bridge `34438006775` e o deploy `34438643117`.
+Candidato vigente `92c15d41b1fea5704fb119faa55f94564d9559e3`. Toda evidencia vinculada a
+`cf6ecd8fbbab843e1d98103e33e3cb1edf29f745` e anteriores esta invalidada, inclusive o CI
+`34440082107`, o bridge `34440446910` e o deploy `34441157353`.
 
 Na ordem, sem pular nenhum passo:
 
-1. Confirmar o CI do SHA exato `cf6ecd8`. Run despachado automaticamente pelo push.
+1. Confirmar o CI do SHA exato `92c15d4`. Run despachado automaticamente pelo push.
 2. Despachar `promote-staging-frontend-bridge.yml` com
-   `candidate_sha=cf6ecd8fbbab843e1d98103e33e3cb1edf29f745` e
-   `expected_baseline_sha=5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`, que e o SHA realmente servido
+   `candidate_sha=92c15d41b1fea5704fb119faa55f94564d9559e3` e
+   `expected_baseline_sha=cf6ecd8fbbab843e1d98103e33e3cb1edf29f745`, que e o SHA realmente servido
    pelo alias `ev2-g17-canary` no momento, confirmado por `/healthz`.
-3. Despachar `deploy-staging.yml` com `git_ref=cf6ecd8fbbab843e1d98103e33e3cb1edf29f745`,
-   `rollback_ref=cf6ecd8fbbab843e1d98103e33e3cb1edf29f745`, `frontend_bridge_run_id` igual ao run do
+3. Despachar `deploy-staging.yml` com `git_ref=92c15d41b1fea5704fb119faa55f94564d9559e3`,
+   `rollback_ref=92c15d41b1fea5704fb119faa55f94564d9559e3`, `frontend_bridge_run_id` igual ao run do
    passo 2 e `ev2_draft_v2_candidate=false`. Esse run aplica a migration 0089, o que corrige a tela
    de diagnosticos no proprio staging, e executa o canario de migrations com o prazo de saida ja
    ativo nas Edge Functions.
