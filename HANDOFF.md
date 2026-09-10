@@ -77,11 +77,11 @@ analise estatica ou canario parcial nao substituem prova de persistencia, audito
 | Perfil GitHub                        | `Vnd93`                                                                             |
 | Codigo                               | `Vnd93/gaiatec-cms`                                                                 |
 | Branch do codigo                     | `main`                                                                              |
-| HEAD do codigo                       | `5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`                                          |
-| `origin/main`                        | `5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`                                          |
+| HEAD do codigo                       | `cf6ecd8fbbab843e1d98103e33e3cb1edf29f745`                                          |
+| `origin/main`                        | `cf6ecd8fbbab843e1d98103e33e3cb1edf29f745`                                          |
 | Checkout do codigo                   | limpo                                                                               |
-| Candidato vigente                    | `5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`                                          |
-| Candidato anterior                   | `86ea00a7144bd7dd20c026c1a46d6300554eb2f1`                                          |
+| Candidato vigente                    | `cf6ecd8fbbab843e1d98103e33e3cb1edf29f745`                                          |
+| Candidato anterior                   | `5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`                                          |
 | Documentacao                         | `Vnd93/gaiatec-documentacao`                                                        |
 | Branch documental                    | `docs/g12-production-release`                                                       |
 | Base documental antes do handoff     | `641889875e8d425f7902474e9f5e0700a4e8b5dc`                                          |
@@ -356,6 +356,64 @@ verbo e caminho; a query string carrega `apikey` e filtros de usuario e nunca e 
 rotulo anterior, e o canario passa a anexar o codigo de erro do CMS a identidade codificada da falha,
 apenas slugs `CMS_[A-Z0-9_]+` fechados, nunca outro campo do corpo. O proximo run nomeia a dependencia
 travada em vez de apenas o orcamento consumido.
+
+## Efeito real da 0089 medido no staging
+
+Medido no proprio projeto de staging depois que o deploy `34438643117` aplicou as migrations, com
+consulta somente leitura:
+
+- A politica instalada passou a ser exatamente
+  `(cms_system_operational_session_scope_allowed() AND cms_system_operational_event_row_allowed(id))`.
+- Os dois indices existem.
+- `select ... where resolved_at is null order by created_at desc limit 50` agora resolve por
+  `Index Scan using cms_operational_events_unresolved_recent_idx`, 50 linhas, `Execution Time`
+  4,174 ms, com 3.341 linhas na tabela. Antes eram 8.228 ms ate o `statement_timeout` com 1.107
+  linhas.
+
+Esse plano foi obtido com papel privilegiado, entao prova a metade do indice e do limite. A metade da
+politica esta provada pela forma instalada acima, pelo teste pgTAP e pela verificacao
+`operational_events_read_scale_0089_semantics_exact` contra o banco real.
+
+A verificacao pela tela autenticada nao pode ser refeita nesta sessao porque o JWT do operador expirou
+no navegador. Reautenticar exige credencial e MFA do operador e nao e feito pelo agente.
+
+## Canario reprovava no teardown por contradicao entre dois contratos do banco
+
+O deploy `34438643117` aprovou as 116 verificacoes de cenario, com `operationFailure: null` e
+`fixtureCloseFailures: []`, e reprovou em `cleanup` com `G12_STAGING_SYNTHETIC_LEASE_COMPLETION_FAILED`.
+
+Lido no banco de staging depois do run, o documento sintetico estava em
+`blob_disposition = 'access_revoked'`, `blob_cleanup_last_error_code = 'database_confirm_failed'` e
+`canonical_cleanup_not_before` cerca de duas horas e meia no futuro.
+
+A 0063 instala o fence canonico de escrita, que recusa marcar o blob como `removed` antes de
+`canonical_cleanup_not_before`, calculado como 30 minutos apos o maior prazo entre a expiracao do
+token de upload assinado, a claim de finalizacao e a neutralizacao. O fence esta correto: declarar o
+blob removido enquanto o token ainda pode escrever abriria janela de reuso. A 0061 exigia
+`blob_disposition = 'removed'` para concluir a lease do ator sintetico. Nenhum run satisfaz as duas
+regras, e quem executa essa transicao mais tarde e o reconciliador de blobs do `cms-outbox-worker`,
+que so pode agir depois que o fence expira.
+
+`0090_cms_qa_lease_document_canonical_fence.sql`, digest
+`295f8adcfac409de8dd86f6f557da78a5a5a0d6836cf9b3af52f02608f6d18c9`, aceita o estado intermediario
+apenas quando ele e provadamente o que o fence impoe: acesso revogado, prazo canonico registrado e
+ainda no futuro. Prazo ja vencido continua reprovando, porque ai o residuo e real. Nenhuma outra
+condicao foi afrouxada e a funcao continua exclusiva de `service_role`.
+
+Duas superficies relatavam isso errado e foram corrigidas junto:
+
+- `cms-documents` registrava `database_confirm_failed` e devolvia 503 para o desfecho projetado da
+  neutralizacao. Passa a devolver 200 com `blobDisposition: "access_revoked"` e
+  `canonicalCleanupScheduled: true`.
+- O canario aceitava um 503 `CMS_DOCUMENT_BLOB_REMOVAL_PENDING` generico como sucesso, o que tornava
+  a verificacao `documents_fixture_neutralized_fenced` infalsificavel justamente na condicao exigida
+  pelo teardown. Passa a exigir 200 e um dos dois desfechos legitimos. O teste que fixava a aceitacao
+  antiga foi atualizado com a razao, porque fixava uma regra que escondia essa falha.
+
+Residuo deixado pelo run reprovado, esperado e auto-resolvido: duas leases `active` do run tag
+`QA-CMS-FINAL-20260910-5e7aab4c`, que o watchdog varre no TTL de 119 minutos, e um documento
+sintetico em `access_revoked` que o reconciliador de blobs conclui depois do fence. Leases sao por
+`run_tag`, entao nao bloqueiam o proximo run.
 
 ## Ponte de compatibilidade legacy-f48 do candidato `b6ed084` (evidencia superada)
 
@@ -797,19 +855,19 @@ scripts/prepare-cloudflare-worker.mjs` e vazio. Portanto a degradacao esta no pr
 
 ## Proxima acao exata
 
-Candidato vigente `5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`. Toda evidencia vinculada a
-`e28d10c7edf822a85a88a258bda5aec74030f461` e anteriores esta invalidada, inclusive o bridge
-`34427477249` e o deploy `34428190779`.
+Candidato vigente `cf6ecd8fbbab843e1d98103e33e3cb1edf29f745`. Toda evidencia vinculada a
+`5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b` e anteriores esta invalidada, inclusive o CI
+`34437657179`, o bridge `34438006775` e o deploy `34438643117`.
 
 Na ordem, sem pular nenhum passo:
 
-1. Confirmar o CI do SHA exato `5e7aab4`. Run despachado automaticamente pelo push.
+1. Confirmar o CI do SHA exato `cf6ecd8`. Run despachado automaticamente pelo push.
 2. Despachar `promote-staging-frontend-bridge.yml` com
-   `candidate_sha=5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b` e
-   `expected_baseline_sha=e28d10c7edf822a85a88a258bda5aec74030f461`, que e o SHA realmente servido
+   `candidate_sha=cf6ecd8fbbab843e1d98103e33e3cb1edf29f745` e
+   `expected_baseline_sha=5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`, que e o SHA realmente servido
    pelo alias `ev2-g17-canary` no momento, confirmado por `/healthz`.
-3. Despachar `deploy-staging.yml` com `git_ref=5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`,
-   `rollback_ref=5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`, `frontend_bridge_run_id` igual ao run do
+3. Despachar `deploy-staging.yml` com `git_ref=cf6ecd8fbbab843e1d98103e33e3cb1edf29f745`,
+   `rollback_ref=cf6ecd8fbbab843e1d98103e33e3cb1edf29f745`, `frontend_bridge_run_id` igual ao run do
    passo 2 e `ev2_draft_v2_candidate=false`. Esse run aplica a migration 0089, o que corrige a tela
    de diagnosticos no proprio staging, e executa o canario de migrations com o prazo de saida ja
    ativo nas Edge Functions.
