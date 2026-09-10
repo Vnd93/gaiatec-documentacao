@@ -39,6 +39,238 @@ claimedAt: 2026-09-10T22:44:23.000Z
 previousReleasedAt: 2026-09-10T21:36:12.000Z
 ```
 
+## Defeito de produto nomeado pelo segundo passe: conclusao de lease estoura o timeout
+
+Captura local `2026-09-10T20:43:22-03:00`, UTC `2026-09-10T23:43:22.000Z`.
+
+Run `34542229170`, candidato `8585818572b9b58762a34e8f8fa99b96c7c8ec4a`. O `supabase link` resolveu o
+canario de migrations, que passou. Duas causas novas apareceram.
+
+### O defeito
+
+```
+POST /rest/v1/rpc/cms_complete_qa_actor_lease: HTTP 500
+{"code":"57014","message":"canceling statement due to statement timeout"}
+```
+
+**Doze gatilhos de limpeza terminal** disparam num unico `update ... set status` da linha de lease:
+`0063`, `0064`, `0069`, `0071`, `0072`, `0073`, `0074`, `0075`, `0076`, `0078` (dois) e `0080`. Cada
+um varre e encerra tudo que o run criou no subsistema dele — conteudo, formularios, leads, visual,
+IA, atributos, colaboracao, PIM. Tudo isso corre dentro de **um** statement, sob o
+`statement_timeout` de oito segundos herdado do `authenticator`; nenhuma migration configura esse
+valor.
+
+Isso explica a intermitencia observada: o custo do encerramento cresce com o que o run criou. E e
+quase certamente a mesma causa do `QA_CMS_FIXTURE_LEASE_COMPLETION_FAILED` que reprovou a etapa
+`Revoke the rollback compatibility actor and verify zero active residue` no deploy `34528923953`. La
+o erro veio nu; aqui veio nomeado, porque `scripts/ev2/phase11/staging-canary.mjs` ja anexa a
+identidade retornada pelo banco e `scripts/qa/cms-browser-fixture.mjs` ainda nao.
+
+Todos os checks operacionais do canario G11 passaram. O que quebra e o encerramento, nao a operacao.
+
+A correcao pertence a `supabase/migrations/**`, caminho da Faixa A, e esta bloqueada pelo mapa de
+propriedade — ver a secao de bloqueio abaixo.
+
+### O limite estrutural do ciclo autenticado de navegador
+
+`scripts/qa/cms-browser-fixture.mjs` exige, ao mesmo tempo, que `git rev-parse HEAD` do checkout seja
+igual ao SHA esperado e que `/healthz` de `ev2-g17-canary` sirva esse mesmo SHA. Num passe que nao
+publica nada as duas condicoes se excluem: com o SHA candidato ele reprova por
+`QA_CMS_FIXTURE_RELEASE_MISMATCH`, com o SHA vivo reprova por `QA_CMS_FIXTURE_CHECKOUT_SHA_MISMATCH`.
+
+Nao existe valor que satisfaca as duas. Forcar qualquer lado produz falha garantida, o que e pior do
+que nao rodar, porque ensina a ignorar o vermelho do passe. O gate passou a rodar exatamente quando
+pode — quando o alias ja serve o candidato, caso do rediagnostico de um SHA ja publicado — e fica
+`skipped` fora disso, com o limite escrito no campo `limits` do relatorio, para que a ausencia nunca
+seja lida como cobertura.
+
+Faltava tambem instalar o navegador: os canarios dirigem Chromium internamente, e sem ele a suite de
+rotas e acessibilidade do G11 reprova por ausencia de ferramenta.
+
+### Bloqueio de propriedade de arquivo, agora sobre o caminho critico
+
+`scripts/ev2/phase12/backend-compatibility-policy.test.mjs` exige, para **toda** migration `>= 0057`,
+duas provas: ao menos um `.test.sql` e ao menos uma prova de aplicacao `.ts`, `.tsx` ou `.mjs`
+executada no CI. O `ownership` do `FAIXAS_LEASE.yaml` atribui `tests/**` e
+`scripts/ev2/**/*.test.mjs` a Faixa C.
+
+Consequencia mecanica: a Faixa A **nao consegue adicionar nenhuma migration**, embora a secao 9.1
+defina o escopo dela como "codigo, migrations, selo, promocao". Isso ja travava o Bloco 6 no primeiro
+passo, o RPC de heartbeat. Agora trava tambem a correcao de um defeito real do caminho critico, com
+evidencia de execucao em staging.
+
+Emenda sugerida: `scripts/ev2/**` e `supabase/**` para a Faixa A; `scripts/qa/**` e `tests/**` para a
+Faixa C. Enquanto a decisao nao vem, a Faixa A nao escreve em `tests/**`.
+
+### Candidato
+
+`352c29de3308a4cad17a18d3637dea52031a2990`, com verificacao local integral aprovada: 178 arquivos,
+1105 testes, `G12_RULES_PASS` e build.
+
+## Primeiro passe de diagnostico: quatro problemas em uma passada
+
+Captura local `2026-09-10T20:27:33-03:00`, UTC `2026-09-10T23:27:33.000Z`.
+
+Run `34540916796`, candidato `4552f9ad9a09a18a015967c392213127ed3ba579`, despachado com
+`diagnostic_run=true`. O desenho estrutural se confirmou na primeira execucao: `deploy` e `finalize`
+ficaram `skipped` e so o job `diagnostic` executou. Nenhum step de selo, publicacao, promocao ou
+evidencia existiu no run.
+
+### Uma armadilha de leitura, registrada para nao se repetir
+
+`gh run view --json jobs` devolve o **conclusion** de cada step. Para um step com
+`continue-on-error: true`, um gate que reprova aparece como `success` no conclusion; o resultado real
+esta no **outcome**. Ler o conclusion faz um passe de diagnostico parecer integralmente verde
+justamente quando ele esta cumprindo a funcao dele. O relatorio consolidado usa `outcome`, e e ele a
+fonte, nao a listagem de steps.
+
+### O que o passe colheu
+
+`failedGates: 3 de 12`, mais a prova de residuo:
+
+| Gate | Erro | Causa |
+| ---- | ---- | ----- |
+| `migrations_canary` | `G12_STAGING_MIGRATION_CANARY_TARGET_REFUSED` | CLI do Supabase nao vinculado |
+| `g11_canary` | `ALVO RECUSADO: o projeto vinculado nao e o staging autorizado` | a mesma |
+| `browser_fixture` | `QA_CMS_FIXTURE_RELEASE_MISMATCH` | SHA candidato onde se confere o release servido |
+| prova de residuo | `QA_CMS_FIXTURE_STATE_REQUIRED` | consequencia da anterior |
+
+Duas causas raiz, as duas no proprio job de diagnostico, nenhuma no produto:
+
+- O `supabase link` acontecia no step que aplica migrations, que o passe pula com razao. Mas `link` e
+  operacao local: escreve `supabase/.temp` no workspace e nao muta o projeto remoto. Sem ele os
+  canarios recusam o alvo antes de rodar qualquer check — `checkCount: 0`.
+- `QA_CMS_EXPECTED_SHA` levava o SHA candidato. A fixture compara esse valor com o release que
+  `/healthz` de `ev2-g17-canary` realmente serve, e o passe nao publica nada.
+
+No fluxo serial anterior esses quatro problemas custariam quatro candidatos. Aqui custaram um.
+
+### Um furo do proprio relatorio, exposto pelo mesmo run
+
+`diagnostic.cleanup` voltou `PASS`. Mas limpar o que nunca foi provisionado tem sucesso sem
+exercitar nada, e um PASS vazio mente sobre a cobertura da passada. Os gates passaram a declarar
+pre-condicao: um gate cuja pre-condicao nao passou e reportado `SKIPPED`, nunca `PASS`, enquanto uma
+falha propria dele continua sendo reportada como falha. A prova de residuo virou gate catalogado, em
+vez de step nao contado.
+
+### Lote corrigido em um unico SHA
+
+Candidato `8585818572b9b58762a34e8f8fa99b96c7c8ec4a`, CI `34541841345` aprovada nos tres jobs:
+
+1. `supabase link` como guarda do passe, sem nenhum `db push`.
+2. SHA vivo em todo gate que compara release servido; SHA candidato onde a identidade da fixture nao
+   e comparada com release servido.
+3. Gate de residuo catalogado e regra de pre-condicao no relatorio.
+4. `frontend_bridge_run_id` deixou de ser obrigatorio, porque o passe nao publica nem sela. Isso
+   sozinho abriria um furo: `grep` de string vazia devolve string vazia, entao a comparacao do guarda
+   canonico aceitaria um valor ausente. O guarda passou a exigir a presenca antes de conferir o
+   formato.
+
+## Fim de linha decidia o resultado da verificacao local
+
+Captura local `2026-09-10T19:57:51-03:00`, UTC `2026-09-10T22:57:51.000Z`.
+
+O repositorio nao tinha `.gitattributes`. Sem ele, o fim de linha materializado no checkout depende do
+`core.autocrlf` de cada maquina. O clone antigo tinha os arquivos em LF; ao criar o clone da Faixa A
+eu fixei `core.autocrlf=true` para "nao divergir", e o resultado foi o oposto: a arvore nova veio em
+CRLF, com 4212 bytes na `0089` contra 4119 do clone antigo.
+
+Cinco testes de contrato comparam trechos de duas linhas unidos por uma quebra `LF`, por
+exemplo o contrato da `0089`:
+
+```ts
+expect(migration).toContain(`revoke all on function ${routine}\n  from public,anon,authenticated;`);
+```
+
+Com CRLF eles nunca casam. Os cinco reprovaram na Faixa A e passariam no CI, que e Linux e usa LF.
+
+Isso e grave pelo criterio do proprio projeto: divergencia entre a verificacao local e a do CI
+invalida evidencia. Uma reprovacao local que o CI nao reproduz treina a equipe a ignorar o vermelho
+local; o inverso, um verde local que o CI nao reproduz, deixa passar defeito.
+
+Correcao aplicada, em duas camadas:
+
+- A arvore da Faixa A foi renormalizada para LF sem nenhum comando destrutivo: o proprio git listou,
+  por `git ls-files --eol`, os 1105 arquivos com indice em LF e arvore em CRLF, e so esses foram
+  reescritos. `git diff` confirmou depois que o unico arquivo com diferenca de conteudo era o que eu
+  havia editado. Os cinco testes passaram na sequencia.
+- `.gitattributes` na raiz, com `* text=auto eol=lf` e binarios explicitos, para que o fim de linha
+  deixe de ser preferencia de maquina. O banco de objetos ja guardava LF; o arquivo apenas torna o
+  checkout igual em toda maquina, agora e para qualquer clone futuro.
+
+Efeito colateral a avisar: o clone da Faixa C, em `C:\dev\cms-site\gaiatec-cms`, tambem esta com
+`core.autocrlf=true` e portanto com arvore CRLF. Ele reprova nos mesmos cinco testes hoje. Depois que
+o `.gitattributes` for integrado, o proximo checkout dele renormaliza a arvore de uma vez.
+
+## Bloco 4 aplicado: passe de diagnostico no deploy de staging
+
+Captura local `2026-09-10T19:52:34-03:00`, UTC `2026-09-10T22:52:34.000Z`.
+
+A secao 2 da instrucao de otimizacao mede o problema: `deploy-staging.yml` e um job serial de ~110
+steps com timeout de 240 minutos, a falha aborta o run, e por isso cada rodada colhe **um** defeito.
+Seis candidatos foram consumidos em um dia para colher seis defeitos que ja coexistiam, todos
+pre-existentes e triviais. O custo esteve em descobrir, nao em corrigir.
+
+### O que foi implementado
+
+Entrada `diagnostic_run` no `workflow_dispatch`, booleana, padrao `false`, e um job `diagnostic`
+proprio. As proibicoes da secao 4.2 passaram a ser **estruturais**, nao anotadas step a step:
+
+- `deploy` roda apenas com `if: ${{ !inputs.diagnostic_run }}`;
+- `diagnostic` roda apenas com `if: ${{ inputs.diagnostic_run }}`;
+- `finalize` nao roda em diagnostico, porque nao ha mutacao para compensar.
+
+Em diagnostico o job canonico inteiro deixa de existir. Nao ha step de selo, publicacao, promocao ou
+evidencia que possa ser alcancado por engano, e nao ha anotacao a manter em dia a cada step novo.
+
+Os doze gates do passe rodam com `continue-on-error: true` e `id` proprio, de modo que a falha e
+registrada em vez de abortar a passada: cadeia local, matriz de cobertura, compatibilidade de
+backend, banco de staging vivo, canario de migrations, canario G11, probe publico, fronteiras,
+ciclo editorial, canario operacional, provisionamento de ator MFA e conclusao de lease.
+
+A limpeza e a prova de residuo zero permanecem obrigatorias e fail-closed tambem aqui: a primeira
+tentativa tolera falha apenas para que a retentativa exista, e a retentativa e a prova de residuo nao
+toleram nada.
+
+### Limite honesto, declarado no proprio relatorio
+
+O passe **nao** aplica migration, **nao** configura secret, **nao** faz deploy de Edge Function,
+**nao** publica bytes e **nao** sela artefato. Ele exercita o codigo do candidato contra o staging
+como ele esta agora. Portanto ele **nao valida migration nova nem funcao nova do candidato**; isso
+continua sendo exclusividade do run canonico. Esses limites sao gravados no campo `limits` do
+relatorio, ao lado de `diagnostic: true` e `approvable: false`.
+
+Como nada e publicado pelo passe, o alias serve o SHA anterior. Os gates que comparam o release
+servido recebem o SHA vivo, resolvido em tempo de execucao pelo `/healthz`; os que criam fixture
+recebem o SHA candidato. E exatamente esse par, codigo novo contra backend atual, que expoe a classe
+de defeito de fixture contra schema que consumiu seis candidatos.
+
+### Relatorio consolidado
+
+`scripts/ev2/phase12/diagnostic-report.mjs` materializa o objeto auto-descritivo do Bloco 3 para cada
+gate: `gate`, `cause` como codigo estavel, `entity`, `observed`, `expected`, `remediation`, `sha` e
+`runTag`. Nenhuma reprovacao exige leitura de log bruto. Um gate que nunca chegou a rodar conta como
+reprovado, nunca como pendente. O passe termina vermelho se qualquer gate reprovou, depois de emitir
+o relatorio.
+
+Cobertura de regressao em `scripts/ev2/phase12/diagnostic-pass.test.mjs`, dez testes, incluindo o
+criterio de aceite da secao 4.3: uma passada sobre um candidato com tres defeitos reporta os tres.
+
+### Duas causas ja colhidas do candidato anterior
+
+O deploy `34528923953`, de `c59232da`, reprovou em duas etapas, e as duas causas ja estao nomeadas:
+
+1. `Run three healthy G12 windows and inherited system assurance` — o canario G11 parou em
+   `POST /functions/v1/cms-leads: HTTP 404 CMS_LEAD_DELIVERY_NOT_FOUND`. Corrigido em `ff2238df`:
+   o run passou a possuir o formulario em que captura o lead sintetico.
+2. `Revoke the rollback compatibility actor and verify zero active residue` — `cms-browser-fixture.mjs`
+   lancou `QA_CMS_FIXTURE_LEASE_COMPLETION_FAILED` **sem dizer a causa retornada pelo banco**. Este
+   silencio e o defeito a corrigir primeiro: sem a causa nao se sabe se a falha esta na limpeza
+   terminal do lease, no residuo de conteudo do run ou em outro lugar.
+
+O item 2 esta em `scripts/qa/**`, caminho da Faixa C pelo mapa de propriedade. Ele nao foi escrito
+pela Faixa A; foi especificado e encaminhado.
+
 ## Claim da Faixa A apos a migracao do diretorio local
 
 Captura local `2026-09-10T19:44:23-03:00` (`America/Sao_Paulo`), UTC `2026-09-10T22:44:23.000Z`.
