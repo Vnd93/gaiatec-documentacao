@@ -695,6 +695,39 @@ Correcoes no candidato `5a6bd4d`, todas com teste de regressao:
 Site publico conferido em paralelo: `/`, `/produtos`, `/contato`, `/servicos`, `/solucoes` e
 `/industrias` responderam `200` entre 0,57 e 0,86 s, com `sitemap.xml` e `robots.txt` em `200`.
 
+## Prazo de saida: como escolher, e o erro que eu cometi ao escolher
+
+O padrao vale e esta provado: cada funcao de borda precisa responder dentro da janela de quem a chama,
+e nao de uma janela generica. Mas o prazo tem dois lados, e eu so respeitei um deles na primeira vez.
+
+- Teto de cima, dado pelo chamador. O Worker publico desiste de `cms-public` em 5 segundos. O painel
+  desiste de `cms-session` em 10 segundos. Passar disso e trabalhar para um pedido que ja foi
+  abandonado.
+- Piso de baixo, dado pelo trabalho real da funcao. `cms-session` monta o manifesto de capacidades,
+  que avalia doze flags, cada uma com a sua cadeia de autorizacao. Para um ator sintetico recem
+  provisionado esse trabalho e mais longo do que para um operador ja aquecido.
+
+Eu fixei 3 segundos olhando so o teto. O resultado foi uma regressao com sintoma enganoso: a resolucao
+voltava `200`, com acesso concedido, e sem o manifesto, porque a chamada que o monta era cortada. O
+provisionamento reprovava com `QA_CMS_FIXTURE_SESSION_NOT_READY:200:granted:no_capabilities`, e foi a
+propria instrumentacao adicionada no commit anterior que nomeou a causa na primeira tentativa.
+
+Valores em vigor, com a razao ao lado:
+
+| Funcao        | Prazo por chamada | Repeticao | Teto do chamador |
+| ------------- | ----------------- | --------- | ---------------- |
+| `cms-public`  | 1.800 ms          | uma, so leitura | 5 s do Worker |
+| `cms-session` | 6.000 ms          | nenhuma         | 10 s do painel |
+| demais        | 30.000 ms         | nenhuma         | sem teto proprio |
+
+`cms-session` nao repete: duas tentativas em sequencia poderiam somar dois prazos e estourar a janela
+do painel, que e exatamente a falha que essa mudanca existe para evitar. Caminho quente medido entre
+0,9 e 1,7 s, entao 6 segundos cobrem o trabalho e ainda deixam quatro segundos de folga.
+
+Verificado durante o diagnostico e registrado para nao ser reinvestigado: os quatro avaliadores
+especializados e `public.cms_runtime_capability_manifest` carregam, no staging, o desvio de janela que
+a 0061 injeta, entao a janela de override nunca foi a causa.
+
 ## Ponte de compatibilidade legacy-f48 do candidato `b6ed084` (evidencia superada)
 
 Run [`34395203818`](https://github.com/Vnd93/gaiatec-cms/actions/runs/34395203818), tentativa 1,
