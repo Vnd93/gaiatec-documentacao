@@ -77,11 +77,11 @@ analise estatica ou canario parcial nao substituem prova de persistencia, audito
 | Perfil GitHub                        | `Vnd93`                                                                             |
 | Codigo                               | `Vnd93/gaiatec-cms`                                                                 |
 | Branch do codigo                     | `main`                                                                              |
-| HEAD do codigo                       | `86ea00a7144bd7dd20c026c1a46d6300554eb2f1`                                          |
-| `origin/main`                        | `86ea00a7144bd7dd20c026c1a46d6300554eb2f1`                                          |
+| HEAD do codigo                       | `5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`                                          |
+| `origin/main`                        | `5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`                                          |
 | Checkout do codigo                   | limpo                                                                               |
-| Candidato vigente                    | `86ea00a7144bd7dd20c026c1a46d6300554eb2f1`                                          |
-| Candidato anterior                   | `e28d10c7edf822a85a88a258bda5aec74030f461`                                          |
+| Candidato vigente                    | `5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`                                          |
+| Candidato anterior                   | `86ea00a7144bd7dd20c026c1a46d6300554eb2f1`                                          |
 | Documentacao                         | `Vnd93/gaiatec-documentacao`                                                        |
 | Branch documental                    | `docs/g12-production-release`                                                       |
 | Base documental antes do handoff     | `641889875e8d425f7902474e9f5e0700a4e8b5dc`                                          |
@@ -312,6 +312,20 @@ Registro obrigatorio completo: manifesto fixado com digest
 mapa de compatibilidade progressiva com testes que existem e rodam no CI, teste pgTAP
 `supabase/tests/rls_cms_operational_events_read_scale.test.sql` e verificacao contra o banco real de
 staging e producao em `operational_events_read_scale_0089_semantics_exact`.
+
+O CI do job `database` reprovou duas vezes por defeitos do proprio teste pgTAP, ambos corrigidos e
+ambos informativos. O primeiro: `anon` nao tem privilegio de leitura na tabela, entao a tentativa
+nem chega a ser avaliada pela politica, e afirmar contagem zero pedia uma leitura impossivel; a
+garantia correta e a ausencia do grant. O segundo: `select plan(20)` contra 21 asercoes, o que faz o
+pgTAP sair diferente de zero e esconder a ultima asercao em vez de executa-la. Um teste de contrato
+passou a exigir que o plano declarado seja igual ao numero de asercoes do arquivo.
+
+A aplicacao limpa da 0089 em um Postgres real ja esta provada: o `supabase db reset --local` do job
+`database` aplicou todas as migrations antes de chegar ao pgTAP.
+
+Sobra da 0076 registrada e nao removida por estar fora do escopo desta correcao:
+`public.cms_system_operational_session_read_allowed(uuid)` continua existindo e concedida a
+`authenticated`, mas nenhuma politica a usa depois da 0089.
 
 Erro proprio registrado para nao repetir: o `npm run check` local reprovou por
 `0089: at least one database compatibility test required` e eu li o codigo de saida do invocador em
@@ -783,19 +797,19 @@ scripts/prepare-cloudflare-worker.mjs` e vazio. Portanto a degradacao esta no pr
 
 ## Proxima acao exata
 
-Candidato vigente `86ea00a7144bd7dd20c026c1a46d6300554eb2f1`. Toda evidencia vinculada a
+Candidato vigente `5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`. Toda evidencia vinculada a
 `e28d10c7edf822a85a88a258bda5aec74030f461` e anteriores esta invalidada, inclusive o bridge
 `34427477249` e o deploy `34428190779`.
 
 Na ordem, sem pular nenhum passo:
 
-1. Confirmar o CI do SHA exato `86ea00a`. Run despachado automaticamente pelo push.
+1. Confirmar o CI do SHA exato `5e7aab4`. Run despachado automaticamente pelo push.
 2. Despachar `promote-staging-frontend-bridge.yml` com
-   `candidate_sha=86ea00a7144bd7dd20c026c1a46d6300554eb2f1` e
+   `candidate_sha=5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b` e
    `expected_baseline_sha=e28d10c7edf822a85a88a258bda5aec74030f461`, que e o SHA realmente servido
    pelo alias `ev2-g17-canary` no momento, confirmado por `/healthz`.
-3. Despachar `deploy-staging.yml` com `git_ref=86ea00a7144bd7dd20c026c1a46d6300554eb2f1`,
-   `rollback_ref=86ea00a7144bd7dd20c026c1a46d6300554eb2f1`, `frontend_bridge_run_id` igual ao run do
+3. Despachar `deploy-staging.yml` com `git_ref=5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`,
+   `rollback_ref=5e7aab4c1d7bb6b48e58c96fcdbaa02f8465b69b`, `frontend_bridge_run_id` igual ao run do
    passo 2 e `ev2_draft_v2_candidate=false`. Esse run aplica a migration 0089, o que corrige a tela
    de diagnosticos no proprio staging, e executa o canario de migrations com o prazo de saida ja
    ativo nas Edge Functions.
