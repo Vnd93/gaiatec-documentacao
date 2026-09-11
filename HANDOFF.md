@@ -1712,6 +1712,52 @@ enfraquecendo gate: em todos, o gate que reprovou continua reprovando o mesmo ca
   ausente e, para o que derivou, os campos exatos com os dois valores. Nenhum nome de papel e nenhum
   fingerprint sai do runner, e os relatorios selados seguem byte a byte iguais.
 
+### 3b. O que o drill classificado mediu, e por que ele nao pode passar como esta
+
+Run `34614853382`, candidato `758780c1`, mesmo passo. Com a linha de base do alvo efemero e a
+composicao do dump medidas, a reprovacao deixou de ser um enigma:
+
+```
+{"event":"supabase.role_restore.prepared","createRoleStatements":0,"alterRoleStatements":3,
+ "grantStatements":1,"removedRoleSettings":3,...}
+
+BACKUP_ROLE_RESTORE_FINGERPRINT_MISMATCH: {
+  "sourceRoleCount":17,"restoredRoleCount":16,"baselineRoleCount":16,
+  "identicalRoles":15,"rolesDriftedInRestore":1,"rolesMissingFromRestore":1,"rolesOnlyInRestore":0,
+  "missingRolesAbsentFromBaseline":1,
+  "driftedRolesUntouchedByRestore":1,"driftedRolesChangedButNotConverged":0 }
+```
+
+Quatro fatos, agora medidos e nao supostos:
+
+1. O dump de papeis nao contem NENHUM `CREATE ROLE`. Tem 3 `ALTER ROLE`, e os tres sao
+   `ALTER ROLE ... SET ...`, removidos pela sanitizacao por serem configuracao gerenciada. Sobra
+   1 `GRANT`. A "restauracao portavel de papeis" aplica, na pratica, uma declaracao.
+2. `baselineRoleCount` e `restoredRoleCount` sao ambos 16: o dump nao alterou nenhuma impressao
+   digital de papel no alvo. O unico GRANT ja estava satisfeito de fabrica.
+3. O papel ausente tambem nao existia na linha de base, e sem `CREATE ROLE` o dump nao consegue
+   cria-lo. Nao e restauracao que falhou: e cobertura que o backup nao tem.
+4. O papel divergente nao foi tocado pela restauracao
+   (`driftedRolesChangedButNotConverged: 0`): o vinculo a mais e valor de fabrica do alvo efemero,
+   nao consequencia do restore.
+
+Perfil do papel ausente, sem nome: LOGIN, NOINHERIT, sem superuser, sem bypassRls, sem createrole,
+sem createdb, sem replication, limite de conexao -1, exatamente um vinculo, e
+`validUntil: 2026-09-09T03:15:50Z`, ou seja ja expirado. Nao tem forma de papel de aplicacao; tem
+forma de credencial efemera de plataforma. Somado ao fato 1, a leitura coerente e que os 17 papeis
+de producao sao todos gerenciados pela plataforma e nao ha papel proprio da aplicacao a restaurar.
+
+Consequencia para o gate: `restored.fingerprint === sourceReport.portableCatalogSha256` compara o
+catalogo inteiro de producao com o catalogo de fabrica de um Supabase local que o dump quase nao
+toca. Essa igualdade nao e alcancavel contra um alvo gerenciado e pre-semeado, e nao era alcancavel
+no dia em que o gate entrou. Por isso ele nunca passou.
+
+ESCALADO, NAO CONTORNADO. Corrigir isso exige redefinir o que a evidencia de papeis afirma, e
+`portableRoleCatalogMatched` e consumido por `production-backup-gate-lib.mjs` e
+`readiness-lib.mjs` como condicao de aprovacao do release. Mudar o significado desse campo muda o
+que o gate de release aceita, e essa decisao nao e minha. As duas leituras estao no relatorio ao
+responsavel; nenhuma foi aplicada.
+
 ### 4. Defeito que eu introduzi: o watchdog de staging reprovando a cada passe de diagnostico
 
 - Rota/acao: `deploy-staging-watchdog.yml`, gatilho `workflow_run` de "Deploy staging".
