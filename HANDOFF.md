@@ -1853,6 +1853,46 @@ tratou isso como bloqueio separado do item 12 e do caminho de producao do item 6
 nomes de secrets do environment: o segredo ESTA presente. O bloqueio nao existe. Somente nomes foram
 lidos; nenhum valor.
 
+## Classe recorrente: teste que PRENDE o defeito em vez de verificar comportamento
+
+Quatro ocorrencias em um unico dia, todas encontradas ao corrigir outra coisa. Vale tratar como
+classe e varrer dirigido a ela, nao como coincidencia.
+
+1. `phase16-readiness.test.mjs` asseverava o literal `to_jsonb(storage.objects)` — a SQL invalida que
+   impedia o inventario de Storage. O teste exigia o defeito.
+2. O mesmo arquivo ancorava uma recusa no comentario que EXPLICAVA o defeito, e nao no uso real.
+3. `phase12-rollout.test.mjs` asseverava `/deployment-url/` na travessia de rollback, exigindo a URL
+   efemera por deployment — exatamente a origem fora do allowlist que devolve 403 em toda sessao.
+4. `cms-ui-created-state.ts` exigia `^qa-ops-qa-cms-final-...$` como chave de formulario, forma que a
+   UI NUNCA produz, porque a chave e derivada do titulo por `urlSegmentFromText`.
+
+O caso 4 e o mais instrutivo: o defeito tinha TRES sitios — o spec que inventava a chave, a escrita do
+handoff e o validador do contrato. Corrigir os dois primeiros deixaria o terceiro reprovando o
+handoff correto, e a barreira seguinte apareceria a 240 minutos de run de staging de distancia.
+
+Assinatura para varredura: assercao que fixa literal de implementacao (texto de SQL, URL especifica,
+prefixo de identificador, contagem de caracteres) onde o que importa e comportamento observavel.
+
+## Metodo: pipeline mascara status de saida, e isso me pegou
+
+Empurrei `910a660` com a main vermelha depois de ler `exit code 0` de
+`npm run check 2>&1 | tail -3`. O status de um pipeline e o do ULTIMO comando — do `tail` — e e
+sempre 0. O `npm run check` tinha reprovado.
+
+E o mesmo defeito que eu acabara de remover de nove passos de `deploy-staging.yml` no commit
+imediatamente anterior (`cmd | tee arquivo` sob `bash -e`, sem pipefail). Corrigi o habito de rodar
+o portao e nao o metodo de ler o resultado.
+
+Procedimento que passa a valer: redirecionar para arquivo e ler `$?`, nunca canalizar para `tail`
+ou `grep` e confiar no codigo de saida.
+
+```bash
+npm run check > check.log 2>&1; echo "CHECK_EXIT=$?"
+```
+
+Verificacao independente do mesmo run, porque um numero sozinho nao basta: conferir tambem o
+sumario (`Test Files N passed`, `Tests N passed`) no proprio log.
+
 ## Lote de correcao dos passos 46-69, verificado antes de aplicado (2026-09-11)
 
 Uma analise de leitura previu 24 defeitos nos passos que nunca executaram. Antes de aplicar, cada
