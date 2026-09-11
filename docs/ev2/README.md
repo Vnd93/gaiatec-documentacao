@@ -1,7 +1,7 @@
 # EV2 — Evolução do CMS GAIATEC
 
-**Status:** Gates G0–G11 e G13–G14 aprovados; EV2.15 qualificada; controles EV2.16 implementados; G12 pendente; produção bloqueada<br>
-**Data-base:** 5 de setembro de 2026<br>
+**Status:** Gates G0–G17 aprovados, incluindo G12. A janela G12 de 6 de setembro de 2026 promoveu o candidato `e52b25d9…` para produção, que está no ar e saudável servindo `f48bb453…`. G12 é uma janela **por candidato**: o candidato em curso exige nova decisão, nova evidência e nova autorização literal vinculadas ao próprio SHA. Flags EV2 seguem `default-off` em produção.<br>
+**Data-base:** 10 de setembro de 2026<br>
 **Fonte canônica:** Markdown versionado neste diretório<br>
 **Branch de código consolidada:** `ev2/desenvolvimento-fases-1-a-12`<br>
 **Branch candidata EV2.16:** `ev2/fase-16-prontidao-producao-g12`<br>
@@ -103,6 +103,18 @@ qualidade, banco e navegador; o alias efêmero `ev2-final-rc` confirmou health/m
 e smoke HTTP 6/6. Os PRs de código #6–#9 foram integrados em ordem no head `e92632c…` do ramo EV2
 consolidado, e os PRs documentais #5–#9 foram integrados em `main`. Não há bloqueador P0/P1
 conhecido no escopo validado. O Gate G12 e todos os limites de produção permanecem inalterados.
+
+**Correção de status registrada em 10 de setembro de 2026.** Os parágrafos abaixo descrevem o estado
+de cada fase no momento em que foram escritos e permanecem como registro histórico. O trecho da EV2.12
+que afirma que o Gate G12 nunca foi aprovado **ficou superado em 6 de setembro de 2026**: o
+`GATE_G12.md` registra decisão `APROVADO E CONCLUÍDO` para o candidato imutável
+`e52b25d903251cf538918d89049a58524c3c9911`, promovido pelo run `34039654304` do workflow
+`Deploy production` em 7 min 40 s, com 51/51 arquivos Vitest, 168/168 testes, preview completo e probe
+pós-promoção aprovados e sem acionamento de rollback. A produção resultante está no ar.
+
+A aprovação vincula-se **exclusivamente** àquele SHA. Qualquer implantação futura exige nova decisão
+vinculada ao novo candidato, e o gate não autorizou ativação global das funcionalidades EV2. Por isso
+a promoção do candidato em curso continua pendente: ela é uma **nova** janela G12, não a primeira.
 
 Na EV2.16, o repositório executável passou a recusar produção sem PR e CODEOWNERS de `@Vnd93`,
 backup externo cifrado com restore comprovado, entrega sintética pelo Resend, CSP enforced sem
