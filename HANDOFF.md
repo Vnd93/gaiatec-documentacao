@@ -1853,6 +1853,56 @@ tratou isso como bloqueio separado do item 12 e do caminho de producao do item 6
 nomes de secrets do environment: o segredo ESTA presente. O bloqueio nao existe. Somente nomes foram
 lidos; nenhum valor.
 
+## "Restauracao provada" e "restauracao de objetos provada" sao afirmacoes diferentes
+
+O drill de restauracao passou (ver secao do backup de producao). Dentro dele,
+`supabase.storage.payloads.exported` saiu com `objects: 0, bytes: 0`, e o mesmo agregado vazio
+apareceu no `restored-verified`. Producao nao tem nenhum objeto no Storage hoje, por causa da
+politica de recadastro limpo: nada foi migrado. O caminho de payload de objeto foi, portanto,
+SATISFEITO POR AUSENCIA, nao exercitado.
+
+Isso e a terceira aparicao da mesma classe de defeito nesta rodada: PASS vazio de limpeza, selo
+consumindo campo ausente sem reclamar, e agora restauracao de objetos satisfeita por nao haver
+objetos. Verde que nao vem de trabalho feito.
+
+### O que esta provado, em tres niveis distintos
+
+1. A LOGICA da ida e volta de objetos esta provada localmente, com fixtures nao vazias:
+   `phase16-readiness.test.mjs` exercita `exportStorageObjects`, `restoreStorageObjects` e
+   `verifyRestoredStorageObjects` em sequencia, comparando o agregado sha256 exportado com o
+   restaurado e recusando vazamento de nome de objeto no relatorio. O transporte e um `fetchImpl`
+   simulado.
+2. O caminho VIVO contra a API real de Storage do Supabase nunca foi exercitado.
+3. O drill contra PRODUCAO nao o exercita e nao vai exercitar enquanto producao tiver zero objetos.
+
+### A inversao que isso produz, e que precisa estar registrada
+
+Producao so tera objetos depois do go-live, quando o CMS comecar a ser usado e a DAM receber midia.
+Ou seja: a metade do backup que cuida de midia estara provada exatamente enquanto nao existe nada a
+perder, e deixara de estar provada no instante em que passar a existir. A ordem natural da garantia
+fica invertida.
+
+Nao e bloqueio para o backup voltar a funcionar — o dump diario e o drill passando ja resolvem o
+risco vivo dos dias sem backup. E bloqueio para declarar o item 9 completo no SHA final.
+
+### O que falta decidir, e por que eu nao decidi sozinho
+
+Semear um objeto sintetico antes de exportar so faz sentido num ambiente que NAO seja producao, e o
+`backup-supabase-production.yml` e production-only por desenho e por guarda. Habilitar uma origem de
+staging no drill e capacidade nova em workflow release-critical dentro da janela congelada, e nao e
+correcao minima de defeito: e mudanca de escopo. Fica escalado, nao contornado.
+
+Pergunta aberta que decide o caminho: o Storage de STAGING tem objetos? Se tiver, um drill com
+origem em staging exercita o caminho vivo sem tocar producao. Eu nao medi: a capacidade de rodar SQL
+contra projeto Supabase foi recusada pelo classificador de permissao nesta sessao, e nao tentei a
+mesma capacidade contra outro alvo para contornar a recusa. A consulta que responde, para quem tiver
+a permissao:
+
+```sql
+select count(*) as objetos, coalesce(sum((metadata->>'size')::bigint), 0) as bytes
+from storage.objects;
+```
+
 ## Erros, causas raiz e correcoes
 
 ### Corrigido no candidato atual
