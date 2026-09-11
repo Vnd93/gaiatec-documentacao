@@ -1853,6 +1853,63 @@ tratou isso como bloqueio separado do item 12 e do caminho de producao do item 6
 nomes de secrets do environment: o segredo ESTA presente. O bloqueio nao existe. Somente nomes foram
 lidos; nenhum valor.
 
+## EVIDENCIA DE PRIMEIRA ORDEM: o drill de restauracao passou (2026-09-11)
+
+Run `34643611132`, workflow `backup-supabase-production.yml`, candidato `d9e7ea8`, disparo manual
+com `restore_drill=true`. Os 17 passos em `success`, incluindo `Seal non-sensitive backup evidence`
+e o `upload-artifact`, que vinham saindo `skipped` desde que o gate de papeis entrou em `97731f0`.
+
+E a primeira prova de restaurabilidade desde 2026-09-06, e a unica desde que a verificacao de papeis
+existe. CI `34643605523` no mesmo SHA: `success`. Main fechada.
+
+### O que o manifesto SELADO afirma, lido do artefato e nao inferido do verde do passo
+
+```
+restoreDrill.outcome            passed        duracao 67s
+completeDataRestoreDrill        true
+rolesRestored                   false
+portableRoleCatalogMatched      false     <- igualdade inalcancavel gravada como falsa
+dumpGovernedRolesRestored       true
+rolesNotReconstructableFromDump 1         dumpCreateRoleStatements 0
+rolesDivergingFromTargetBaseline 1
+auth                            22 tabelas, 44 linhas, fingerprint de linha inteira conferido
+storage.objectPayloads.objects  0
+```
+
+Limitacoes declaradas no proprio manifesto: credencial de runtime e desafio de MFA exigem drill no
+ambiente alvo; senhas e settings de papel nao sao restaurados; ledgers de migration sao recriados
+pelo runtime gerenciado; e a que entrou hoje, `role-existence-is-not-restored-by-the-role-dump`.
+
+### O que a leitura do manifesto revelou e o verde do passo escondia
+
+Com `objects: 0`, o campo `storagePayloadsByteIdentical` sai `true`. Nao e falso: e vacuamente
+verdadeiro, porque nao ha byte nenhum que possa divergir. Um consumidor que exija
+`storagePayloadsByteIdentical === true` fica satisfeito por nada. Vacuidade e pior do que falsidade,
+porque falsidade alguem investiga.
+
+Corrigido como declaracao obrigatoria e nao como gate duro: o manifesto passa a carregar
+`objectPayloadsExercised`, e o validador recusa selar um drill com zero objeto que nao declare esse
+campo como `false` junto da limitacao `object-payload-restore-not-exercised-without-objects`. O
+inverso tambem reprova: havendo objeto, dizer que nao exercitou e falso. Duas regressoes fixam os
+dois lados.
+
+Virar gate duro quebraria o backup que acabou de voltar depois de tres dias fora, por uma lacuna que
+e real mas nao e nova. A escolha foi tornar a lacuna VISIVEL, nao tornar o backup impossivel.
+
+### Item bloqueante de go-live registrado
+
+Provar a restauracao de payload de objeto ANTES do primeiro upload real na DAM — nao antes do
+go-live, antes do CONTEUDO. A politica de recadastro limpo faz producao subir vazia, o que cria uma
+janela entre o go-live e a primeira midia real: e ali que a prova passa a importar e ainda e barata.
+O manifesto declarando `objectPayloadsExercised: false` e o que torna esse item impossivel de
+esquecer.
+
+### O que continua nao provado, dito sem arredondar
+
+- Restauracao de payload de objeto contra API real de Storage: nunca exercitada (ver secao seguinte).
+- Credencial de runtime e desafio de MFA: exigem drill no ambiente alvo, declarado como limitacao.
+- Existencia de papel: o dump nao emite `CREATE ROLE`, entao um papel perdido nao e recriado.
+
 ## "Restauracao provada" e "restauracao de objetos provada" sao afirmacoes diferentes
 
 O drill de restauracao passou (ver secao do backup de producao). Dentro dele,
