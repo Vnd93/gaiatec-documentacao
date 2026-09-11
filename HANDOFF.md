@@ -39,6 +39,85 @@ claimedAt: 2026-09-10T22:44:23.000Z
 previousReleasedAt: 2026-09-10T21:36:12.000Z
 ```
 
+## Quatro passes de diagnostico: de quatro defeitos para um, e o defeito restante e de outra faixa
+
+Captura local `2026-09-10T21:32:23-03:00`, UTC `2026-09-11T00:32:23.000Z`.
+
+| Passe | Run | Candidato | Gates reprovados |
+| ----- | --- | --------- | ---------------- |
+| 1 | `34540916796` | `4552f9ad` | 3 de 12, mais a prova de residuo |
+| 2 | `34542229170` | `8585818` | 4 de 13 |
+| 3 | `34543824215` | `352c29d` | 1 de 13 |
+| 4 | `34545424560` | `f3771d8` | 1 de 13 |
+
+O passe 3 provou tambem a regra de pre-condicao: `browser_fixture`, `cleanup` e `residue` voltaram
+`SKIPPED`, nao `PASS` vazio, porque o alias nao serve o candidato.
+
+### Correcao de leitura: o passe 2 tinha dois problemas no G11, nao um
+
+O `AggregateError` do canario G11 carrega o erro **operacional** e o de **encerramento**. Eu li so o
+de encerramento — o timeout de lease — e relatei um defeito onde havia dois. A suite de
+acessibilidade ja reprovava desde o passe 2, identicamente, e nos runs canonicos o canario morria
+antes de chegar nela: `runAccessibility()` esta na linha 1127 de
+`scripts/ev2/phase11/staging-canary.mjs`, depois dos checks de lead. No deploy `34528923953` ele
+parou no 404 do lead. Nao ha evidencia, nos runs examinados, de que esse gate ja tenha rodado ate o
+fim contra um alias publicado.
+
+### Timeout de lease: corrigido e confirmado
+
+O `57014` foi reproduzido tres vezes e desapareceu no passe 4. A correcao esta em
+`f3771d825a61307245651dc91e03ec2b07ba7ce3`.
+
+Duas premissas minhas caíram no caminho, e vale registrar as duas:
+
+1. `ALTER FUNCTION ... SET statement_timeout` **nao** afeta o statement em execucao. O timer e armado
+   no inicio do statement de topo; quando a funcao comeca, e tarde. Eu havia recomendado isso de
+   memoria e verifiquei antes de implementar.
+2. Lotear a varredura, como eu descrevi, exigiria reimplementar mais de trinta tabelas espalhadas por
+   doze funcoes de gatilho. Nao e correcao minima, e eu propus sem ter medido o que seria loteado.
+
+O caminho que ficou de pe nao estava em nenhuma das duas: armar o teto **antes** do statement, pelo
+transporte de gestao que o canario ja usava. O encerramento tenta o caminho normal do PostgREST e, so
+quando ele responde `57014`, e so para `cms_complete_qa_actor_lease`, repete pela API de gestao com
+teto explicito — sessenta segundos de statement dentro de noventa de requisicao, o primeiro
+necessariamente menor que o segundo para que o abort nunca corte antes da resposta do banco. Sem
+migration, sem afrouxar nenhuma protecao de producao. A identidade e validada contra padroes fechados
+antes de qualquer interpolacao em SQL, e a autorizacao continua dentro da funcao, que e
+`SECURITY DEFINER`.
+
+### Defeito restante: `networkidle` nao assenta num origin com service worker
+
+Todas as navegacoes da suite `@a11y` estouram contra o alias publicado, esperando `networkidle`,
+inclusive nas duas retentativas — portanto nao e cache frio.
+
+A pagina registra um service worker (`src/app/components/ServiceWorkerRegister.tsx`), e no alias
+publicado ele esta **ativo**, com escopo `/`, confirmado no proprio origin:
+`navigator.serviceWorker.getRegistrations()` devolve um registro `activated` com `controller` verdadeiro.
+Cada teste do Playwright abre contexto novo, e cada retentativa tambem; em todos o service worker
+instala e pre-cacheia. `networkidle` exige 500 ms com no maximo duas conexoes abertas, e isso nao
+acontece dentro de trinta segundos pela rede do runner.
+
+No CI a mesma suite passa porque roda contra `vite preview` em `127.0.0.1`: o service worker registra
+igual, mas os assets vem da propria maquina. O canario, por outro lado, aponta a suite para o alias
+publicado.
+
+A correcao pedida e trocar `networkidle` por `load` mais asserção explicita sobre o conteudo. Isso
+**nao** enfraquece o gate: `networkidle` e um proxy nao determinista para "a pagina terminou", e a
+propria documentacao do Playwright desaconselha seu uso. Aumentar o prazo nao resolve: o service
+worker continua pre-cacheando, e so troca uma falha rapida por uma lenta.
+
+### Dois pedidos abertos com a Faixa C
+
+`C:\dev\cms-site\PEDIDOS_FAIXA_C.md` reune os dois, com codigo pronto e referencia a implementacao
+provada:
+
+1. `scripts/qa/cms-browser-fixture.mjs` — mesmo transporte duravel de encerramento de lease. **E o
+   que reprova o deploy canonico hoje**, na etapa `Revoke the rollback compatibility actor and verify
+   zero active residue`.
+2. `tests/e2e/routes-and-a11y.spec.ts` — remover `networkidle` das seis navegacoes.
+
+Os dois caminhos sao da Faixa C pelo `ownership` emendado. A Faixa A nao escreveu em nenhum deles.
+
 ## Defeito de produto nomeado pelo segundo passe: conclusao de lease estoura o timeout
 
 Captura local `2026-09-10T20:43:22-03:00`, UTC `2026-09-10T23:43:22.000Z`.
