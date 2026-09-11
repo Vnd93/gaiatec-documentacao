@@ -1853,6 +1853,76 @@ tratou isso como bloqueio separado do item 12 e do caminho de producao do item 6
 nomes de secrets do environment: o segredo ESTA presente. O bloqueio nao existe. Somente nomes foram
 lidos; nenhum valor.
 
+## O release de PRODUCAO vivo hoje foi selado com evidencia vazia e com um passo reprovado dentro
+
+Leitura de evidencia JA SELADA, sem consulta a banco e sem credencial. Os dois artefatos de release
+de producao que existem foram baixados e lidos arquivo a arquivo.
+
+### O que os dois artefatos dizem
+
+| arquivo | janela 06/09 (`e52b25d9`) | janela 07/09 (`f48bb453`, EM PRODUCAO HOJE) |
+| --- | --- | --- |
+| `g12-production-backend.json` | 56 bytes, `{"event":"g12.production.database.verified","checks":7}` | **0 BYTES** |
+| `g12-production-content.json` | `status: "failed"`, `productionTouched: true` | `status: "failed"`, `productionTouched: true` |
+| conclusao do run | `success` | `success` |
+
+O erro identico nas duas janelas: `cms-content/publish retornou 422: 23514` (23514 e violacao de
+CHECK no PostgreSQL).
+
+### Por que passou, e e exatamente o defeito corrigido hoje
+
+O arquivo de backend nasce em `deploy-production.yml`:
+
+```
+node scripts/ev2/phase12/verify-production-database.mjs --source . | tee ../g12-production-backend.json
+```
+
+Sob `bash -e` sem pipefail, o status que conta e o do `tee`, sempre 0. Na janela de 07/09 o
+verificador nao imprimiu NADA — zero bytes — e o passo passou assim mesmo.
+
+E ninguem consumiu o arquivo: `create-production-backend-evidence.mjs`, que valida
+`g12.production.database.verified` com `checks > 0` e recusaria o vazio, so nasceu em `97731f0`
+(2026-09-08). Confirmado: `git cat-file -e 38ecae8b:scripts/ev2/phase12/create-production-backend-evidence.mjs`
+responde ABSENT. O run de 07/09 e de `38ecae8b`.
+
+Ou seja: o release que producao serve agora foi declarado bem-sucedido com a verificacao de banco de
+producao PRODUZINDO NADA, e com a publicacao de conteudo registrando `failed` dentro da propria
+evidencia selada.
+
+### O que isso muda
+
+Nao e defeito teorico corrigido por precaucao. O `| tee` sem pipefail JA PRODUZIU release aprovado
+sobre evidencia vazia, e esta debaixo do que esta no ar. As duas correcoes de hoje fecham o
+mecanismo pelos dois lados:
+
+- `6be66f8` poe `shell: bash` nos dez passos com `| tee` do `deploy-production.yml`, entao o status
+  do comando da esquerda volta a reprovar o passo.
+- `17c4215`/`910a660` acrescentam validacao de CONTEUDO da evidencia: arquivo que nao faz parse como
+  JSON, ou que diga `status: failed` por dentro, passa a ser recusado em vez de contado.
+
+Nenhuma das duas existia quando aquelas janelas rodaram.
+
+### Resposta a pergunta que foi feita: ha residuo sintetico orfao em producao daquelas janelas?
+
+Nao ha evidencia de que exista. Os dois artefatos NAO contem nada do ciclo editorial sintetico: sem
+`cms-browser-*`, sem `cms-ui-created-state`, sem relatorio de residuo. Os unicos formularios
+registrados como configurados sao `contato-principal` e `newsletter`, que sao conteudo real de
+negocio, com aprovacao juridica registrada — nenhum casa `qa-ops-` nem o padrao derivado do runTag.
+
+Logo a vacuidade do predicado `qa-ops-` nao deixou residuo NAQUELAS janelas, porque elas nunca
+criaram dado sintetico. Isso reduz a urgencia do par acoplado (predicado + migration), sem torna-lo
+correto: o predicado continua incapaz de casar o formulario real, por DOIS motivos independentes — o
+prefixo `qa-ops-`, e a igualdade exata `form.title = runTag || ' Formulário operacional'` contra um
+titulo real que termina em ` ${instance}`.
+
+### O que continua aberto e nao foi tocado
+
+O par `production-terminal-residue-lib.mjs:190` + predicado em `0061`/`0090` NAO foi corrigido, de
+proposito. Corrigir so a lib faz a prova passar a contar linhas de verdade enquanto a limpeza segue
+sem limpar, e o gate reprova. Corrigir so a migration faz a limpeza comecar a APAGAR e ANONIMIZAR
+linhas reais em producao, por migration nova, dentro de janela congelada. Meia-correcao e pior que
+nenhuma nos dois sentidos, entao a decisao e do responsavel e nao minha.
+
 ## Classe recorrente: teste que PRENDE o defeito em vez de verificar comportamento
 
 Quatro ocorrencias em um unico dia, todas encontradas ao corrigir outra coisa. Vale tratar como
