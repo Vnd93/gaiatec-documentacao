@@ -1786,6 +1786,73 @@ A lacuna real e mais estreita e continua aberta: `validateProductionBackupManife
 quando houve drill (`write-backup-manifest.mjs`), entao o artefato diario e selado e publicado sem
 nenhuma validacao estrutural do manifesto.
 
+## Runbook do operador: atestacao em Google Chrome real (preparado, nunca executado)
+
+`submit-real-browser-attestation.yml` tem ZERO runs. Nada aqui foi exercitado contra a API real; o
+que segue e o contrato lido na fonte, mais as duas ferramentas que passaram a existir para que o dia
+nao queime na primeira tentativa. Verificado em `real-browser-attestation-store-lib.mjs` e
+`tests/e2e/cms-real-browser-attestation.ts`, nao em memoria.
+
+### A janela e o verdadeiro risco
+
+O desafio nasce com `expiresAt = agora + 15 min` e `REAL_BROWSER_ATTESTATION_MAX_AGE_MS` e
+15 minutos. A idade de `observedAt` e revalidada em quatro pontos independentes: prepare local,
+dispatch local, claim no broker e gravacao no store. A janela e unica, nao renovavel, e nao ha
+notificacao de que o desafio nasceu. Tudo o que segue existe para caber nela.
+
+### Ferramentas novas, locais, sem mutacao remota
+
+- `scripts/ev2/phase12/canonical-screenshot.mjs` — reencoda a captura para o PNG que a atestacao
+  aceita. O validador so admite IHDR, PLTE, IDAT e IEND; Snipping Tool, Paint e extensoes de
+  navegador injetam pHYs, sRGB, tEXt e tIME sem perguntar, e isso reprova com
+  `screenshot_chunk_not_canonical`. Uso:
+  `node scripts/ev2/phase12/canonical-screenshot.mjs --input captura.png --output canonica.png`.
+  Ele confere a propria saida contra `validateRealBrowserScreenshotPng` antes de gravar: se o
+  validador recusaria, o arquivo nao e escrito e os codigos saem no erro.
+  O orcamento default e 28.000 bytes, e nao os 30 KiB do teto do PNG, porque o wrapper selado leva o
+  screenshot em base64 junto do relatorio sob `MAX_REAL_BROWSER_VARIABLE_BYTES = 47.000`. Captura
+  grande demais e reduzida por fator inteiro, e o fator sai declarado no JSON.
+- `scripts/ev2/phase12/await-real-browser-challenge.mjs` — espera o desafio e diz quanto da janela
+  sobrou. Cada tentativa e o proprio `fetch-challenge` como processo filho, com caminho de saida
+  novo (o fetcher grava com `wx`). Uso:
+  `node scripts/ev2/phase12/await-real-browser-challenge.mjs --environment staging --run-id <ID>
+  --run-attempt 1 --output-dir outputs/real-browser-challenge`.
+
+### O que o operador tem de observar no Chrome, e em que ordem
+
+1. Abrir DevTools na aba Network ANTES de abrir a URL do desafio. O `201` e o header de release sao
+   lidos da resposta e nao ha segunda chance de capturar a requisicao.
+2. Preencher o formulario publico com o e-mail sintetico que o desafio traz. Nunca outro.
+3. Resolver o Turnstile oficial. `turnstile.tokenCaptured` e `false` por contrato: o token nao deve
+   ser capturado, so a presenca do widget oficial atestada.
+4. Confirmar `201` no POST e o texto visivel de sucesso. O contrato exige que
+   `visibleSuccessText` case com `/\bProtocolo\s+<reference>\b/i`, e `reference` casa com
+   `^LD-[A-F0-9]{10}$`.
+5. Confirmar que o documento e o `/healthz` servem o MESMO SHA do candidato:
+   `documentReleaseSha === healthReleaseSha === candidateSha`.
+6. Capturar so o seletor de sucesso, `[data-form-submission-status="success"]`, sem campo de
+   formulario visivel — a captura nao pode carregar o e-mail sintetico.
+7. Passar a captura pelo reencoder acima.
+8. `prepare` e depois `dispatch`, sem troca de contexto no meio.
+
+O relatorio tem exatamente 21 chaves, verificadas contra `REPORT_KEYS`: schemaVersion, event,
+repository, environment, candidateSha, documentReleaseSha, healthReleaseSha,
+deploymentIdentityObserved, runId, runAttempt, runTag, origin, campaignPath, emailSha256, reference,
+responseStatus, uiSuccessObserved, visibleSuccessText, observedAt, challengeNonceSha256 e turnstile.
+
+### Precondicao que nao e ferramenta
+
+O alias `ev2-g17-canary` precisa estar servindo o candidato ANTES de o desafio nascer. Enquanto
+servir um ancestral, nao existe nada a atestar para o candidato corrente, e nenhuma preparacao
+resolve isso.
+
+### Correcao de uma afirmacao da analise
+
+A analise read-only registrou `VITE_TURNSTILE_SITE_KEY` como AUSENTE do environment `production` e
+tratou isso como bloqueio separado do item 12 e do caminho de producao do item 6. Conferi a lista de
+nomes de secrets do environment: o segredo ESTA presente. O bloqueio nao existe. Somente nomes foram
+lidos; nenhum valor.
+
 ## Erros, causas raiz e correcoes
 
 ### Corrigido no candidato atual
