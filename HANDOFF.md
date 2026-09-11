@@ -39,6 +39,63 @@ claimedAt: 2026-09-10T22:44:23.000Z
 previousReleasedAt: 2026-09-10T21:36:12.000Z
 ```
 
+## Passes 6 e 7, e a correcao de uma afirmacao minha que estava errada
+
+Captura local `2026-09-11T10:02:06-03:00`, UTC `2026-09-11T13:02:06.000Z`.
+
+| Passe | Run | Candidato | Gates reprovados |
+| ----- | --- | --------- | ---------------- |
+| 6 | `34552942444` | `680c6a8` | 1 de 13 |
+| 7 | `34554432797` | `cbcc7223` | 1 de 13 |
+
+### A correcao
+
+No passe 6 eu relatei que o PR #38, que corrigiu as doze ocorrencias de `aria-label` em elemento
+generico, estava **provado de ponta a ponta contra o alias publicado**. **Nao estava, e o relato
+estava errado.**
+
+O alias `ev2-g12-canary` serve `c59232da`, que e ancestral de `6e60a72`, o commit que trouxe os doze
+`role`. Confirmado por `git merge-base --is-ancestor`. O alias roda um build **sem** a correcao, e o
+passe de diagnostico nao publica nada, por desenho.
+
+O zero de violacoes do passe 6 foi **falso negativo**. O elemento infrator e o estado de carregamento
+do catalogo, que e transitorio: numa carga rapida ele ja saiu do DOM quando a axe varre; numa lenta,
+nao. Passe 6: zero violacoes. Passe 7, **mesma fonte e mesmo alias**: dezesseis. Duas execucoes
+identicas com resultados opostos. Nao era prova; era sorte, e eu li sorte como prova.
+
+### Dois defeitos estruturais que isso expoe
+
+O relatorio do passe declara que ele nao valida migration nova nem funcao nova do candidato.
+**Faltava declarar que ele tambem nao valida mudanca de frontend**, pela mesma razao: o alias serve o
+SHA anterior, entao todo gate que inspeciona o frontend publicado esta avaliando o build antigo.
+
+E um gate cujo alvo e um elemento transitorio **nao e gate**: ele aprova ou reprova por temporizacao.
+Isso vale independentemente de qual SHA o alias serve.
+
+### O que o passe 7 nao chegou a exercitar
+
+`cbcc7223` trouxe a nomeacao do orcamento que a reprovacao de medicao nao informava. O passe 7 rodou
+sobre esse candidato, mas o canario G11 morreu em `runAccessibility()`, que fica antes de
+`record_run`. A linha `g11.metrics` nao foi emitida nenhuma vez. **A correcao esta na main e continua
+sem ter sido exercitada.**
+
+### Consequencia para o sequenciamento
+
+Repetir passes de diagnostico para o gate de acessibilidade e inutil: ele so pode ser validado por um
+run que publique o candidato, e quem publica e o run canonico. O mesmo vale para qualquer correcao de
+frontend.
+
+### Estado das provas
+
+| Correcao | Provada contra | Situacao |
+| -------- | -------------- | -------- |
+| `networkidle` para `load` | comportamento da navegacao | provado: zero `page.goto` timeout, independe do alias |
+| Doze `role` ARIA | fonte e trava mecanica | **nao provado no alias**; exige publicacao |
+| Contrato fixture x schema | local e CI | provado |
+| Transporte duravel de lease | forma do codigo | **nao exercitado**: `57014` nao ocorreu em nenhum passe |
+| Nomeacao de orcamento | nenhuma | **nao exercitada**: o canario morre antes |
+| Bloco 5 | testes proprios | parcial: identificacao sim, remediacao nao |
+
 ## Passe 5: um patch provado, um nao exercitado, e uma violacao que estava encoberta
 
 Captura local `2026-09-10T22:33:46-03:00`, UTC `2026-09-11T01:33:46.000Z`.
