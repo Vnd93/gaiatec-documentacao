@@ -39,6 +39,65 @@ claimedAt: 2026-09-10T22:44:23.000Z
 previousReleasedAt: 2026-09-10T21:36:12.000Z
 ```
 
+## Passe 5: um patch provado, um nao exercitado, e uma violacao que estava encoberta
+
+Captura local `2026-09-10T22:33:46-03:00`, UTC `2026-09-11T01:33:46.000Z`.
+Candidato `32443205d37226c935ca538c58dea7dd0aa371d8`, run `34550325640`, 1 gate reprovado de 13.
+
+O PR #37 da Faixa C entrou por **rebase**, nao por merge: a `main` tem o ruleset
+`required_linear_history`, que recusa commit de merge mesmo com `allow_merge_commit` verdadeiro na
+API do repositorio. Os dois commits da Faixa C foram reaplicados como `e9152f2` e `3244320`.
+
+### Provado
+
+A troca de `networkidle` por `load` funcionou **contra o alias publicado**. O passe 5 teve zero
+`page.goto: Test timeout`, contra quinze em cada um dos passes 2, 3 e 4. Esse era justamente o
+caminho que o job `browser` do CI nao exerce, porque roda contra `vite preview` em `127.0.0.1`; quem
+o exerce e o canario G11 contra o alias.
+
+### Nao provado, e nao deve ser contado como tal
+
+Zero ocorrencias de `57014` no passe 5. O teardown nao estourou o orcamento, entao o caminho de
+fallback do transporte duravel **nao foi percorrido** em staging. A forma do codigo segue provada por
+sete testes de regressao e pela verificacao adversarial dos quatro defeitos reintroduzidos um a um; a
+sobrevivencia ao erro real continua pendente e so aparece num teardown que crie volume suficiente.
+
+Verde aqui e evidencia de nao regressao, nao prova de que o caminho novo funcionou. A distincao foi
+registrada como criterio antes do passe rodar, exatamente para nao ser confundida depois.
+
+### Defeito novo, e nao e regressao
+
+Com as navegacoes completando, a suite passou a de fato executar a assercao que ela sempre teve, e
+reprovou:
+
+```
+/produtos: aria-prohibited-attr  (impact: serious)
+aria-label attribute cannot be used on a div with no valid role attribute.
+<div class="products-catalog__loading" aria-busy="true" aria-label="Carregando produtos">
+```
+
+Origem: `src/public/pages/CmsProductsPage.tsx:247`. A violacao existia antes; enquanto `page.goto`
+nunca retornava, a assercao nunca chegava a rodar.
+
+**A classe tem dez instancias, nao uma.** `aria-label` e permitido em elemento com role implicito,
+como `section` e `ul`, e proibido em elemento generico: `div` e `span` tem role `generic`, `p` tem
+role `paragraph`, e nenhum dos tres aceita nome acessivel. A axe pegou uma porque `/produtos` e a rota
+testada e o estado de carregamento estava na tela naquele instante. As outras nove sao latentes e
+aparecem assim que outro estado renderizar.
+
+Ha precedente correto no proprio codigo: `src/admin/components/AdminUI.tsx:541` usa `role="status"`
+junto com `aria-busy` e `aria-label`, que alem de tornar o atributo permitido faz o leitor de tela
+anunciar a mudanca.
+
+`src/**` pertence a Faixa C pelo mapa. O pedido foi escrito em `C:\dev\cms-site\PEDIDOS_FAIXA_C.md`
+com a lista completa de arquivo e linha, o precedente, e o pedido de trava mecanica — a axe so cobre o
+que a rota testada renderiza naquele instante, e foi por isso que nove passaram despercebidas.
+
+### Por que o ciclo remoto nao avancou
+
+Nao faz sentido gastar bridge e deploy canonico com um gate conhecido reprovando. O ciclo fica parado
+ate a Faixa C entregar, e entao roda o passe 6.
+
 ## Quatro passes de diagnostico: de quatro defeitos para um, e o defeito restante e de outra faixa
 
 Captura local `2026-09-10T21:32:23-03:00`, UTC `2026-09-11T00:32:23.000Z`.
