@@ -1853,6 +1853,88 @@ tratou isso como bloqueio separado do item 12 e do caminho de producao do item 6
 nomes de secrets do environment: o segredo ESTA presente. O bloqueio nao existe. Somente nomes foram
 lidos; nenhum valor.
 
+## Lote de correcao dos passos 46-69, verificado antes de aplicado (2026-09-11)
+
+Uma analise de leitura previu 24 defeitos nos passos que nunca executaram. Antes de aplicar, cada
+alegacao foi conferida contra `origin/main` com verdito adversarial e recusa por padrao: 15
+confirmadas, 2 parciais, 1 REFUTADA. A verificacao se pagou tres vezes.
+
+### O item refutado teria causado dano
+
+F18 propunha apontar o retry da limpeza de rollback para
+`outputs/cms-browser-rollback-cleanup.json`. Isso faria um retry bem-sucedido SOBRESCREVER a
+evidencia `cleanup-failed` da primeira tentativa. O caminho distinto existe exatamente para nao
+apagar a prova da falha. Nao aplicado.
+
+### Os dois parciais tinham o alvo certo e o mecanismo errado
+
+- F5: o teto de 15 minutos da atestacao nao e default arbitrario — e acoplado ao `expiresAt` do
+  desafio, e a validacao de binding recusa `observedAt` fora da janela. Subir o teto produziria
+  atestacao que falha o binding. Foi alargado o ENVELOPE do teste, nunca o teto.
+- F6: o 422 nao vem da ordenacao sozinha, vem de `unknown-field`: o spec fixava `email` enquanto a
+  chave real e o rotulo slugificado pela UI. A consequencia que a analise nao viu e a que mais
+  importa — o gate nomeado para provar o fail-closed de captcha NUNCA exercitava esse caminho.
+
+### O achado que a analise nao tinha: um teste que prendia o defeito
+
+`phase12-rollout.test.mjs` asseverava `/deployment-url/` na travessia de rollback, isto e, EXIGIA a
+URL efemera por deployment — a mesma que nao esta no allowlist de origem e faz `cms-session`
+devolver 403 em toda sessao. O teste fixava o defeito em vez de verificar comportamento. Invertido:
+agora exige o alias e recusa a URL efemera.
+
+E a assercao recortava o passo por contagem fixa de 900 caracteres, entao um comentario a mais
+empurrava a regra para fora da propria janela e ela deixava de valer sem ninguem notar. Passou a
+recortar ate o passo seguinte.
+
+Terceira ocorrencia hoje da classe "teste que prende o defeito": o literal de
+`to_jsonb(storage.objects)`, o comentario do storage, e agora este.
+
+### Correcao de escala em F13
+
+Nao eram cinco linhas com `| tee` sem pipefail, eram NOVE: 321, 344, 872, 881, 890 na faixa canonica
+e 1150, 1195, 1209, 1221 na faixa de diagnostico — estas ultimas do passe que eu mesma construi.
+Verificado por parse que nenhuma ficou de fora.
+
+### Aplicado
+
+F1, F2, F3, F4 (parcial), F6, F7, F8, F9, F13, F14, F15, F17, nos commits `0d2465b` e `910a660`.
+`npm run check` completo aprovado antes do push.
+
+### Dois residuos escalados, nenhum contornado
+
+1. **F4 nao cabe inteiro.** `cms-browser-fixture.test.mjs` exige que a soma dos tetos entre setup e
+   cleanup do ator mutante fique em 200 minutos, e a janela de lease vem da migration 0091 (240).
+   Os demais passos ja consomem 120, entao o ciclo mutante cabe em 80, nao nos ~107 que os tetos
+   declarados somam. Subiu de 55 para 80 sem afrouxar a guarda. Alargar a janela de lease e
+   migration dentro de janela congelada. Os ~107 sao ARITMETICA sobre tetos declarados, nao
+   medicao: o passo roda com 80 e o residuo volta com numero em vez de calculo.
+
+2. **`/industrias/telemetria` responde 404 em STAGING.** Nao e lacuna de codigo — o seeder
+   `scripts/phase9/publish-staging-clean-room-pages.mjs` cobre telemetria, e as irmas saneamento e
+   mineracao respondem 200. O conteudo nao esta publicado. Nao consigo corrigir: o seeder exige
+   `GAIATEC_SUPABASE_SERVICE_ROLE_KEY` de staging, que eu nao tenho e nao devo manipular, e NENHUM
+   dos 31 workflows o invoca. A proibicao em `phase12-rollout.test.mjs:135` e sobre
+   `deploy-production.yml` e esta correta: deploy de producao nao semeia conteudo. A ausencia de
+   caminho autorizado para staging e lacuna real, e acrescentar capacidade de seeding a workflow
+   release-critical dentro do congelamento nao e decisao minha.
+
+   Enquanto isso nao se resolve, o passo 48 reprova por CONTEUDO mesmo com todo o codigo correto.
+   Por isso o lote foi empurrado para main (com CI) e NENHUM run de deploy-staging foi disparado.
+
+### Divergencia de conteudo entre ambientes, medida pela Faixa C
+
+```
+rota                     producao   staging
+/industrias/telemetria      200        404
+/industrias/saneamento      404        200
+/industrias/mineracao       404        200
+/setores/telemetria      301->200   301->404
+```
+
+Os dois conjuntos divergem e nenhum esta completo. A consequencia atinge o valor de todo o resto:
+staging nao e ensaio fiel de producao, e qualquer gate apoiado em conteudo pode nao refletir o que
+producao serve. O lado producao e decisao de recadastro do responsavel, nao defeito de codigo.
+
 ## EVIDENCIA DE PRIMEIRA ORDEM: o drill de restauracao passou (2026-09-11)
 
 Run `34643611132`, workflow `backup-supabase-production.yml`, candidato `d9e7ea8`, disparo manual
