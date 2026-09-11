@@ -1652,6 +1652,94 @@ A matriz deve ser regenerada depois de qualquer correcao e antes da homologacao 
 - Ao terminar, despublicar/arquivar/remover conforme a politica, provar retirada e zero residuo ativo,
   sem apagar auditoria imutavel.
 
+## Backup de producao: o que quebrou, o que foi corrigido e o que o drill revelou (2026-09-11)
+
+Esta secao cobre quatro achados do dia, cada um com run, passo e causa. Nenhum deles foi corrigido
+enfraquecendo gate: em todos, o gate que reprovou continua reprovando o mesmo caso.
+
+### 1. A regra de configuracao de backup recusava o unico endpoint que serve
+
+- Rota/acao: `backup-supabase-production.yml`, passo `Validate fail-closed backup configuration and
+  PostgreSQL runtime`, via `scripts/ev2/phase16/readiness-lib.mjs`.
+- Sintoma: producao ficou de 2026-09-08 ate 2026-09-11 sem backup. Os runs agendados de 09, 10 e 11
+  de setembro (`34327900390`, `34453882605`, `34577615950`) reprovaram no mesmo passo.
+- Causa raiz: `97731f0` removeu o ramo de pooler da validacao e passou a exigir o endpoint direto
+  `db.<ref>.supabase.co`. Esse host resolve somente AAAA (IPv6) e o runner do GitHub e IPv4, entao a
+  regra exigia o unico endpoint que a infraestrutura nao alcanca. O diagnostico de que o segredo teria
+  sido rotacionado era falso: `updated_at` do secret e de 2026-09-05T21:54:37Z, anterior a primeira
+  falha.
+- Correcao `ba6afc2`: a regra passou a aceitar o endpoint direto OU o pooler
+  (`*.pooler.supabase.com`), continuando a exigir a porta 5432 (session mode, a unica que o `pg_dump`
+  aceita) e o usuario coerente com o endpoint (`postgres` no direto, `postgres.<ref>` no pooler). O
+  que discrimina session de transaction mode e a porta, nao o host. Regressao com fixtures dos dois
+  modos.
+- Efeito comprovado: run `34612625471` (2026-09-11T14:51:23Z) concluiu com sucesso. Producao voltou a
+  ter backup externo, o primeiro desde 08/09.
+
+### 2. A consulta de inventario de Storage nomeava uma tabela que nao existia no escopo
+
+- Rota/acao: mesmo workflow, passo `Create one-snapshot logical dump and encrypted external bundle`.
+- Causa raiz: as duas consultas de inventario usavam `to_jsonb(storage.objects)`. Em SQL isso e a
+  referencia a uma tabela sem alias dentro de uma expressao de linha, e o parser recusa.
+- Correcao `e9e949f`: `from storage.objects as object` com `to_jsonb(object)`. O teste que antes fixava
+  a consulta quebrada foi substituido por uma recusa ancorada no uso real, e nao no comentario que
+  explica o defeito.
+
+### 3. O drill de restauracao: uma reprovacao que nao sabia dizer o que reprovou
+
+- Rota/acao: passo `Prove decryption and complete data restore in an ephemeral Supabase`, script
+  `scripts/ev2/phase16/verify-role-backup.mjs`.
+- Runs: `34612800748` (candidato `e9e949fb`) e `34613720758` (candidato `5b78f724`), ambos failure.
+- Causa raiz da reprovacao original: `BACKUP_ROLE_RESTORE_FINGERPRINT_MISMATCH` sem numero nenhum. O
+  mesmo codigo era emitido para relatorio de origem malformado e para divergencia de catalogo, e o
+  agregado so sabe dizer "diferente".
+- Correcao `5b78f72`: detalhe por papel nos dois lados, contagens no lugar do silencio, relatorio de
+  origem invalido com codigo proprio, e o detalhe recalculando o agregado para nao ser aceito por
+  confianca. Nenhuma asserção foi afrouxada.
+- Resultado medido no run `34613720758`:
+  `{"sourceRoleCount":17,"restoredRoleCount":16,"identicalRoles":15,"rolesDriftedInRestore":1,
+  "rolesMissingFromRestore":1,"rolesOnlyInRestore":0}`.
+- Leitura: 15 dos 17 papeis restauram identicos. Um papel nao chega ao alvo e um chega com atributo ou
+  vinculo diferente. Nao e limite do pooler em session mode: o alvo do restore e um Postgres local em
+  container, o transporte nao participa, e o passo de dump concluiu com sucesso. Por isso a condicao
+  1.6 do coordenador (parar e escalar se o pooler nao servir para restauracao completa) NAO foi
+  acionada.
+- Por que ainda nao esta corrigido: contagem nao decide o que fazer. Papel que o dump nao levou e
+  defeito de backup; papel que a plataforma recria sozinha e limite a declarar. Exigem correcoes
+  opostas.
+- Correcao `3422d02`: cada papel passa a carregar um perfil sem nome (atributos canonicos sem a chave
+  `name`, vinculos reduzidos a hash do nome do pai). A divergencia agora nomeia os atributos do papel
+  ausente e, para o que derivou, os campos exatos com os dois valores. Nenhum nome de papel e nenhum
+  fingerprint sai do runner, e os relatorios selados seguem byte a byte iguais.
+
+### 4. Defeito que eu introduzi: o watchdog de staging reprovando a cada passe de diagnostico
+
+- Rota/acao: `deploy-staging-watchdog.yml`, gatilho `workflow_run` de "Deploy staging".
+- Causa raiz: o modo `diagnostic_run` que eu acrescentei a `deploy-staging.yml` termina em failure por
+  desenho e pula o job `deploy` inteiro. O gatilho do watchdog nao distingue isso de um deploy real
+  interrompido, entao ele acordava, nao encontrava estado pre-mutacao e morria em
+  `G12_STAGING_WATCHDOG_STATE_UNAVAILABLE`.
+- Por que e defeito e nao ruido: falha esperada que se repete a cada passada torna a falha real
+  indistinguivel. Uma compensacao que deveria ter acontecido e nao aconteceu ficaria escondida no
+  meio de runs vermelhos rotineiros.
+- Correcao `3422d02`: um job `classify-parent-run` pergunta ao run pai se o job mutante `deploy`
+  chegou a executar, e a compensacao so roda quando executou. A decisao nao le o input do pai, le o
+  fato que importa. Se a propria classificacao falhar, o watchdog segue como antes: nao compensar por
+  nao saber seria o unico erro irrecuperavel. Estado ausente depois de o job mutante ter rodado
+  continua sendo falha dura.
+
+### Correcao de uma afirmacao minha sobre o selo sem prova de restauracao
+
+Eu havia registrado que o selo publica evidencia consumindo um `restore_scope_report` vazio. Isso
+esta errado e o manifesto do run `34612625471` prova: `restoreDrill.performed: false`,
+`outcome: "not_scheduled"`, todas as verificacoes `false`, `reports.restore: null` e
+`completeDataRestoreDrill: false`. Os relatorios de restauracao nao sao lidos quando nao ha drill, e
+o gate de release recusa um manifesto assim, porque exige os eventos `...restore-verified`.
+
+A lacuna real e mais estreita e continua aberta: `validateProductionBackupManifest` so e chamado
+quando houve drill (`write-backup-manifest.mjs`), entao o artefato diario e selado e publicado sem
+nenhuma validacao estrutural do manifesto.
+
 ## Erros, causas raiz e correcoes
 
 ### Corrigido no candidato atual
