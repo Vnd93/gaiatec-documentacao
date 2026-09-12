@@ -37,15 +37,109 @@
 > (`git ls-tree -r --name-only 38ecae8b -- supabase/migrations`), não pelo banco. Método reprodutível
 > e que não depende de credencial.
 >
-> **O que continua sem resposta, e exige leitura do banco de produção:**
+> **MEDIDO NO BANCO DE PRODUÇÃO EM 11/09/2026.** As perguntas abaixo estavam abertas e foram
+> respondidas consultando o banco ao vivo, com autorização do responsável. A dedução pelo SHA do
+> deploy bateu exatamente: `select count(*) from supabase_migrations.schema_migrations` devolve
+> **56**, e `max(version)` devolve **0056**.
 >
-> 1. Quais habilitações o operador de produção tem, e com que janela de validade.
-> 2. Quantas linhas antigas de produto seguem não arquivadas — determina se há incidente em curso
->    travando a publicação de produto.
-> 3. Se a chave do provedor externo de IA está de fato instalada.
+> ### 🔴 A CAUSA RAIZ DOS SEIS PORTÕES: O MENU E O COMANDO DISCORDAM SOBRE PRODUÇÃO
 >
-> O conector Supabase da sessão coordenadora está autenticado numa organização que não contém os
-> projetos da GAIATEC — escalado ao responsável, que está ajustando o acesso.
+> **Correção de um diagnóstico anterior.** Uma leitura anterior deste handoff atribuía os portões a
+> uma contradição de janela — 365 dias concedidos contra uma regra de 30 minutos. **Está errado, e a
+> leitura do código vivo em produção refuta.** A regra dos 30 minutos nunca chega a ser avaliada em
+> produção. O mecanismo real é outro, é mais simples, e é pior.
+>
+> Em produção há **dois caminhos** que consultam as mesmas habilitações, e eles não concordam:
+>
+> **Caminho de leitura — o que acende o menu.** `public.cms_runtime_capability_manifest`, redefinida
+> pela `0055` (a última migration substantiva que produção tem):
+>
+> ```sql
+> v_runtime_allowed boolean := p_environment in ('local', 'staging', 'production') and p_site_key = 'main';
+> v_max_override_duration interval := case
+>   when p_environment = 'production' then interval '365 days'
+>   else interval '30 minutes'
+> end;
+> ```
+>
+> Produção é aceita, e **365 dias é exatamente o prazo previsto para produção**. As 13 habilitações
+> passam. O manifesto devolve `enabled: true` para as 13 funcionalidades. **O menu acende — e está
+> correto acender, segundo a `0055`.**
+>
+> **Caminho de comando — o que executa a ação.** Toda função de comando por funcionalidade que
+> produção tem recusa produção na primeira linha, antes de olhar flag, janela ou permissão:
+>
+> | Migration (em produção) | Função | Guarda |
+> |---|---|---|
+> | `0038` | `cms_assert_draft_v2_command` | `p_environment not in ('local','staging')` → `CMS_DRAFT_V2_COMMAND_INVALID` |
+> | `0048` | `cms_ev2_individual_flag_context` | `p_environment not in ('local','staging')` → `scope_invalid` |
+> | `0049` | `cms_ai_individual_flag_context` | `p_environment not in ('local','staging')` |
+> | `0050` | `cms_system_individual_flag_context` | `p_environment not in ('local','staging')` |
+> | `0054` | `cms_ai_execute_individual_flag_context` | `p_environment not in ('local','staging')` |
+>
+> **É isto, e só isto.** O manifesto foi aberto para produção pela `0055`; as guardas de comando
+> nunca foram. O operador vê o botão porque o manifesto diz que pode; o clique falha porque a função
+> de comando recusa o ambiente. Não são seis problemas independentes — é **uma divergência entre o
+> que o menu anuncia e o que o servidor aceita**.
+>
+> **Consequências para quem for corrigir — as três importam:**
+>
+> 1. **Encurtar a janela para 30 minutos não resolve nada.** Em produção a regra dos 30 minutos não
+>    é alcançada: as funções que a contêm já recusaram o ambiente. Encurtar só faz as habilitações
+>    expirarem sozinhas.
+> 2. **365 dias não é defeito.** É o prazo que a `0055` prescreve para produção, e que a `0077`
+>    (ainda não aplicada) formaliza com `window_minutes between 1440 and 525600`. Corrigir o
+>    "provisionamento que emite 365 dias" seria corrigir o que está certo.
+> 3. **A correção é fazer os dois caminhos concordarem**, e a direção é fechar, não abrir: o
+>    manifesto precisa parar de anunciar em produção o que o comando recusa. Abrir as guardas de
+>    comando para produção é a direção contrária à que a revisão de segurança recomendou para seis
+>    das sete áreas.
+>
+> ### Estado das flags em produção
+>
+> As 13 flags de `cms_feature_flags` estão com `default_enabled = false`, criadas em 2026-09-06
+> 14:02 e nunca atualizadas. Toda a ativação depende das 13 linhas de `cms_feature_flag_overrides`,
+> que são do escopo `user`, todas para o mesmo `scope_key`, com o motivo registrado "Ativação
+> individual final autorizada do CMS EV2 em produção".
+>
+> ### ⚠️ As habilitações de produção não vieram do caminho governado
+>
+> A migration `0077_cms_production_operator_provisioning` é o caminho oficial de provisionamento. Ela
+> cria uma tabela de recibos cuja restrição fixa **exatamente 11 flags** e proíbe duas por
+> `check` explícito:
+>
+> ```sql
+> check (not ('ev2.multisite'  = any(enabled_flags))),
+> check (not ('ev2.ai_execute' = any(enabled_flags)))
+> ```
+>
+> **A `0077` não está em produção** (produção parou na `0056`). E produção tem **13** habilitações:
+> as 11 governadas **mais `ev2.multisite` e `ev2.ai_execute`** — precisamente as duas que a regra
+> proíbe.
+>
+> Ou seja: as habilitações de produção foram criadas por um caminho que não passou pela trava que
+> existia para impedir exatamente isso, porque a trava não estava aplicada. Os dois adiamentos
+> declarados (especificação e ADR-015) estão habilitados no manifesto de produção até setembro de
+> 2027.
+>
+> **Por que não causam dano hoje:** as funções de comando de `multisite` (`0048`) e `ai_execute`
+> (`0054`) recusam produção pelo mesmo guarda de ambiente. A proteção que resta é a divergência
+> descrita acima — não a governança, que foi contornada. **Qualquer trabalho que abra as guardas de
+> comando para produção precisa remover estas duas habilitações antes**, ou ativa dois adiamentos
+> declarados no mesmo gesto.
+>
+> ### Catálogo de produção: vazio
+>
+> `cms_pim_products`, `cms_product_projection`, `cms_product_manufacturers`, `cms_product_lines` e
+> `cms_pim_product_master_links` têm **zero linhas**. Coerente com a política de recadastro limpo.
+>
+> **Isso encerra uma preocupação:** não há linhas antigas divergentes travando a publicação de
+> produto. O incidente que se temia não existe.
+>
+> ### O que permanece sem medição
+>
+> A instalação da chave do provedor externo de IA não é verificável pelo banco — segredos não ficam
+> lá. Continua dependendo de leitura da configuração de deploy ou do painel de secrets.
 
 ## Checkpoint e lease de escrita
 
