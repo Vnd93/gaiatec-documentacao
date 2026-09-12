@@ -3,6 +3,50 @@
 > Estado de entrega: **NAO APROVADO PARA USO OPERACIONAL**. Este documento transfere o estado real
 > da execucao; nao declara que o candidato foi homologado ou publicado.
 
+> ## 🔴 PRODUÇÃO ESTÁ 36 MIGRATIONS ATRÁS DA MAIN
+>
+> **Medido em 11/09/2026. Leia antes de planejar qualquer promoção.**
+>
+> ```
+> Produção roda .............. 38ecae8b   (deploy 34069047721, 2026-09-07T00:12:09Z)
+> Migrations nesse SHA ....... 56
+> Migrations na main hoje .... 92
+> Última aplicada ............ 0056_cms_audit_identity_detach.sql
+> ```
+>
+> Nenhum documento do projeto registrava isto. Quem lia este handoff concluía que produção tem o que
+> a `main` tem.
+>
+> **O que NÃO está em produção, e importa:**
+>
+> - `0078` — consolidação do PIM em somente-leitura. É a causa-raiz apontada para as lacunas do
+>   catálogo; se não está aplicada, **o diagnóstico do catálogo derivado da `main` pode não valer em
+>   produção**. Confirmar exige leitura do banco.
+> - `0067`–`0072` — escopo autoritativo de conteúdo, PIM, usuários, atributos, formulários e leads.
+> - `0086`–`0088` — endurecimento de runtime. Uma leitura anterior atribuiu os portões de ambiente a
+>   estas três migrations; **está errado**, elas não estão em produção. Os portões vêm de `0038`,
+>   `0043`, `0045` e `0048`, que são antigas e estão aplicadas.
+> - `0090` — o predicado do par acoplado da limpeza. `0061` está; `0090` não.
+> - `0091`, `0092` — janela de lease. Em produção vale o prazo da `0061`.
+>
+> **Consequência para o G12:** o próximo deploy de produção aplica **36 migrations de uma vez**. Não
+> é incremento, é travessia. O perfil de risco da promoção é outro, e o plano do gate precisa tratá-lo
+> como tal.
+>
+> **Como foi medido:** pelo conteúdo do commit que o deploy promoveu
+> (`git ls-tree -r --name-only 38ecae8b -- supabase/migrations`), não pelo banco. Método reprodutível
+> e que não depende de credencial.
+>
+> **O que continua sem resposta, e exige leitura do banco de produção:**
+>
+> 1. Quais habilitações o operador de produção tem, e com que janela de validade.
+> 2. Quantas linhas antigas de produto seguem não arquivadas — determina se há incidente em curso
+>    travando a publicação de produto.
+> 3. Se a chave do provedor externo de IA está de fato instalada.
+>
+> O conector Supabase da sessão coordenadora está autenticado numa organização que não contém os
+> projetos da GAIATEC — escalado ao responsável, que está ajustando o acesso.
+
 ## Checkpoint e lease de escrita
 
 - Captura local: `2026-09-09T14:20:20-03:00` (`America/Sao_Paulo`).

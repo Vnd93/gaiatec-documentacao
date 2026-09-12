@@ -1213,6 +1213,54 @@ Os critérios específicos de cada F-001..F-018 constam nas fichas. Critérios s
 
 ## 22. Matriz de Rastreabilidade
 
+> ### ⚠️ LEIA ANTES DE USAR ESTA TABELA — correção registrada em 11/09/2026
+>
+> **"Implementado; gate aprovado" nesta tabela significa que o gate foi aprovado quando foi aprovado.
+> NÃO significa que a funcionalidade está disponível em produção hoje.** Sete linhas estão nessa
+> situação, e a diferença já induziu a conclusões erradas.
+>
+> **O que mudou depois da aprovação.** Uma auditoria de completude mediu 182 requisitos desta
+> especificação contra o código. Sete funcionalidades marcadas aqui como implementadas e aprovadas
+> estão **recusadas pelo banco quando o operador tenta usá-las em produção**: o menu acende, a tela
+> abre, e a primeira gravação falha.
+>
+> | Linha | Situação real em produção |
+> |---|---|
+> | **F-001** rascunho progressivo | tabela só aceita ambiente local ou staging (migration `0038`) |
+> | **F-006** curadoria de mídia | corrigir ALT, licença, titular, coleções e recorte recusados (`0043`) |
+> | **F-009** pacote editorial | publicar em conjunto não executa em produção (`0045`) |
+> | **F-010** tarefas, comentários, lote | toda gravação recusada (`0045`) |
+> | **F-011** Estúdio Visual | salvar, versionar e aplicar recusados (`0048`) |
+> | **F-013** operações em massa | só a importação por planilha funciona (`0045`) |
+> | **F-015** copiloto de IA | toda chamada devolve 403 em produção |
+>
+> **Correção de atribuição.** Uma leitura anterior apontou as migrations `0086`, `0087` e `0088` como
+> origem desses bloqueios. Está errado: as três nasceram em 08/09 e **não estão em produção**. Os
+> portões vêm das migrations antigas listadas na tabela acima, e essas sim estão aplicadas.
+>
+> **E o mais importante para quem for planejar qualquer coisa a partir deste documento:**
+>
+> **PRODUÇÃO ESTÁ 36 MIGRATIONS ATRÁS DA BRANCH PRINCIPAL.** Produção roda o SHA `38ecae8b`,
+> promovido pelo deploy `34069047721` em 2026-09-07T00:12:09Z. Nesse SHA existem **56 migrations**;
+> a `main` de hoje tem **92**. A última aplicada em produção é `0056_cms_audit_identity_detach.sql`.
+>
+> Consequências que nenhum documento registrava até agora:
+>
+> - A consolidação do PIM (`0078`), apontada como causa-raiz das lacunas do catálogo, **não está em
+>   produção**. O diagnóstico do catálogo derivado da `main` pode não valer lá.
+> - As famílias de escopo autoritativo (`0067`–`0072`), o endurecimento de runtime (`0086`–`0088`) e
+>   a janela de lease (`0091`, `0092`) **não estão em produção**. Vale a versão anterior de cada um.
+> - O próximo deploy de produção aplica **36 migrations de uma vez**. Não é incremento: é travessia,
+>   e muda o perfil de risco da promoção inteira.
+>
+> **Por que este aviso existe.** Sem ele, quem lê esta tabela conclui que os desligamentos foram
+> defeitos e tenta revertê-los. Pelo menos dois deles protegem invariantes reais — um dispara limpeza
+> total de cache a cada publicação, outro rebaixa página aprovada sem registro. O documento
+> desatualizado era, até esta correção, um convite a reabrir portões perigosos.
+>
+> Medição feita em 11/09/2026 a partir do conteúdo do commit promovido, não do banco. As perguntas
+> que exigem leitura do banco continuam abertas e estão listadas no `HANDOFF.md`.
+
 | **Req.** | **Funcionalidade**                                         | **Implementação**            | **Teste**               | **Aceite**        | **Status**                      |
 | -------- | ---------------------------------------------------------- | ---------------------------- | ----------------------- | ----------------- | ------------------------------- |
 | F-001    | Rascunho livre, autosave e validação progressiva           | Draft schemas/autosave       | T-001 unit/contract/E2E | Critério na ficha | Implementado; G2 aprovado       |
