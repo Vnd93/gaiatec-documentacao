@@ -151,6 +151,30 @@
 > **Não muda a revogação das sete:** `ev2.draft_v2` continua entre as seis a manter, porque hoje
 > sustenta leitura em funcionamento. O que muda é depois da travessia.
 >
+> ### Sequência obrigatória do rascunho progressivo na travessia
+>
+> A `0093` (livro de entregas) dá a saída para o problema que a `0079` cria — mas **não
+> automaticamente**, e a ordem importa:
+>
+> ```
+> 1. Travessia aplica 0057..0093.
+>    → Neste instante o rascunho progressivo em produção CAI. A habilitação de 365 dias
+>      não satisfaz a exigência nova da 0079, e o livro de entregas nasce VAZIO.
+>
+> 2. Declarar ev2.draft_v2 entregue em STAGING.
+>    → cms_ev2_declare_delivery, pelo workflow, com service_role.
+>
+> 3. Esperar 24 horas.  ← exigência da própria função, não é convenção
+>
+> 4. Declarar ev2.draft_v2 entregue em PRODUÇÃO.
+>    → O rascunho progressivo volta, agora sem depender de habilitação nominal.
+> ```
+>
+> **A janela de indisponibilidade é de no mínimo 24 horas**, e é consequência da soma de duas
+> migrations independentes, não de um defeito novo. Quem planejar o G12 precisa decidir se aceita
+> essa janela ou se reemite a habilitação de `ev2.draft_v2` com janela de 30 minutos como ponte —
+> o que funciona, mas devolve o incômodo de reemitir a cada 30 minutos.
+>
 > ### ⚠️ LIGAR `default_enabled` DESLIGARIA FUNCIONALIDADES
 >
 > Registrado porque é contraintuitivo e alguém vai tentar. A coluna
