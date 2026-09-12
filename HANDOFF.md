@@ -42,58 +42,92 @@
 > deploy bateu exatamente: `select count(*) from supabase_migrations.schema_migrations` devolve
 > **56**, e `max(version)` devolve **0056**.
 >
-> ### 🔴 A CAUSA RAIZ DOS SEIS PORTÕES: O MENU E O COMANDO DISCORDAM SOBRE PRODUÇÃO
+> ### 🔴 A `0055` REESCREVE O CORPO DE TODA FUNÇÃO `cms_*`. LER AS MIGRATIONS DÁ A RESPOSTA ERRADA.
 >
-> **Correção de um diagnóstico anterior.** Uma leitura anterior deste handoff atribuía os portões a
-> uma contradição de janela — 365 dias concedidos contra uma regra de 30 minutos. **Está errado, e a
-> leitura do código vivo em produção refuta.** A regra dos 30 minutos nunca chega a ser avaliada em
-> produção. O mecanismo real é outro, é mais simples, e é pior.
+> **Esta é a terceira redação deste bloco. As duas anteriores estavam erradas, e pelo mesmo motivo:
+> leram o texto das migrations como se fosse a definição viva do banco.** É exatamente a classe de
+> defeito que este projeto já documentou cinco vezes — teste que confere arquivo, não comportamento.
+> Fica registrado assim para que ninguém repita.
 >
-> Em produção há **dois caminhos** que consultam as mesmas habilitações, e eles não concordam:
->
-> **Caminho de leitura — o que acende o menu.** `public.cms_runtime_capability_manifest`, redefinida
-> pela `0055` (a última migration substantiva que produção tem):
+> A `0055_ev2_operational_cms_production.sql`, linhas 50–92, contém um bloco `DO` que varre `pg_proc`,
+> pega a definição de **toda** função `cms\_%` de `public` e `private`, e reescreve o texto dela:
 >
 > ```sql
-> v_runtime_allowed boolean := p_environment in ('local', 'staging', 'production') and p_site_key = 'main';
-> v_max_override_duration interval := case
->   when p_environment = 'production' then interval '365 days'
->   else interval '30 minutes'
-> end;
+> for function_record in
+>   select p.oid, n.nspname, p.proname from pg_proc p
+>   join pg_namespace n on n.oid = p.pronamespace
+>   where n.nspname in ('public', 'private')
+>     and p.proname like 'cms\_%' escape '\'
+>     and p.proname <> 'cms_runtime_capability_manifest'
+> loop
+>   original_definition := pg_get_functiondef(function_record.oid);
+>   operational_definition := replace(original_definition,
+>     'not in (''local'', ''staging'')', 'not in (''local'', ''staging'', ''production'')');
+>   operational_definition := replace(operational_definition,
+>     'in (''local'', ''staging'')',     'in (''local'', ''staging'', ''production'')');
+>   -- mais dois regexp_replace que APAGAM o raise 'CMS_DAM_PRODUCTION_GATED'
+>   -- e o ramo que devolvia 'production_not_available'
+>   if operational_definition is distinct from original_definition then
+>     execute operational_definition;
+>   end if;
+> end loop;
 > ```
 >
-> Produção é aceita, e **365 dias é exatamente o prazo previsto para produção**. As 13 habilitações
-> passam. O manifesto devolve `enabled: true` para as 13 funcionalidades. **O menu acende — e está
-> correto acender, segundo a `0055`.**
+> **Consequência direta:** as guardas de ambiente que você lê em `0038`, `0043`, `0045`, `0048`,
+> `0049`, `0050` e `0054` **não são o que roda em produção**. A `0055` é ≤ `0056`, logo foi aplicada,
+> logo o laço rodou. Em produção essas funções aceitam `production`. Duas recusas de produção foram
+> apagadas por completo, não relaxadas.
 >
-> **Caminho de comando — o que executa a ação.** Toda função de comando por funcionalidade que
-> produção tem recusa produção na primeira linha, antes de olhar flag, janela ou permissão:
+> A única função excluída do laço é `cms_runtime_capability_manifest` — e ela é redefinida logo em
+> seguida, na mesma migration, aceitando produção com janela de até `interval '365 days'`.
 >
-> | Migration (em produção) | Função | Guarda |
+> ### O que sobreviveu à reescrita, e é o que de fato fecha cinco portões
+>
+> O laço só troca listas de ambiente e apaga dois ramos nomeados. **A regra dos 30 minutos passou
+> intacta.** Ela vive dentro das funções `*_individual_flag_context`:
+>
+> ```sql
+> if v_expires_at > v_starts_at + interval '30 minutes'
+>    or v_expires_at > now() + interval '30 minutes' then
+>    return jsonb_build_object('enabled', false, 'source', 'override_window_invalid');
+> ```
+>
+> Com o ambiente agora aceito, a execução **chega** nessa regra — e as habilitações de 365 dias são
+> recusadas por ela. Isso divide as 13 funcionalidades em dois grupos, e a divisão foi verificada
+> funcionalidade por funcionalidade:
+>
+> | Portão de cada funcionalidade | Funcionalidades | Estado em produção hoje |
 > |---|---|---|
-> | `0038` | `cms_assert_draft_v2_command` | `p_environment not in ('local','staging')` → `CMS_DRAFT_V2_COMMAND_INVALID` |
-> | `0048` | `cms_ev2_individual_flag_context` | `p_environment not in ('local','staging')` → `scope_invalid` |
-> | `0049` | `cms_ai_individual_flag_context` | `p_environment not in ('local','staging')` |
-> | `0050` | `cms_system_individual_flag_context` | `p_environment not in ('local','staging')` |
-> | `0054` | `cms_ai_execute_individual_flag_context` | `p_environment not in ('local','staging')` |
+> | `cms_evaluate_feature_flag` puro — **sem regra de janela** | `draft_v2`, `master_data`, `pim_v2`, `dam`, `search_quality`, `collaboration_bulk` | **Funcionam.** A habilitação de 365 dias é honrada |
+> | `*_individual_flag_context` — **com a regra dos 30 minutos** (`0048`, `0049`, `0050`, `0054`) | `visual_studio`, `multisite`, `ai_assist`, `ai_execute`, `system_assurance` | **Recusadas.** 365 dias > 30 minutos |
 >
-> **É isto, e só isto.** O manifesto foi aberto para produção pela `0055`; as guardas de comando
-> nunca foram. O operador vê o botão porque o manifesto diz que pode; o clique falha porque a função
-> de comando recusa o ambiente. Não são seis problemas independentes — é **uma divergência entre o
-> que o menu anuncia e o que o servidor aceita**.
+> **É aqui que "vê o botão, clica e falha" acontece, e só para as cinco de baixo:** o manifesto —
+> a única função que o laço não tocou — aceita 365 dias e acende o menu; a função de contexto
+> individual recusa a mesma habilitação pela janela. **A primeira redação deste bloco estava certa
+> para essas cinco.** A segunda redação, que negava a regra dos 30 minutos, estava errada para todas.
 >
-> **Consequências para quem for corrigir — as três importam:**
+> ### ⚠️ Consequência que muda uma ação já recomendada
 >
-> 1. **Encurtar a janela para 30 minutos não resolve nada.** Em produção a regra dos 30 minutos não
->    é alcançada: as funções que a contêm já recusaram o ambiente. Encurtar só faz as habilitações
->    expirarem sozinhas.
-> 2. **365 dias não é defeito.** É o prazo que a `0055` prescreve para produção, e que a `0077`
->    (ainda não aplicada) formaliza com `window_minutes between 1440 and 525600`. Corrigir o
->    "provisionamento que emite 365 dias" seria corrigir o que está certo.
-> 3. **A correção é fazer os dois caminhos concordarem**, e a direção é fechar, não abrir: o
->    manifesto precisa parar de anunciar em produção o que o comando recusa. Abrir as guardas de
->    comando para produção é a direção contrária à que a revisão de segurança recomendou para seis
->    das sete áreas.
+> **NÃO revogue as 13 habilitações.** Seis delas sustentam leitura que funciona hoje em produção.
+> Revogá-las tira do operador, entre outras coisas: a tela `/admin/pim` inteira (`AdminPimPage`
+> aborta o `load()` e troca a página por um aviso), a caixa de trabalho (`cms_get_work_inbox`), a
+> biblioteca de mídia, o Centro de Qualidade e a busca administrativa, os dados mestres, e a
+> recuperação de rascunho no servidor.
+>
+> Lista verificada por auditoria com refutação adversarial, treze funcionalidades, duas lentes por
+> funcionalidade:
+>
+> - **Seguras para revogar (7):** `release_skeleton`, `rbac_scoped`, `visual_studio`, `multisite`,
+>   `ai_assist`, `ai_execute`, `system_assurance`.
+> - **NÃO revogar (6):** `draft_v2`, `master_data`, `pim_v2`, `dam`, `search_quality`,
+>   `collaboration_bulk`.
+>
+> ### O que fica em aberto, e não deve ser afirmado sem medir
+>
+> A afirmação de que **criar produto em produção está travado** foi derivada da leitura das
+> migrations, pelo mesmo método que se mostrou inválido. Com `draft_v2` funcionando, o caminho v2
+> provavelmente funciona. **Não se afirma o contrário aqui — afirma-se que a base da afirmação caiu**
+> e que confirmar exige exercitar a tela em produção, não ler arquivo.
 >
 > ### Estado das flags em produção
 >
@@ -122,11 +156,13 @@
 > declarados (especificação e ADR-015) estão habilitados no manifesto de produção até setembro de
 > 2027.
 >
-> **Por que não causam dano hoje:** as funções de comando de `multisite` (`0048`) e `ai_execute`
-> (`0054`) recusam produção pelo mesmo guarda de ambiente. A proteção que resta é a divergência
-> descrita acima — não a governança, que foi contornada. **Qualquer trabalho que abra as guardas de
-> comando para produção precisa remover estas duas habilitações antes**, ou ativa dois adiamentos
-> declarados no mesmo gesto.
+> **Por que não causam dano hoje:** `multisite` (`0048`) e `ai_execute` (`0054`) estão entre as cinco
+> que a regra dos 30 minutos recusa. A proteção que resta é **o prazo errado da habilitação** — não a
+> governança, que foi contornada, e não a guarda de ambiente, que a `0055` apagou.
+>
+> **Isso torna a correção de prazo perigosa.** Encurtar as janelas para 30 minutos, sem antes retirar
+> estas duas linhas, **ativa os dois adiamentos declarados em produção no mesmo gesto** — porque
+> passariam a caber na janela que a função aceita. A correção é de escopo primeiro, de prazo depois.
 >
 > ### Catálogo de produção: vazio
 >
