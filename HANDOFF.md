@@ -122,6 +122,52 @@
 > - **NÃO revogar (6):** `draft_v2`, `master_data`, `pim_v2`, `dam`, `search_quality`,
 >   `collaboration_bulk`.
 >
+> ### 🔴 A TRAVESSIA QUEBRA O RASCUNHO PROGRESSIVO EM PRODUÇÃO
+>
+> Achado novo, e é do plano do G12, não deste diagnóstico. A migration `0079` — uma das 36
+> pendentes — acrescenta a `cms_assert_draft_v2_command` uma exigência que hoje **não existe**:
+>
+> ```sql
+> if p_environment = 'production' then
+>   select count(*) into v_individual_override_count
+>   from public.cms_feature_flag_overrides override
+>   where override.flag_key = 'ev2.draft_v2'
+>     ...
+>     and override.expires_at - override.starts_at <= interval '30 minutes';
+> end if;
+>
+> if ... or (p_environment = 'production'
+>            and (v_individual_override_count <> 1 or v_broad_override_count <> 0)) then
+>   raise exception 'CMS_DRAFT_V2_FEATURE_DISABLED' using errcode = '42501';
+> ```
+>
+> A habilitação de produção tem **365 dias**. A contagem dá **zero**. No instante em que a `0079`
+> for aplicada, o rascunho progressivo em produção — que **funciona hoje** — para de funcionar.
+>
+> Isso acontece com ou sem qualquer trabalho novo. É consequência direta da travessia, e precisa
+> constar do plano do gate. Falha fechada, que é a direção certa, mas é perda de capacidade real e
+> não pode chegar como surpresa.
+>
+> **Não muda a revogação das sete:** `ev2.draft_v2` continua entre as seis a manter, porque hoje
+> sustenta leitura em funcionamento. O que muda é depois da travessia.
+>
+> ### ⚠️ LIGAR `default_enabled` DESLIGARIA FUNCIONALIDADES
+>
+> Registrado porque é contraintuitivo e alguém vai tentar. A coluna
+> `cms_feature_flags.default_enabled` tem `check (default_enabled is false)`, e a leitura natural é
+> "removam a trava e liguem a funcionalidade para todos". **Faria o oposto.**
+>
+> Sete pontos leem a coluna. **Seis tratam `true` como motivo de RECUSA:**
+>
+> ```
+> 0047:198  0048:535  0049:320  0050:153  0054:235  0077:109
+>     if v_flag.default_enabled then return 'broad_activation_not_supported'
+> ```
+>
+> Só `0037:250` a usa como "ligado". Ligá-la desligaria estúdio visual, assistente de IA, IA
+> transacional, garantia de sistema e RBAC por escopo — de uma vez. **Não é o caminho para declarar
+> uma funcionalidade entregue.**
+>
 > ### O que fica em aberto, e não deve ser afirmado sem medir
 >
 > A afirmação de que **criar produto em produção está travado** foi derivada da leitura das
