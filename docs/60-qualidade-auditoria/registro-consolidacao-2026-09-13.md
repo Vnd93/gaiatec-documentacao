@@ -47,3 +47,10 @@ hash, sem apagar bytes. Os controles operacionais necessários permaneceram na r
 - remover somente branches comprovadamente incorporadas ou preservadas por tag;
 - não alterar visibilidade pública nem exigir PR, pois isso mudaria a política vigente e poderia
   afetar integrações.
+
+## Organização do GitHub
+
+Foram removidas 44 branches remotas: 26 do CMS com patches já incorporados e 18 da documentação,
+das quais 17 já incorporadas e uma preservada pela tag de arquivo. Branches com commits exclusivos
+permaneceram disponíveis. A exclusão automática de branch após merge de PR excepcional foi
+habilitada nos dois repositórios.

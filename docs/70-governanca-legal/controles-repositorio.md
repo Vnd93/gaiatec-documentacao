@@ -34,6 +34,7 @@ relacionados:
 | Histórico linear obrigatório                    | sim                          | sim                 |
 | Force-push                                      | proibido                     | proibido            |
 | Exclusão da branch                              | proibida                     | proibida            |
+| Exclusão automática após merge excepcional      | habilitada                   | habilitada          |
 | Reviews obrigatórias                            | não configuradas             | não configuradas    |
 | Status checks obrigatórios na proteção clássica | não configurados             | não configurados    |
 
