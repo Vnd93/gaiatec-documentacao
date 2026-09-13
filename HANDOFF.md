@@ -1,5 +1,23 @@
 # Handoff controlado — fechamento final do CMS GAIATEC
 
+## Claim de retomada pelo Codex Desktop — 12/09/2026 22:16 -03:00
+
+- Holder: `SESSAO_CODEX_DESKTOP_RETOMADA_2026_09_12`, unico escritor ativo das faixas A e C.
+- Perfil GitHub confirmado: `Vnd93`.
+- `git fetch` executado; clone canonico da Faixa A limpo, em `main`, sincronizado por fast-forward
+  com `origin/main` no SHA `12c71b99ec3301bc1180185bcf26c02eb69527eb`.
+- Clone da Faixa C limpo no PR #41, SHA `0952901d68fea7f871dfae8ef32ca03cadb9b040`.
+- GitHub Actions medido no Chrome autenticado: zero runs `queued` e zero `in_progress`.
+- `/healthz` staging: `ready`, release `259c03d78af5f6c914752600b84316c75ad319dc`,
+  environment `staging`.
+- `/healthz` producao: `ready`, release `f48bb4530566456a0090a98cd39caf1cacb51b09`,
+  environment `production`.
+- Escopo imediato: revisar e corrigir o candidato do PR #41 antes da integracao. Nenhum workflow,
+  migration ou deploy sera disparado enquanto os bytes nao estiverem novamente validados.
+- Alteracoes preexistentes em `docs/ev2/README.md` e
+  `docs/ev2/ESTUDO_MODELO_LLM_OPENAI_PARA_CMS_2026-09-06.md` permanecem fora deste claim e nao
+  serao incluidas incidentalmente.
+
 > Estado de entrega: **NAO APROVADO PARA USO OPERACIONAL**. Este documento transfere o estado real
 > da execucao; nao declara que o candidato foi homologado ou publicado.
 

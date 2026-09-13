@@ -32,6 +32,7 @@
 20. [EV2.14 — IA transacional controlada](fase-14/README.md) — sandbox sintético, plano/dry-run, aprovação por hash, execução atômica, compensação e plano do Gate G14.
 21. [EV2.15 — fechamento técnico e integração segura](fase-15/README.md) — zero avisos acionáveis, regressões finais, hash G14 multiplataforma, preview efêmero e consolidação ordenada dos PRs.
 22. [EV2.16 — controles vinculantes de prontidão](fase-16/README.md) — governança solo `@Vnd93`, backup/restore externo, Resend, CSP, DPO/legal, owners e autorização vinculada ao SHA.
+23. [Estudo de seleção de LLM OpenAI para o CMS](ESTUDO_MODELO_LLM_OPENAI_PARA_CMS_2026-09-06.md) — comparação de modelos, custos, arquitetura de tools, privacidade, evals e plano de adoção.
 
 ## Escopo documental
 
