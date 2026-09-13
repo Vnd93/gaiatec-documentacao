@@ -8,7 +8,7 @@ fase: transversal
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-09-06
+ultima_revisao: 2026-09-13
 fonte_canonica: gaiatec-documentacao
 substitui: []
 relacionados:
@@ -26,7 +26,9 @@ de migração, está no [manifesto](manifesto-migracao-documental.md) e em sua v
 
 | Documento                                                                                                            | Tipo               | Status     | Finalidade                                              |
 | -------------------------------------------------------------------------------------------------------------------- | ------------------ | ---------- | ------------------------------------------------------- |
+| [Comece aqui](comece-aqui.md)                                                                                        | guia de entrada    | ativo      | Precedência, retomada e primeira leitura                |
 | [Status atual](status-atual.md)                                                                                      | status consolidado | ativo      | Estado presente de fases, branches e controles          |
+| [Ambientes e execução](ambientes-e-execucao.md)                                                                      | mapa de ambientes  | ativo      | Separação Supabase e regras de execução                 |
 | [Mapa documental](mapa-documental.md)                                                                                | índice             | ativo      | Roteamento pela taxonomia                               |
 | [Mapa de repositórios](mapa-repositorios.md)                                                                         | mapa               | ativo      | Autoridade e fronteiras entre repositórios/áreas locais |
 | [Glossário](glossario.md)                                                                                            | glossário          | ativo      | Vocabulário comum                                       |

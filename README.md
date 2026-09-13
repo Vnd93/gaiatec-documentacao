@@ -8,7 +8,7 @@ fase: transversal
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-04
-ultima_revisao: 2026-09-06
+ultima_revisao: 2026-09-13
 fonte_canonica: gaiatec-documentacao
 substitui: []
 relacionados:
@@ -29,7 +29,9 @@ esta fonte; não replica a árvore documental.
 
 ## Comece aqui
 
+- [Comece aqui — ordem de autoridade e retomada segura](docs/00-indice/comece-aqui.md)
 - [Status atual](docs/00-indice/status-atual.md)
+- [Ambientes e execução](docs/00-indice/ambientes-e-execucao.md)
 - [Mapa documental](docs/00-indice/mapa-documental.md)
 - [Catálogo de documentos](docs/00-indice/catalogo-documentos.md)
 - [Mapa de repositórios](docs/00-indice/mapa-repositorios.md)
@@ -56,5 +58,6 @@ esta fonte; não replica a árvore documental.
 - [Origem e proveniência](docs/70-governanca-legal/origem.md)
 - [Controles dos repositórios](docs/70-governanca-legal/controles-repositorio.md)
 
-Alterações usam branch, validação e pull request para `main`. Nenhum segredo de runtime deve ser
-adicionado a este repositório.
+O fluxo vigente é trabalho direto em `main`, com lease exclusivo, validação, commit e push. Branches,
+worktrees e pull requests só são usados quando o responsável solicitar uma exceção. Nenhum segredo
+de runtime deve ser adicionado a este repositório.

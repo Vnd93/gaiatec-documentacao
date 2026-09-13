@@ -8,7 +8,7 @@ fase: transversal
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-09-06
+ultima_revisao: 2026-09-13
 fonte_canonica: gaiatec-documentacao
 substitui: []
 relacionados:
@@ -17,6 +17,7 @@ relacionados:
 
 # Histórico
 
+- [Handoff G12 preservado antes da consolidação](handoff-g12-pre-consolidacao-2026-09-13.md)
 - [Fase 1 preservada do repositório documental](fase-1/)
 - [Fases 0 e 2–11 importadas do CMS](cms-fases-0-a-11/)
 - [Validação local curada de 29 de agosto de 2026](cms-validacao-local/ultima-validacao-local-2026-08-29.md)

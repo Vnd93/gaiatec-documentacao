@@ -8,7 +8,7 @@ fase: transversal
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-09-06
+ultima_revisao: 2026-09-13
 fonte_canonica: gaiatec-documentacao
 substitui: []
 relacionados:
@@ -17,6 +17,7 @@ relacionados:
 
 # Qualidade e auditoria
 
+- [Registro de consolidação de 13 de setembro de 2026](registro-consolidacao-2026-09-13.md)
 - [Relatório final da reorganização documental](relatorio-final-reorganizacao-documental-2026-09-06.md)
 - [Tabela de resolução das 24 duplicidades](tabela-resolucao-duplicidades.md)
 - [Auditoria CMS](auditoria-cms-gaiatec.md)
