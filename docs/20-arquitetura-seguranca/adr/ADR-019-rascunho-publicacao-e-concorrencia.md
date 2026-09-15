@@ -3,6 +3,15 @@
 **Status:** aprovada para EV2<br>
 **Data:** 1 de setembro de 2026
 
+## Nota de escopo posterior — Núcleo de Catálogo
+
+Para o novo Núcleo de Catálogo `cms_catalog_*`, as
+[decisões funcionais aprovadas em 13 de setembro de 2026](../../10-produto-requisitos/nucleo-catalogo/decisoes-funcionais-aprovadas-2026-09-13.md)
+clarificam o fluxo como `Rascunho → Pronto → Publicado`. “Aprovar” não cria um estado adicional nem
+exige um segundo usuário: a decisão administrativa de publicar a partir de `Pronto` incorpora essa
+aprovação. Agendar e publicar continuam comandos distintos. O versionamento otimista,
+`expectedVersion`, conflito 409 e proibição de `last-write-wins` permanecem integralmente vigentes.
+
 ## Contexto
 
 O operador precisa começar vazio e salvar progresso sem satisfazer requisitos de publicação. Usar um contrato completo para rascunho causa perda, bloqueios prematuros e workarounds.

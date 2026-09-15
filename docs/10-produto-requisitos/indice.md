@@ -8,7 +8,7 @@ fase: transversal
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-09-06
+ultima_revisao: 2026-09-14
 fonte_canonica: gaiatec-documentacao
 substitui: []
 relacionados:
@@ -18,4 +18,5 @@ relacionados:
 # Produto e requisitos
 
 - [Planejamento executivo de desenvolvimento e remodelagem do CMS](planejamento-executivo-desenvolvimento-remodelagem-cms-gaiatec.md)
+- [Decisões funcionais aprovadas do Núcleo de Catálogo](nucleo-catalogo/decisoes-funcionais-aprovadas-2026-09-13.md)
 - [Especificação técnica e funcional EV2](../80-evolucao/ev2/ESPECIFICACAO_TECNICA_FUNCIONAL_E_PLANO_DE_IMPLEMENTACAO.md)

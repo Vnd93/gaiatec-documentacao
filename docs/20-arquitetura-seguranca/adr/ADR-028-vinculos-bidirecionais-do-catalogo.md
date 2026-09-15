@@ -3,6 +3,15 @@
 **Status:** aceita<br>
 **Data:** 6 de setembro de 2026
 
+## Nota de escopo posterior — Núcleo de Catálogo
+
+Para o novo Núcleo de Catálogo `cms_catalog_*`, a definição de Indústria como categoria principal
+foi parcialmente superada pelas
+[decisões funcionais aprovadas em 13 de setembro de 2026](../../10-produto-requisitos/nucleo-catalogo/decisoes-funcionais-aprovadas-2026-09-13.md).
+`Categoria/Família de Produto` é a única classificação principal; Indústria e Aplicação são
+vínculos N:N complementares. A projeção bidirecional e a preservação de IDs canônicos permanecem
+aplicáveis.
+
 ## Contexto
 
 O cliente precisa entender setor, situação de uso, oferta aplicável e cross-sell sem duplicação de

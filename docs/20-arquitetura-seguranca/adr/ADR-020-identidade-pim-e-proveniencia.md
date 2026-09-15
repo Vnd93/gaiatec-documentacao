@@ -3,6 +3,15 @@
 **Status:** aprovada para EV2<br>
 **Data:** 1 de setembro de 2026
 
+## Nota de escopo posterior — Núcleo de Catálogo
+
+Para o novo Núcleo de Catálogo `cms_catalog_*`, a definição de SKU como entidade foi parcialmente
+superada pelas
+[decisões funcionais aprovadas em 13 de setembro de 2026](../../10-produto-requisitos/nucleo-catalogo/decisoes-funcionais-aprovadas-2026-09-13.md).
+SKU não integra esta fase; UUID interno e slug público são as identidades vigentes. As decisões de
+proveniência, herança, conflito e preservação histórica deste ADR continuam aplicáveis quando não
+conflitarem com o registro posterior.
+
 ## Contexto
 
 O portfólio mistura produto, família, modelo, versão e kit. A EV2 precisa evitar duplicação, preservar identificadores comerciais e provar a origem de atributos técnicos.

@@ -3,6 +3,17 @@
 **Status:** aceito em 2026-08-29
 **Decisor:** administrador da GAIATEC SISTEMAS
 
+## Nota de escopo posterior — Núcleo de Catálogo
+
+Para o novo Núcleo de Catálogo `cms_catalog_*`, esta decisão foi parcialmente superada pelas
+[decisões funcionais aprovadas em 13 de setembro de 2026](../../10-produto-requisitos/nucleo-catalogo/decisoes-funcionais-aprovadas-2026-09-13.md):
+SKU está totalmente fora desta fase, e importação em massa só poderá ser implementada após a
+estabilização comprovada do cadastro manual. Os demais controles de segurança e qualidade deste ADR
+continuam aplicáveis ao novo Catálogo quando compatíveis com CAT-D010 — inclusive allowlist,
+sanitização pública, limites de arquivo/lote, recusa de macros, mídia fora do lote, auditoria, RBAC,
+MFA e RLS. Contratos legados permanecem históricos; qualquer divergência futura exige decisão
+explícita, sem enfraquecer esses controles.
+
 ## Contexto
 
 O administrador precisa manter informações úteis à operação no CMS sem divulgá-las no site. Fabricante/OEM, referência do fabricante e SKU são exemplos iniciais. Também é necessário cadastrar grande quantidade de conteúdo novo com uma planilha padronizada, sem reutilizar o painel anterior nem importar os produtos, serviços, imagens ou estruturas nele cadastrados.
