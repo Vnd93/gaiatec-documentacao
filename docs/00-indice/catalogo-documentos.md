@@ -61,6 +61,9 @@ de migração, está no [manifesto](manifesto-migracao-documental.md) e em sua v
 | [Especificação EV2](../80-evolucao/ev2/ESPECIFICACAO_TECNICA_FUNCIONAL_E_PLANO_DE_IMPLEMENTACAO.md)                               | Markdown             | ativo      |
 | [Decisões EV2](../80-evolucao/ev2/DECISOES_E_ACOES_NECESSARIAS.md)                                                                | Markdown             | ativo      |
 | [Decisões funcionais do Núcleo de Catálogo](../10-produto-requisitos/nucleo-catalogo/decisoes-funcionais-aprovadas-2026-09-13.md) | registro de decisões | ativo      |
+| [Matriz de rastreabilidade das Fatias 1–4](../10-produto-requisitos/nucleo-catalogo/matriz-rastreabilidade-ondas-1-a-4-2026-09-24.md) | matriz e gates | ativo-planejamento |
+| [Backlog executável das Fatias 1–4](../10-produto-requisitos/nucleo-catalogo/backlog-executavel-fatias-1-a-4-2026-09-24.md) | backlog | ativo-planejamento |
+| [Lista nominal prioritária CAT-D009](../10-produto-requisitos/nucleo-catalogo/lista-nominal-prioritaria-cat-d009-2026-09-24.md) | gate de cobertura | pendente-aprovacao |
 | [Fase 17](../80-evolucao/ev2/fase-17/README.md)                                                                                   | índice de fase       | em revisão |
 | [Pré-requisitos EV2.12 consolidados](../80-evolucao/ev2/fase-12/pre-requisitos-infraestrutura-atual-2026-09-06.md)                | síntese aditiva      | em revisão |
 | [Validação local de 29/08/2026](../90-historico/cms-validacao-local/ultima-validacao-local-2026-08-29.md)                         | evidência histórica  | histórico  |
