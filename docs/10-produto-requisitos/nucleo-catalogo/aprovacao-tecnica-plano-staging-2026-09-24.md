@@ -26,6 +26,10 @@ preço, estoque ou disponibilidade, publicação pública, ativação global de 
 de qualquer linha CAT-D009. A lista nominal continua exigindo recaptura, owner, aprovador funcional,
 UAT em Chrome real e ensaio de rollback.
 
+A confirmação do usuário para os itens 17 e 18 é registrada somente como
+`user-confirmed-provisional`; ela não altera este escopo, não constitui aprovação funcional e não
+autoriza carga, publicação ou cutover.
+
 ## Regra de separação
 
 O mesmo ator que cadastra ou altera uma proposta não pode revisá-la como aprovador. O sistema deve

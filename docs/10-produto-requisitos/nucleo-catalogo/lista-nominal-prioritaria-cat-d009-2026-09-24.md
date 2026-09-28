@@ -38,8 +38,8 @@ novo catálogo, seguida de revisão e aprovação registradas.
 | 14 | Medidor ultrassônico de espessura | Comercial GAIATEC Sistemas | Comercial GAIATEC Sistemas | pendente-recaptura | — |
 | 15 | Canhão de Ar | Comercial GAIATEC Sistemas | Comercial GAIATEC Sistemas | pendente-recaptura | — |
 | 16 | Vibrador Pneumático | Comercial GAIATEC Sistemas | Comercial GAIATEC Sistemas | pendente-recaptura | — |
-| 17 | Medidor de Nível Ultrassônico Compacto | Comercial GAIATEC Sistemas | Comercial GAIATEC Sistemas | bloqueado-qualidade | conflito documental a resolver |
-| 18 | Medidor de Nível Ultrassônico Remoto | Comercial GAIATEC Sistemas | Comercial GAIATEC Sistemas | bloqueado-qualidade | conflito documental a resolver |
+| 17 | Medidor de Nível Ultrassônico Compacto | Comercial GAIATEC Sistemas | Comercial GAIATEC Sistemas | user-confirmed-provisional | confirmação explícita do usuário; conflito documental continua sem resolução |
+| 18 | Medidor de Nível Ultrassônico Remoto | Comercial GAIATEC Sistemas | Comercial GAIATEC Sistemas | user-confirmed-provisional | confirmação explícita do usuário; conflito documental continua sem resolução |
 | 19 | Medidor de Vazão Ultrassônico Portátil | Comercial GAIATEC Sistemas | Comercial GAIATEC Sistemas | pendente-recaptura | — |
 | 20 | Medidor de Vazão Clamp-On, Inserção e Flangeado | Comercial GAIATEC Sistemas | Comercial GAIATEC Sistemas | bloqueado-completude | fabricante/origem a confirmar |
 
@@ -50,3 +50,10 @@ marca uma linha como `aprovada` após evidência de cadastro, revisão, publica�
 real e rollback. Enquanto qualquer linha estiver pendente/bloqueada, CAT-D009 permanece fechado e o
 site antigo continua sendo a única fonte pública. A quantidade de linhas não substitui a aprovação
 nominal.
+
+## Estado provisório dos itens 17 e 18
+
+Os itens 17 e 18 foram marcados como `user-confirmed-provisional` por confirmação explícita do
+usuário nesta execução. Esse estado é apenas uma decisão provisória de planejamento: não substitui
+recaptura documental, owner/aprovador independente, UAT, aprovação funcional ou o gate CAT-D009.
+Nenhuma linha foi carregada, publicada ou usada em cutover.

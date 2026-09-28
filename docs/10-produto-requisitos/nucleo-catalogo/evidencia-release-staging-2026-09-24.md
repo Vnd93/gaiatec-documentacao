@@ -31,7 +31,7 @@ data: 2026-09-24
 
 ## Núcleo de Catálogo
 
-O contrato versionado e o planejamento das Fatias 1–4 estão publicados, com `catalog_v1` default-off. A lista nominal CAT-D009 continua `pendente-aprovacao`; nenhum item foi importado, nenhum SKU/preço/estoque foi criado e nenhum cutover é autorizado até owners, aprovadores e UAT estarem completos.
+O contrato versionado e o planejamento das Fatias 1–4 estão publicados, com `catalog_v1` default-off. A lista nominal CAT-D009 continua `pendente-aprovacao`; os itens 17 e 18 foram apenas marcados como `user-confirmed-provisional` por confirmação explícita do usuário, sem resolver o conflito documental. Nenhum item foi importado, nenhum SKU/preço/estoque foi criado e nenhum cutover é autorizado até owners, aprovadores e UAT estarem completos.
 
 ## Próximo gate humano
 
