@@ -81,6 +81,12 @@ lista nominal não tiver 100% de cadastro, revisão e aprovação.
   `tests/e2e/catalog-editorial-fatia4.spec.ts` passou em desktop e mobile Chromium (4/4),
   provando que capability desligada ou malformada mantém `noindex` e não requisita o termo.
 - CI terminal do gate E2E: run `36471368672`, todas as lanes verdes.
+- Envelope de evidência UAT adicionado no commit `db6388e65441ab44f0e1ce67adbc4f9bc2e075d9`:
+  registra SHA, ambiente, cobertura, rollback e status do navegador sem PII; só aceita `passed`
+  para Google Chrome autenticado contra staging com evidência nominal, e nunca autoriza publicação,
+  carga ou cutover.
+- CI terminal do envelope UAT: run `36480366876`, todas as lanes verdes; suíte unitária final
+  `211` arquivos/`1322` testes aprovados.
 - A lane de browser validou o pacote local de staging; a homologação manual em Chrome real
   autenticado e backend de staging ainda é gate pendente para promover os itens a `done`.
 - `ev2.catalog_v1` permanece default-off. Nenhuma migration nova, carga, publicação, deploy,

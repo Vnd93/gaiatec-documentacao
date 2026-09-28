@@ -58,3 +58,10 @@ de busca editorial. A cobertura nominal e o rollback de leitor estão implementa
 fail-closed; a homologação manual em Chrome real autenticado e backend de staging permanece
 obrigatória antes de qualquer estado `done`. Itens 17 e 18 continuam
 `user-confirmed-provisional`, sem aprovação final.
+
+Na fase seguinte, o CMS adicionou `CatalogFatia4UatRecordSchema` e
+`catalog-fatia4-uat-gate.test.ts` no commit `db6388e65441ab44f0e1ce67adbc4f9bc2e075d9`.
+O envelope aceita o estado local `pending` e exige, para `passed`, Google Chrome autenticado,
+backend de staging e evidência `CAT-UAT-*`; qualquer publicação, carga ou cutover é rejeitado pelo
+contrato. O CI `36480366876` terminou verde com 211 arquivos/1322 testes unitários. A homologação
+manual real continua pendente.
