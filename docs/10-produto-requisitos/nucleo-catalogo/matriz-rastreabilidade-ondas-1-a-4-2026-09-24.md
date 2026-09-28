@@ -68,3 +68,18 @@ lista nominal não tiver 100% de cadastro, revisão e aprovação.
 - Nenhum produto, SKU, relação, carga, publicação, deploy ou cutover foi executado; `ev2.catalog_v1`
   permanece default-off. O rollback aprovado para esta fase é uma nova revisão compensatória, sem
   exclusão física.
+
+## Evidência da Fatia 4 — CAT-010/CAT-011/CAT-012
+
+- Implementação local/staging no CMS canônico: commit `e37eb1b729e680f2c9a346b0088593e63aa3e138`.
+- Contratos editoriais adicionados para Tecnologia, Indústria e Aplicação: payload público sanitizado,
+  `noindex` fail-closed, aprovação/UAT server-owned, cobertura nominal de 100% e leitor legado para
+  rollback. Nenhum campo comercial, SKU, preço, estoque ou disponibilidade é exposto.
+- CI terminal verde: run `36449157247`; release-plan, quality, browser Playwright, database,
+  hotfix-bundle-smoke, pacote de staging e pipeline-metrics concluídos com sucesso.
+- A lane de browser validou o pacote local de staging; a homologação manual em Chrome real
+  autenticado e backend de staging ainda é gate pendente para promover os itens a `done`.
+- `ev2.catalog_v1` permanece default-off. Nenhuma migration nova, carga, publicação, deploy,
+  promoção ou cutover foi executado. CAT-D010 continua `deferred`.
+- Rollback ensaiável: desligar a flag e selecionar o leitor legado, sem cópia entre fontes; qualquer
+  correção futura exige novo SHA e revalidação dos gates dependentes.

@@ -48,3 +48,11 @@ commit CMS `037695887f370a8d10cad663ff89562940c7c3dd` e a migration `0109` (SHA-
 `36446140298`, que terminou verde com 48 testes pgTAP da Fatia 3 e as demais lanes obrigatórias.
 Não há carga, publicação ou cutover; a promoção para `done` depende da homologação de staging e
 evidência Chrome/backend previstas no gate.
+
+`CAT-010`, `CAT-011` e `CAT-012` estão `ready-for-gate` em local/staging, com feature flag
+default-off. O commit CMS `e37eb1b729e680f2c9a346b0088593e63aa3e138` está vinculado ao CI
+`36449157247`, com quality, browser Playwright, database, smoke de runtime, pacote de staging e
+métricas concluídos com sucesso. A cobertura nominal e o rollback de leitor estão implementados
+como contratos fail-closed; a homologação manual em Chrome real autenticado e backend de staging
+permanece obrigatória antes de qualquer estado `done`. Itens 17 e 18 continuam
+`user-confirmed-provisional`, sem aprovação final.
