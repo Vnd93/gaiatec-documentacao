@@ -50,9 +50,11 @@ Não há carga, publicação ou cutover; a promoção para `done` depende da hom
 evidência Chrome/backend previstas no gate.
 
 `CAT-010`, `CAT-011` e `CAT-012` estão `ready-for-gate` em local/staging, com feature flag
-default-off. O commit CMS `e37eb1b729e680f2c9a346b0088593e63aa3e138` está vinculado ao CI
-`36449157247`, com quality, browser Playwright, database, smoke de runtime, pacote de staging e
-métricas concluídos com sucesso. A cobertura nominal e o rollback de leitor estão implementados
-como contratos fail-closed; a homologação manual em Chrome real autenticado e backend de staging
-permanece obrigatória antes de qualquer estado `done`. Itens 17 e 18 continuam
+default-off. O commit CMS `8389c5da7b4d3a4736d31f1ef89bdec9f35155d9` está vinculado ao CI
+`36471368672`, com quality, browser Playwright, database, smoke de runtime, pacote de staging e
+métricas concluídos com sucesso. O contrato E2E `catalog-editorial-fatia4.spec.ts` passou em
+desktop e mobile Chromium (4/4), cobrindo capability desligada/malformada, `noindex` e ausência
+de busca editorial. A cobertura nominal e o rollback de leitor estão implementados como contratos
+fail-closed; a homologação manual em Chrome real autenticado e backend de staging permanece
+obrigatória antes de qualquer estado `done`. Itens 17 e 18 continuam
 `user-confirmed-provisional`, sem aprovação final.

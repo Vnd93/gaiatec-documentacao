@@ -77,6 +77,10 @@ lista nominal não tiver 100% de cadastro, revisão e aprovação.
   rollback. Nenhum campo comercial, SKU, preço, estoque ou disponibilidade é exposto.
 - CI terminal verde: run `36449157247`; release-plan, quality, browser Playwright, database,
   hotfix-bundle-smoke, pacote de staging e pipeline-metrics concluídos com sucesso.
+- Gate E2E de homologação fechado no commit `8389c5da7b4d3a4736d31f1ef89bdec9f35155d9`:
+  `tests/e2e/catalog-editorial-fatia4.spec.ts` passou em desktop e mobile Chromium (4/4),
+  provando que capability desligada ou malformada mantém `noindex` e não requisita o termo.
+- CI terminal do gate E2E: run `36471368672`, todas as lanes verdes.
 - A lane de browser validou o pacote local de staging; a homologação manual em Chrome real
   autenticado e backend de staging ainda é gate pendente para promover os itens a `done`.
 - `ev2.catalog_v1` permanece default-off. Nenhuma migration nova, carga, publicação, deploy,
