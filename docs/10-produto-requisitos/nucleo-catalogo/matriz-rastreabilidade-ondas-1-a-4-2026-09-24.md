@@ -1,14 +1,14 @@
 ---
 id: gaiatec-nucleo-catalogo-matriz-rastreabilidade-2026-09-24
 titulo: Matriz de rastreabilidade e gates do Núcleo de Catálogo
-status: ativo-planejamento
+status: ativo-implementacao
 tipo: matriz-de-rastreabilidade
 area: produto-requisitos
 fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-09-24
+ultima_revisao: 2026-09-28
 fonte_canonica: gaiatec-documentacao
 decisoes: CAT-D001-CAT-D010
 ---
@@ -54,3 +54,17 @@ Registrar duração por etapa (preflight, validações paralelas, mutação seri
 leitura, Chrome e evidência). O SLO de caminho feliz é 40–60 minutos; qualquer extrapolação deve
 identificar o gargalo e nunca relaxar segurança. O primeiro cutover permanece bloqueado enquanto a
 lista nominal não tiver 100% de cadastro, revisão e aprovação.
+
+## Evidência da Fatia 3 — CAT-D008/CAT-D009
+
+- Implementação local/staging no CMS canônico: commit `037695887f370a8d10cad663ff89562940c7c3dd`.
+- Migration selada: `0109_catalog_fatia_3_relations.sql`, SHA-256
+  `921e9cfcf4a6947a656a17768ac04fbc67db851e39099d50abc9ed5a9178084d`.
+- A migration materializa tipos de relação, unidades controladas, quantidade positiva para composição,
+  herança Variante→Modelo→Produto, exclusão local, auditoria append-only e RLS; rejeita
+  autorrelação, ciclo, duplicata, relação simétrica não canônica e kit aninhado.
+- CI terminal verde: run `36446140298`, database pgTAP `48/48`, quality, browser, smoke de runtime,
+  pacote de staging e métricas concluídos com sucesso.
+- Nenhum produto, SKU, relação, carga, publicação, deploy ou cutover foi executado; `ev2.catalog_v1`
+  permanece default-off. O rollback aprovado para esta fase é uma nova revisão compensatória, sem
+  exclusão física.

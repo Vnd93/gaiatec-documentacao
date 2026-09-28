@@ -1,14 +1,14 @@
 ---
 id: gaiatec-nucleo-catalogo-backlog-fatias-1-a-4-2026-09-24
 titulo: Backlog executável das Fatias 1–4 do Núcleo de Catálogo
-status: ativo-planejamento
+status: ativo-implementacao
 tipo: backlog-executavel
 area: produto-requisitos
 fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-09-24
+ultima_revisao: 2026-09-28
 fonte_canonica: gaiatec-documentacao
 ---
 
@@ -39,3 +39,12 @@ disponibilidade, importação em massa ou leitura composta do legado. Cada item 
 exigem F1/F2 verdes. `CAT-010`–`CAT-012` exigem F1–F3 verdes. Estados permitidos são
 `planned → in-progress → blocked → ready-for-gate → done`; `done` exige SHA, digest, evidência e
 rollback registrados. `CAT-D010` permanece `deferred` até dois ciclos manuais completos e estáveis.
+
+## Evidência atual de execução
+
+`CAT-008` e `CAT-009` estão `ready-for-gate` em local/staging, com feature flag default-off. O
+commit CMS `037695887f370a8d10cad663ff89562940c7c3dd` e a migration `0109` (SHA-256
+`921e9cfcf4a6947a656a17768ac04fbc67db851e39099d50abc9ed5a9178084d`) estão vinculados ao CI
+`36446140298`, que terminou verde com 48 testes pgTAP da Fatia 3 e as demais lanes obrigatórias.
+Não há carga, publicação ou cutover; a promoção para `done` depende da homologação de staging e
+evidência Chrome/backend previstas no gate.
