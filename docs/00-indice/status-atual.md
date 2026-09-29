@@ -8,7 +8,7 @@ fase: execucao
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-09-28
+ultima_revisao: 2026-09-29
 fonte_canonica: gaiatec-documentacao
 substitui:
   - gaiatec-status-atual-2026-09-06
@@ -17,11 +17,43 @@ relacionados:
   - ambientes-e-execucao.md
   - mapa-repositorios.md
   - ../60-qualidade-auditoria/registro-consolidacao-2026-09-13.md
+  - ../10-produto-requisitos/nucleo-catalogo/registro-staging-controlado-fatias-1-a-4-2026-09-29.md
 ---
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 28 de setembro de 2026
+## Situação vigente — 29 de setembro de 2026
+
+O usuário autorizou migrations e deploy controlados **exclusivamente em staging**. Foram aplicadas
+as migrations até `0111` e implantados os bytes selados do candidato
+`87010df64300c4c41089f9d0fc74e6bd6ed1a6a7`, sob o controle de release
+`92b87565111d09d7b2eb25f3e1f307e9219d8766`. Não reiniciar a implementação das Fatias 1–4.
+
+O [deploy 36595593172](https://github.com/Vnd93/gaiatec-cms/actions/runs/36595593172) passou pelos
+gates de migrations, integridade, compatibilidade, três janelas G12 e regressões de navegador,
+mas **não foi homologado**: o canário de IA recebeu `OPENROUTER_NO_ALLOWED_PROVIDER`. A consulta
+ao OpenRouter confirmou zero endpoints para o modelo fixado. Finalizer e watchdog terminaram
+verdes; estado/fences foram liberados por CAS e não havia operação concorrente ao fechar a evidência.
+
+`ev2.catalog_v1` permanece desligada, com zero overrides, produtos, snapshots e leases de QA ativos.
+As tabelas do catálogo mantêm RLS. A inspeção em Chrome real autenticado confirmou apenas a barreira
+default-off; não substitui UAT funcional. Não houve publicação de catálogo, carga, cutover nem alteração
+de produção.
+
+O bloqueio imediato exige decidir entre manter o modelo atual e aguardar disponibilidade ou autorizar
+a seleção e validação de outro modelo gratuito com ZDR e coleta de dados proibida. Não há retry
+automático nem autorização implícita para trocar o modelo ou reduzir privacidade. Após resolver esse
+gate, ainda faltam a homologação Chrome completa, o UAT/rollback do catálogo e a aprovação nominal
+independente; itens 17/18 continuam provisórios e item 20 incompleto.
+
+O [registro de staging controlado](../10-produto-requisitos/nucleo-catalogo/registro-staging-controlado-fatias-1-a-4-2026-09-29.md)
+contém a cadeia exata de SHA/artefatos, correções já concluídas, recuperação, tempos e ponto de retomada.
+Esta atualização prevalece sobre as fotografias históricas abaixo somente quanto ao estado atual.
+
+## Registro histórico preservado — 28 de setembro de 2026
+
+O texto desta seção registra o escopo e o estado daquela data. A restrição então vigente a migrations
+e deploy hospedados foi substituída exclusivamente para staging pela autorização de 29 de setembro.
 
 O desenvolvimento integrado das Fatias 1–4 do Núcleo de Catálogo está em `main`, SHA
 `486fa5c40baeafe7212914591499245ddef4a5a6`. O
