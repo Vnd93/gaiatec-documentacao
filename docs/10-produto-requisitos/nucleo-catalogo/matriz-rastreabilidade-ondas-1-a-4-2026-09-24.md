@@ -21,12 +21,12 @@ novo começa vazio, sem fonte mista e sem SKU, conforme CAT-D002 e CAT-D009.
 
 ## Regra de seleção de perfil
 
-| Perfil | Mudança permitida | Gates obrigatórios | Artefato/rollback |
-| --- | --- | --- | --- |
-| `frontend-only` | telas, copy, acessibilidade, flag sem contrato novo | check, unit, build, browser real em staging | pacote frontend selado; desligar flag |
-| `edge-only` | contrato/Edge sem schema novo | check, unit, contrato API, Auth/RLS de staging, browser real | bundle Edge único; restaurar versão anterior |
-| `database-auth` | migration, RLS, auditoria, Auth/AAL2 | manifesto de migration, pgTAP, advisors, RLS negativo/positivo, rollback local e staging | migration imutável; compensação/rollback testado |
-| `full-release` | combinação de áreas ou ambiguidade | todos os gates acima, artefato único e canário completo | pacote único por SHA; rollback de leitura, Edge e banco |
+| Perfil          | Mudança permitida                                   | Gates obrigatórios                                                                       | Artefato/rollback                                       |
+| --------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `frontend-only` | telas, copy, acessibilidade, flag sem contrato novo | check, unit, build, browser real em staging                                              | pacote frontend selado; desligar flag                   |
+| `edge-only`     | contrato/Edge sem schema novo                       | check, unit, contrato API, Auth/RLS de staging, browser real                             | bundle Edge único; restaurar versão anterior            |
+| `database-auth` | migration, RLS, auditoria, Auth/AAL2                | manifesto de migration, pgTAP, advisors, RLS negativo/positivo, rollback local e staging | migration imutável; compensação/rollback testado        |
+| `full-release`  | combinação de áreas ou ambiguidade                  | todos os gates acima, artefato único e canário completo                                  | pacote único por SHA; rollback de leitura, Edge e banco |
 
 Qualquer mudança que atravesse mais de uma área, altere contrato de publicação, classificação,
 relações, RLS/Auth ou tenha classificação incerta seleciona `full-release`. Nenhum perfil menor pode
@@ -34,12 +34,12 @@ ser escolhido para reduzir gates.
 
 ## Mudança → decisão → gate → evidência
 
-| Fatia | Entrega verificável | Decisões | Gates de entrada | Gates de saída e evidência | Rollback |
-| --- | --- | --- | --- | --- | --- |
-| F1 — fundação | entidades, revisão otimista, taxonomia principal, papéis e RLS | D001, D004, D005 | contrato versionado, owner de taxonomia, flag default-off | migração local/staging, pgTAP concorrência/RLS, API 409, auditoria sem PII, Chrome autenticado | desativar flag; migration compensatória aprovada |
-| F2 — revisão/publicação | Rascunho/Pronto/Publicado, snapshot público e CTA de orçamento | D003, D007 | F1 verde, outbox/cache definido, sem Offer/preço/estoque | testes de transição inválida, snapshot isolado, JSON-LD sem Offer, smoke Edge/Chrome | leitor volta ao snapshot anterior; não apagar histórico |
-| F3 — kits e relações | tipos de relação, quantidades/unidades, herança e exclusões | D005, D006 | F1 e F2 verdes, vocabulário de unidades aprovado | pgTAP de ciclo/autorrelação/duplicata, projeção bidirecional, rollback de revisão | nova revisão compensatória; sem exclusão física |
-| F4 — termos e cutover prep | páginas Tecnologia/Indústria/Aplicação opt-in, lista nominal e gate de cobertura | D008, D009; D010 explicitamente fora | F1–F3 verdes, UAT e owners nomeados | Chrome real, noindex/SEO, sitemap opt-in, lista 100% revisada, rollback ensaiado | manter site antigo e flag off |
+| Fatia                      | Entrega verificável                                                              | Decisões                             | Gates de entrada                                          | Gates de saída e evidência                                                                     | Rollback                                                |
+| -------------------------- | -------------------------------------------------------------------------------- | ------------------------------------ | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| F1 — fundação              | entidades, revisão otimista, taxonomia principal, papéis e RLS                   | D001, D004, D005                     | contrato versionado, owner de taxonomia, flag default-off | migração local/staging, pgTAP concorrência/RLS, API 409, auditoria sem PII, Chrome autenticado | desativar flag; migration compensatória aprovada        |
+| F2 — revisão/publicação    | Rascunho/Pronto/Publicado, snapshot público e CTA de orçamento                   | D003, D007                           | F1 verde, outbox/cache definido, sem Offer/preço/estoque  | testes de transição inválida, snapshot isolado, JSON-LD sem Offer, smoke Edge/Chrome           | leitor volta ao snapshot anterior; não apagar histórico |
+| F3 — kits e relações       | tipos de relação, quantidades/unidades, herança e exclusões                      | D005, D006                           | F1 e F2 verdes, vocabulário de unidades aprovado          | pgTAP de ciclo/autorrelação/duplicata, projeção bidirecional, rollback de revisão              | nova revisão compensatória; sem exclusão física         |
+| F4 — termos e cutover prep | páginas Tecnologia/Indústria/Aplicação opt-in, lista nominal e gate de cobertura | D008, D009; D010 explicitamente fora | F1–F3 verdes, UAT e owners nomeados                       | Chrome real, noindex/SEO, sitemap opt-in, lista 100% revisada, rollback ensaiado               | manter site antigo e flag off                           |
 
 ## Checkpoints e imutabilidade
 
@@ -55,7 +55,19 @@ leitura, Chrome e evidência). O SLO de caminho feliz é 40–60 minutos; qualqu
 identificar o gargalo e nunca relaxar segurança. O primeiro cutover permanece bloqueado enquanto a
 lista nominal não tiver 100% de cadastro, revisão e aprovação.
 
-## Evidência da Fatia 3 — CAT-D008/CAT-D009
+## Checkpoint vigente da integração — 28 de setembro de 2026
+
+O SHA `486fa5c40baeafe7212914591499245ddef4a5a6` reúne a implementação funcional das Fatias
+1–4. CI `36512509486` integralmente verde, 1.351 testes Vitest, 2.110 pgTAP e runtime das 34
+funções com dois builds independentes idênticos. Os IDs/digests e tempos estão no
+[registro da integração](registro-integracao-fatias-1-a-4-2026-09-28.md).
+
+Esse checkpoint é de código/local/CI isolado: não possui deployment ID nem homologação do backend
+hospedado. `CAT-001`–`CAT-010` ficam `ready-for-gate`; `CAT-011`/`CAT-012` permanecem bloqueados
+nos gates nominais e operacionais. Nenhum campo de evidência pode ser preenchido como `passed`
+por analogia com testes automatizados. Nenhuma fatia está declarada `done`.
+
+## Evidência histórica da Fatia 3 — CAT-D008/CAT-D009
 
 - Implementação local/staging no CMS canônico: commit `037695887f370a8d10cad663ff89562940c7c3dd`.
 - Migration selada: `0109_catalog_fatia_3_relations.sql`, SHA-256
