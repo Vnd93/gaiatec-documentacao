@@ -18,11 +18,42 @@ relacionados:
   - mapa-repositorios.md
   - ../60-qualidade-auditoria/registro-consolidacao-2026-09-13.md
   - ../10-produto-requisitos/nucleo-catalogo/registro-staging-controlado-fatias-1-a-4-2026-09-29.md
+  - ../10-produto-requisitos/nucleo-catalogo/registro-modelo-gratuito-zdr-2026-09-29.md
 ---
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 29 de setembro de 2026
+## Situação vigente — 29 de setembro de 2026: modelo gratuito com ZDR
+
+A autorização de substituição do modelo foi executada exclusivamente em staging. O candidato
+`840049128e28e0d66bdd2725cf9df140a326ff29` passou no CI e bridge; migration `0113` aplicada.
+O modelo ativo é `inclusionai/ling-3.0-flash-sante:free`, com ZDR, coleta negada e preços máximos
+zero. Dados reais, publicação automática, acesso direto ao banco e fallback pago continuam proibidos.
+
+O canário operacional executou inferência real com dados sintéticos e aprovou 12 checks no
+[diagnóstico 36620622496](https://github.com/Vnd93/gaiatec-cms/actions/runs/36620622496), com cleanup
+e resíduo aprovados. **Esse diagnóstico não aprova o release nem substitui o gate canônico G17.**
+
+O [deploy canônico 36618100708](https://github.com/Vnd93/gaiatec-cms/actions/runs/36618100708)
+permanece reprovado por latência G11. O diagnóstico também reprovou comandos (p95 3.675 ms / budget
+800 ms) e o ciclo editorial da landing sintética (página/API HTTP 503). O incidente ativo de latência
+do Supabase é compatível com parte dos atrasos; não comprova a causa de todos os sintomas.
+Finalizer e watchdogs terminaram verdes. Não repetir deploy cegamente nem aumentar budgets.
+
+Estado posterior: 113 migrations, última `0113`, flag `ev2.catalog_v1` desligada, zero overrides,
+produtos, snapshots ou leases de QA ativas; RLS preservada. Produção não foi alterada. Chrome real
+confirmou apenas sessão autenticada e barreira default-off, não homologação funcional completa.
+
+O [registro da substituição e diagnóstico](../10-produto-requisitos/nucleo-catalogo/registro-modelo-gratuito-zdr-2026-09-29.md)
+contém SHAs, digests, resultados Qwen/Sante, tempos e retomada. Não refazer as Fatias 1–4. Faltam
+estabilidade/diagnóstico dos bloqueios, gates canônicos, Chrome real completo, UAT/rollback e
+aprovação nominal independente. Itens 17/18 permanecem provisórios, item 20 incompleto e CAT-D010
+adiado. Não houve carga comercial, publicação do catálogo ou cutover.
+
+## Registro histórico preservado — 29 de setembro de 2026: antes da substituição
+
+O texto abaixo registra a fotografia anterior à autorização de selecionar outro modelo. Sua decisão
+pendente foi resolvida pela autorização e execução descritas acima; o registro histórico permanece.
 
 O usuário autorizou migrations e deploy controlados **exclusivamente em staging**. Foram aplicadas
 as migrations até `0111` e implantados os bytes selados do candidato
