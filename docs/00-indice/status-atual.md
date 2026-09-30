@@ -24,7 +24,24 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 30 de setembro de 2026: G17 canônico aprovado
+## Situação vigente — 30 de setembro de 2026: realocação Chrome implementada
+
+O usuário aprovou mover a captação positiva e suas dependências para Chrome real, sem retirar
+controles. A implementação `cccedddc22b895a58f8bca74b649ede3200a1572` passou no check completo
+e no CI `36719306735`. A ponte `36720500359` promoveu o mesmo pacote selado para staging.
+Não refazer as Fatias 1–4 nem reconstruir o artefato promovido.
+
+A promoção passou no attempt 1; somente a consulta de métricas falhou com HTTP 502. Recuperação,
+backend restaurado, cleanup e watchdog foram comprovados. Uma única retomada **somente de métricas**
+passou no attempt 2, sem novo deploy. O controle de rastreabilidade está sendo validado para vincular
+a prova ao produtor original e o relatório ao attempt verde, recusando qualquer mudança de execução.
+
+O [registro da realocação e retomada](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md)
+contém matriz, testes, artefatos e tempos. O deploy canônico completo e Chrome real ainda não foram
+homologados. Flag desligada; 113 migrations; zero dados comerciais, overrides e leases QA ativas.
+Produção, publicação do catálogo, carga comercial e cutover continuam fora do escopo.
+
+## Registro histórico preservado — 30 de setembro de 2026: G17 anterior aprovado
 
 O candidato `035350ad690dcba40bd4542705a6b184b01b87bc` está em `main` e em staging. Foram
 entregues correções de leitura pública, patches de segurança e UUIDs completos nas fixtures de IA.

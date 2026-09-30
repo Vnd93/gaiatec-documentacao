@@ -223,9 +223,47 @@ totalizam 799.039 bytes. Permanecem os 16 skips de symlink específicos de Windo
 passou com 303 arquivos Markdown, 414 links locais e zero padrões sensíveis. O teste de escopo usa
 a mesma derivação do título para chave que a UI real, recusando o prefixo sintético antigo.
 
-O candidato ainda precisa concluir CI, ponte, deploy e Chrome real; aprovação funcional
-e SLO end-to-end permanecem pendentes. A prontidão do Chrome real foi conferida com sessão
-autenticada em staging; nenhum challenge foi criado durante essa preparação.
+O CI `36719306735` aprovou o candidato em 522 s, perfil `full-release`. O único pacote promovível
+é `11098206613`, digest `sha256:542f2b6bc7525924caef3189026ba89aa64d1da483bc82644e3fcfe04482b2f3`.
+O arquivo dist tem digest `6e4c50013e7fd34448c782664b82a0c6cbceb5b0e560868f31316242be5ff9c4`
+e a árvore `350bd4e80736ca4ce398f6cb9d1179cbdcfd526511316ffc275186d4b707c4cd`.
+
+### Retomada somente das métricas da ponte, sem nova promoção
+
+A ponte `36720500359` promoveu esses mesmos bytes: job `109904084336`, attempt 1, aprovado
+em 658 s. Deployment canônico `15e18a82-b107-4ba0-93bd-bcf5aba4dc49`. O backend temporário foi
+restaurado na versão 506, com três probes consecutivos `public-v2` e liberação formal da lease.
+As duas fixtures headless foram limpas, com resíduo zero e auditoria preservada.
+
+O workflow terminou inicialmente em falha porque **somente** `pipeline-metrics` recebeu HTTP 502
+da API de jobs do GitHub. O watchdog `36721871811` confirmou `no-state-no-mutation`; a consulta
+ao staging confirmou SHA exato, 113 migrations, flag desligada e zero leases de QA ou dados de
+catálogo. Nenhuma promoção foi repetida e nenhum gate foi ignorado.
+
+Após esse diagnóstico, houve uma única repetição do job de métricas: `109912879805`, attempt 2,
+aprovado em 9 s. A ponte ficou verde e o watchdog `36723103432` foi skipped como previsto.
+O artefato de promoção continua `11098867415`, digest
+`sha256:40fa91e025e2fcbe4d6a2a4d018e69afe81c4d2320d32488fc418293265a1952`, produzido no attempt 1.
+O GitHub copia a dependência aprovada com outro ID/attempt, mas conserva timestamps e steps da
+execução original. A [documentação de reruns](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs?tool=cli)
+e o [filtro de histórico de jobs](https://github.blog/changelog/2020-03-09-new-filter-parameter-in-workflow-jobs-api/)
+foram consultados; o comportamento foi conferido na API autenticada, não inferido apenas pela UI.
+
+A correção mínima de controle distingue o produtor da promoção do attempt verde de métricas.
+Exige inventário completo de jobs; sucesso terminal; mesmos SHA, run, workflow e branch;
+timestamps e steps idênticos para a dependência copiada; criação do artefato durante a execução
+original; upload imutável e gate terminal aprovados. Qualquer nova execução de promoção, histórico
+incompleto, job desconhecido ou mudança de identidade invalida a reutilização. A prova de deployment
+continua vinculada ao attempt 1; a duração remota é resolvida pelo attempt 2. O estado vivo e os
+digests serão novamente verificados antes do deploy, sem dispensar nenhum gate pós-deploy.
+
+Os 14 s de `observedSeconds` do relatório do attempt 2 medem a retomada das métricas, **não** a
+promoção de 658 s. A ponte inteira, incluindo diagnóstico/retomada, vai de 13:16:53 a 13:38:23 UTC
+(1.290 s). Esses períodos não podem ser apresentados como um caminho feliz de 14 s.
+
+A revisão de controle tem validação própria e não muda nem recompila o candidato já promovido.
+Deploy e Chrome real continuam pendentes; não há aprovação funcional nem SLO end-to-end verde.
+A prontidão do Chrome foi conferida com sessão autenticada em staging, sem gerar challenge antecipado.
 
 ## Encerramento seguro e retomada
 
