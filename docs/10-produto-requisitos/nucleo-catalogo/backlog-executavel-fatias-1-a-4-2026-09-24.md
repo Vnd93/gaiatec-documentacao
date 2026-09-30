@@ -40,7 +40,24 @@ exigem F1/F2 verdes. `CAT-010`–`CAT-012` exigem F1–F3 verdes. Estados permit
 `planned → in-progress → blocked → ready-for-gate → done`; `done` exige SHA, digest, evidência e
 rollback registrados. `CAT-D010` permanece `deferred` até dois ciclos manuais completos e estáveis.
 
-## Situação vigente — diagnóstico terminal de 30 de setembro de 2026
+## Situação vigente — esclarecimentos de 30 de setembro de 2026
+
+`CAT-001`–`CAT-010` continuam implementados e `ready-for-gate`, sem reinício das Fatias 1–4.
+O usuário confirmou o mesmo papel para cadastro/aprovação; CAT-D003 já permite ao Administrador
+publicar o próprio conteúdo. A exigência de segunda pessoa nos registros posteriores foi uma
+interpretação incorreta, não um novo gate aprovado. Não se exige outra equipe, nem se removem
+segregação dos demais fluxos, AAL2, RLS, auditoria ou homologação.
+
+`CAT-011` continua `blocked` por recaptura e evidência de aprovação nominal, não por falta de
+definição de papel. Fabricante do item 20: Tmeasurement, informado pelo usuário; origem da marca
+verificada e limites registrados na [lista nominal](lista-nominal-prioritaria-cat-d009-2026-09-24.md).
+O item 20 passa a `pendente-recaptura`; itens 17/18 permanecem provisórios. Nenhuma linha foi aprovada,
+carregada ou publicada. `CAT-012` depende de UAT/rollback; CAT-D010 permanece `deferred`.
+
+Os gates técnicos reprovados continuam pendentes. Não houve repetição de pipeline ou novo deploy;
+a autorização de staging já existe e não substitui estabilidade, Chrome real ou evidência terminal.
+
+## Registro histórico preservado — diagnóstico anterior aos esclarecimentos de 30 de setembro de 2026
 
 `CAT-001`–`CAT-010` permanecem implementados e `ready-for-gate`, não `done`. A realocação para
 Chrome foi aprovada e implementada; não reabrir essa decisão nem as Fatias 1–4. O SHA de staging

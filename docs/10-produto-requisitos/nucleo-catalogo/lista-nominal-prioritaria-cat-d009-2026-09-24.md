@@ -8,7 +8,7 @@ fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-09-24
+ultima_revisao: 2026-09-30
 fonte_canonica: gaiatec-documentacao
 ---
 
@@ -19,6 +19,15 @@ aprovação de publicação**. Os nomes vieram do lote piloto EV2 como referênc
 serão copiados automaticamente para `cms_catalog_*`, não carregam SKU e não formam fonte mista.
 Cada linha exige recaptura manual de identidade, classificação, direitos, mídia e especificações no
 novo catálogo, seguida de revisão e aprovação registradas.
+
+## Responsabilidade confirmada em 30 de setembro de 2026
+
+O usuário confirmou que cadastro e aprovação funcional pertencem ao **mesmo papel**. Mantém-se
+`Comercial GAIATEC Sistemas` nas duas colunas: não há pendência de indicar outra equipe ou pessoa.
+Conforme [CAT-D003 e CAT-D004](decisoes-funcionais-aprovadas-2026-09-13.md), o Administrador pode
+publicar o próprio conteúdo; Operador continua sem essa capacidade. AAL2, autorização granular,
+revisão, auditoria e evidências de homologação continuam obrigatórias. Essa confirmação não aprova
+antecipadamente nenhuma linha e não estende a regra aos outros fluxos editoriais ou de release.
 
 | Ordem | Produto nominal candidato                                     | Owner de cadastro          | Aprovador funcional        | Estado CAT-D009            | Evidência                                                                    |
 | ----: | ------------------------------------------------------------- | -------------------------- | -------------------------- | -------------------------- | ---------------------------------------------------------------------------- |
@@ -41,11 +50,25 @@ novo catálogo, seguida de revisão e aprovação registradas.
 |    17 | Medidor de Nível Ultrassônico Compacto                        | Comercial GAIATEC Sistemas | Comercial GAIATEC Sistemas | user-confirmed-provisional | confirmação explícita do usuário; conflito documental continua sem resolução |
 |    18 | Medidor de Nível Ultrassônico Remoto                          | Comercial GAIATEC Sistemas | Comercial GAIATEC Sistemas | user-confirmed-provisional | confirmação explícita do usuário; conflito documental continua sem resolução |
 |    19 | Medidor de Vazão Ultrassônico Portátil                        | Comercial GAIATEC Sistemas | Comercial GAIATEC Sistemas | pendente-recaptura         | —                                                                            |
-|    20 | Medidor de Vazão Clamp-On, Inserção e Flangeado               | Comercial GAIATEC Sistemas | Comercial GAIATEC Sistemas | bloqueado-completude       | fabricante/origem a confirmar                                                |
+|    20 | Medidor de Vazão Clamp-On, Inserção e Flangeado               | Comercial GAIATEC Sistemas | Comercial GAIATEC Sistemas | pendente-recaptura         | Tmeasurement informado pelo usuário; fonte de 30/09/2026 abaixo              |
+
+## Fabricante do item 20
+
+Fabricante/marca informado pelo usuário: **Tmeasurement**. A
+[página primária TDS-100M & TUF-2000M](https://www.tflowmeter.com/flow-meter/ultrasonic-flow-meter/tds-100m-tuf-2000m.html),
+consultada em 30/09/2026, apresenta a marca Tmeasurement e a empresa Dalian Taijia Technology Co., Ltd.
+Isso fornece origem verificável para a marca, sem comprovar equivalência desses modelos com a
+referência comercial GATSONIC-SLM. Não transpor especificações, certificações, imagens ou variantes
+sem recaptura da documentação do produto exato e verificação dos direitos de uso.
+
+Histórico preservado: antes desse esclarecimento, o item 20 estava `bloqueado-completude` por
+fabricante/origem ausente. Essa pendência foi resolvida; o estado atual é `pendente-recaptura`, como
+os demais candidatos não provisórios, e não `aprovado`. Nenhum SKU foi incorporado à lista.
 
 ## Gate de aprovação
 
-O Product Owner deve confirmar a composição final desta lista e o aprovador de cada linha. QA só
+O papel responsável pelo cadastro e pela aprovação está confirmado acima. A composição final e a
+evidência de revisão/aprovação de cada linha ainda precisam ser registradas. QA só
 marca uma linha como `aprovada` após evidência de cadastro, revisão, publicação em staging, Chrome
 real e rollback. Enquanto qualquer linha estiver pendente/bloqueada, CAT-D009 permanece fechado e o
 site antigo continua sendo a única fonte pública. A quantidade de linhas não substitui a aprovação
@@ -55,5 +78,9 @@ nominal.
 
 Os itens 17 e 18 foram marcados como `user-confirmed-provisional` por confirmação explícita do
 usuário nesta execução. Esse estado é apenas uma decisão provisória de planejamento: não substitui
-recaptura documental, owner/aprovador independente, UAT, aprovação funcional ou o gate CAT-D009.
+recaptura documental, responsabilidade de cadastro/aprovação, UAT, aprovação funcional ou o gate CAT-D009.
 Nenhuma linha foi carregada, publicada ou usada em cutover.
+
+A redação anterior exigia owner/aprovador independente. Essa interpretação fica corrigida por
+CAT-D003 e pela confirmação de 30/09: não é necessário segundo aprovador no Núcleo de Catálogo.
+O histórico não constitui uma exceção ou alteração dos controles aplicáveis a outros módulos.

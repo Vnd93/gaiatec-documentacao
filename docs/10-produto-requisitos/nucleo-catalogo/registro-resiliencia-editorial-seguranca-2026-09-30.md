@@ -35,6 +35,45 @@ condições de reprovação, retries, RLS, AAL2, budgets ou runtime. A revisão 
 registradas abaixo. O código em `origin/main` avançou para `830664f6384e6bf15e19b91816b82ccc42ba1ef6`;
 não foi promovido a staging. Não reimplementar Fatias 1–4 nem a realocação Chrome já aprovada.
 
+## Esclarecimentos funcionais posteriores — 30 de setembro de 2026
+
+O usuário informou **Tmeasurement** como fabricante do item 20 e confirmou que cadastro e aprovação
+pertencem ao mesmo papel. Os contratos existentes aceitam `ownerRole` e `approverRole` iguais.
+Mais importante, [CAT-D003 e CAT-D004](decisoes-funcionais-aprovadas-2026-09-13.md) já permitem
+ao Administrador publicar o próprio conteúdo; uma segunda pessoa não é obrigatória no Catálogo.
+A exigência posterior de aprovador independente foi uma interpretação incorreta da documentação,
+não uma proteção a acrescentar ao contrato. Fica corrigida para este núcleo, preservando o histórico.
+
+Não se alteram os fluxos editoriais existentes de outras áreas nem a segregação de release,
+revisão de segurança ou atestação documental. Administrador e Operador conservam suas capacidades,
+RLS/AAL2/auditoria permanecem obrigatórios, e evidências server-owned de UAT não são autoatestadas.
+Confirmar o papel não equivale a aprovar os produtos ainda não recapturados e homologados.
+
+A [lista nominal](lista-nominal-prioritaria-cat-d009-2026-09-24.md) contém a fonte primária da marca
+Tmeasurement e distingue essa confirmação da identidade exata do modelo comercial. O item 20 muda
+de `bloqueado-completude` por fabricante ausente para `pendente-recaptura`; nenhum modelo OEM,
+especificação, certificação, mídia ou direito foi inferido por equivalência. Itens 17/18 permanecem
+`user-confirmed-provisional`, sem aprovação, carga, publicação ou cutover.
+
+Retomada verificada com GitHub Vnd93, holder existente, ambas as árvores canônicas limpas em `main`,
+fetch/origin iguais e zero workflows ativos ou fences. Staging continua com 113 migrations/última
+`0113`, flag desligada, zero overrides, produtos, snapshots e leases QA ativas. O incidente público
+de latência do Supabase seguia aberto na consulta; não prova sozinho a causa de G11/503 e não foi
+usado para aprovar um gate. Não houve nova execução, mutação remota, mudança de runtime ou de schema.
+
+Validação dirigida em `830664f6384e6bf15e19b91816b82ccc42ba1ef6`: os **11 testes existentes** de
+`tests/contracts/catalog-release.test.ts` passaram em **20,48 s**, incluindo entrada nominal com
+papéis iguais, itens provisórios, flag, fronteira sem SKU e cobertura/UAT. Não se duplicou teste ou
+implementação já existente. O check integral da documentação passou: **303 arquivos Markdown,
+428 links locais e zero padrões sensíveis**; revisão do diff e `git diff --check` aprovados.
+Esta entrega é documental e não exige deploy do CMS; commit/push e CI são verificados no
+encerramento da sessão, sem invalidar ou reconstruir os artefatos da aplicação.
+
+Pendências vigentes: G11/503 diagnosticados sem estabilidade comprovada, G7 de produtos ainda não
+alcançado remotamente, Chrome positivo, recaptura/aprovação nominal e UAT/rollback. **Não falta
+autorização genérica de staging, outro papel funcional nem o nome do fabricante do item 20.**
+As menções anteriores a essas pendências neste histórico não devem reabri-las.
+
 ## Resultado histórico anterior à validação remota da fixture G7
 
 Após o diagnóstico dirigido descrito abaixo, o candidato

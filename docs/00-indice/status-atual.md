@@ -24,7 +24,27 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 30 de setembro de 2026: staging recuperado; homologação ainda reprovada
+## Situação vigente — 30 de setembro de 2026: responsabilidade e fabricante esclarecidos
+
+O usuário confirmou o mesmo papel funcional para cadastro e aprovação do Catálogo. A decisão
+CAT-D003 já permite ao Administrador publicar o próprio conteúdo, com auditoria; não exigir segunda
+pessoa ou outra equipe. A pendência anterior de aprovador independente era uma interpretação
+incorreta, agora corrigida, sem alterar os controles dos outros módulos ou presumir aprovação nominal.
+
+**Tmeasurement** foi informado pelo usuário para o item 20 e tem fonte primária da marca registrada
+na [lista nominal atualizada](../10-produto-requisitos/nucleo-catalogo/lista-nominal-prioritaria-cat-d009-2026-09-24.md).
+O item passa de fabricante ausente para `pendente-recaptura`; não foi aprovado ou carregado.
+Itens 17/18 continuam `user-confirmed-provisional`. CAT-011 exige recaptura e aprovação registrada,
+não nova definição de papel; CAT-012 exige UAT/rollback. CAT-D010 permanece adiado.
+
+Permissões técnicas para migrations/deploy controlados em staging já existem. Nenhum novo deploy
+ou retry foi disparado: persistem G11 reprovado e landing HTTP 503, sem prova de correção ou de
+estabilidade suficiente. As Fatias 1–4 não foram refeitas. CMS `main` permanece em `830664f`,
+staging em `88e9bcf`, catálogo default-off e vazio; produção, carga/publicação/cutover intocados.
+Os 11 testes existentes de governança do catálogo passaram novamente no SHA completo registrado
+abaixo; o contrato já aceita os papéis iguais. Não houve mudança de código, schema ou permissões.
+
+## Registro histórico preservado — antes dos esclarecimentos de responsabilidade e fabricante
 
 As Fatias 1–4 e a realocação aprovada da captação positiva para Chrome real estão implementadas.
 Não reiniciá-las. O candidato `88e9bcf8a324d35b12dba3c4f8cd522011270d26` passou no check completo,

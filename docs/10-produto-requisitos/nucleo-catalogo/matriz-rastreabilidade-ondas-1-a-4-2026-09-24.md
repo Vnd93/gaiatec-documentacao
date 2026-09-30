@@ -70,6 +70,13 @@ o release. A verificação de Chrome real confirmou apenas sessão e barreira de
 challenge nem captação positiva atestada. `CAT-001`–`CAT-010` seguem `ready-for-gate`;
 `CAT-011`/`CAT-012` continuam bloqueados nos gates nominais e de UAT/rollback. Nenhuma fatia é `done`.
 
+Esclarecimento posterior no mesmo dia: cadastro e aprovação pertencem ao mesmo papel funcional,
+confirmado pelo usuário. CAT-D003 permite ao Administrador publicar o próprio conteúdo; não
+acrescentar segundo aprovador ao gate CAT-011. A [lista nominal](lista-nominal-prioritaria-cat-d009-2026-09-24.md)
+registra Tmeasurement no item 20, agora `pendente-recaptura`, sem afirmar equivalência de modelo.
+Isso resolve as pendências de definição de papel/fabricante, não recaptura, aprovação nominal,
+UAT/rollback ou qualquer gate operacional reprovado. Os controles dos demais fluxos não mudam.
+
 ## Checkpoint histórico da integração — 28 de setembro de 2026
 
 O SHA `486fa5c40baeafe7212914591499245ddef4a5a6` reúne a implementação funcional das Fatias
