@@ -24,7 +24,24 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 30 de setembro de 2026: recuperação editorial comprovada; candidato corrigido
+## Situação vigente — 30 de setembro de 2026: candidato final de seletores `9719f52`
+
+O CI [36785393868](https://github.com/Vnd93/gaiatec-cms/actions/runs/36785393868) aprovou o
+candidato `aad5922` em 454 s: sete jobs, 67 arquivos/2.154 testes PostgreSQL, incluindo as sete
+regressões de recovery; auditoria sem vulnerabilidades. Antes de qualquer promoção, a revisão
+encontrou mais uma ambiguidade na mesma sequência: “Valor” selecionava quatro controles.
+Três testes novos reproduziram o defeito para booleano/número/texto e passaram com busca exata.
+
+O candidato atual é `9719f52d756ba447751398238b2e9dab61df02dc`, apenas dois arquivos de testes
+adicionais, check completo aprovado (221 arquivos/1.418 testes Vitest, nove focados, demais
+suítes e build). CI e gates remotos desse SHA ainda estão pendentes; `aad5922` não foi promovido.
+Staging permanece recuperado em `39a8216`, catálogo desligado/vazio. Chrome real autenticado foi
+observado com a tela default-off; isso não é aprovação do novo SHA nem captação positiva.
+
+As Fatias 1–4 não foram reiniciadas. Recaptura/aprovação nominal, Chrome/UAT/rollback e evidência
+terminal ainda faltam; carga/publicação comercial, cutover e produção continuam fora do escopo.
+
+## Registro histórico preservado — recuperação editorial comprovada e primeiro candidato corrigido
 
 As Fatias 1–4 continuam implementadas, sem reinício. O canônico
 [36778600629](https://github.com/Vnd93/gaiatec-cms/actions/runs/36778600629), candidato

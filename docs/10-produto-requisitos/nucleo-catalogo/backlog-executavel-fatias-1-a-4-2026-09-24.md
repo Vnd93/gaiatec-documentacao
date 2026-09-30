@@ -40,7 +40,16 @@ exigem F1/F2 verdes. `CAT-010`–`CAT-012` exigem F1–F3 verdes. Estados permit
 `planned → in-progress → blocked → ready-for-gate → done`; `done` exige SHA, digest, evidência e
 rollback registrados. `CAT-D010` permanece `deferred` até dois ciclos manuais completos e estáveis.
 
-## Situação vigente — correção e recuperação editorial de 30 de setembro de 2026
+## Situação vigente — revisão de seletores concluída, candidato `9719f52`
+
+`aad5922` passou CI `36785393868` (454 s, sete jobs, 2.154 testes pgTAP), mas não foi promovido.
+A revisão anterior ao deploy encontrou e reproduziu a ambiguidade adicional de “Valor”. Correção
+`9719f52d756ba447751398238b2e9dab61df02dc`, dois arquivos de testes, nove regressões focadas e
+check completo verdes; gates remotos desse SHA pendentes. Estado recuperado, escopo default-off
+e pendências CAT-011/CAT-012 permanecem como abaixo. Não reiniciar fatias nem transferir aprovações
+entre SHAs. Ver [evidência atualizada](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Registro histórico preservado — correção e recuperação editorial de 30 de setembro de 2026
 
 `CAT-001`–`CAT-010` seguem implementados e `ready-for-gate`. O canônico `36778600629` aprovou
 G11 29/29, G7 13/13, 47 testes públicos e pós-deploy; falhou no seletor do teste editorial antes

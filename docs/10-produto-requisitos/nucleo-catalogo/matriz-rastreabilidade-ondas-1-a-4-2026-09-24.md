@@ -55,7 +55,16 @@ leitura, Chrome e evidência). O SLO de caminho feliz é 40–60 minutos; qualqu
 identificar o gargalo e nunca relaxar segurança. O primeiro cutover permanece bloqueado enquanto a
 lista nominal não tiver 100% de cadastro, revisão e aprovação.
 
-## Checkpoint vigente — recuperação editorial e candidato `aad5922`
+## Checkpoint vigente — candidato `9719f52`, antes de nova promoção
+
+`9719f52d756ba447751398238b2e9dab61df02dc` corrige somente os seletores de valor técnico e
+acrescenta três regressões executáveis; check completo local verde com 1.418 testes Vitest.
+Predecessor `aad5922` passou CI `36785393868` em 454 s (sete jobs, 67 arquivos/2.154 testes pgTAP),
+sem promoção. CI/pacote/ponte/canônico/Chrome do novo SHA permanecem pendentes; staging recuperado
+continua `39a8216`, sem alteração de flag ou catálogo. Não reaproveitar aprovação dependente de SHA.
+CAT-001–010 seguem `ready-for-gate`; recaptura nominal e UAT/rollback ainda pendentes.
+
+## Checkpoint histórico — recuperação editorial e candidato `aad5922`
 
 Staging recuperado: `39a82162574195a4bd778cf7d76cc70984bc144a`, pacote `11124908964`, ponte
 `36777260148`, deployment `2f8209f7-973f-48e7-a45f-595143e7ae6d`, 114 migrations, catálogo

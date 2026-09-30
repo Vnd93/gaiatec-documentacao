@@ -21,7 +21,28 @@ relacionados:
 
 # Resiliência editorial e homologação controlada de staging
 
-## Resultado vigente — recuperação editorial comprovada e candidato `aad5922`
+## Resultado vigente — revisão completa dos seletores, candidato `9719f52`
+
+O CI [36785393868](https://github.com/Vnd93/gaiatec-cms/actions/runs/36785393868), attempt 1 de
+`aad5922c3efcf37c998d1280c4ad804c7896c593`, terminou verde em 454 s (22:24:33–22:32:07 UTC).
+Sete jobs passaram, inclusive 67 arquivos/2.154 testes pgTAP e as sete regressões SQL novas;
+auditoria sem vulnerabilidades. O pacote não foi promovido: revisão somente leitura durante o CI
+identificou outro seletor ambíguo na mesma sequência editorial, antes de consumir novo deploy.
+
+`attribute.getByLabel("Valor")` correspondia a quatro controles (tipo, valor, origem e homologação).
+Após o CI terminal, zero concorrência/fences, Vnd93/fetch/árvore limpa e fast-forward confirmados,
+três testes reproduziram a falha no componente real com os seletores extraídos do próprio E2E.
+`9719f52d756ba447751398238b2e9dab61df02dc` acrescenta `exact: true` nas duas ramificações e prova
+que booleano, número e texto alteram somente o valor, mantendo tipo controlado, origem manual e
+homologação desligada. Nove testes focados passaram; check completo: 221 arquivos/1.418 testes
+Vitest, demais suítes, build 18,31 s e 799.039 bytes iniciais. Nenhum runtime, migration ou gate mudou.
+
+O candidato `9719f52` exige CI/pacote/ponte/canônico próprios. Staging segue `39a8216`, recuperado,
+com 114 migrations e catálogo default-off/vazio. Chrome real autenticado exibiu a tela desativada;
+captação positiva e homologação desse novo SHA ainda não ocorreram. Sem carga/publicação comercial,
+cutover ou produção. As evidências anteriores abaixo são históricas, não aprovações transferidas.
+
+## Registro histórico preservado — recuperação editorial e candidato `aad5922`
 
 O canônico `36778600629`, SHA `39a82162574195a4bd778cf7d76cc70984bc144a`, passou G11
 29/29 (leitura p95 227/500 ms; comandos 388/800 ms), G7 13/13, 47 testes públicos aplicáveis
