@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: g17-canonico-validado-editorial-bloqueado
+status: realocacao-chrome-aprovada-em-validacao
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -19,11 +19,11 @@ relacionados:
   - ../../00-indice/status-atual.md
 ---
 
-# Correções entregues; G17 aprovado; captação positiva ainda bloqueada
+# Captação positiva realocada para Chrome; validação em andamento
 
 ## Resultado e limites
 
-O candidato `035350ad690dcba40bd4542705a6b184b01b87bc` está em `origin/main` e foi
+Antes da aprovação de sequência abaixo, o candidato `035350ad690dcba40bd4542705a6b184b01b87bc` foi
 implantado exclusivamente em staging, com o mesmo pacote selado no CI e promovido pela ponte.
 O run canônico passou G11, G12 e G17, mas **não homologou o release**: o ciclo editorial tentou
 captar um lead usando um token dummy incompatível com a prova Turnstile exigida. Finalizer e
@@ -155,7 +155,7 @@ anterior de HTTP 503 nessa etapa não se repetiu neste run. Isso comprova esta e
 universal nem causalidade exclusiva da correção de retry. O incidente Supabase observado no diagnóstico
 anterior tampouco prova a causa de todos os atrasos históricos.
 
-### Bloqueio atual: prova positiva do Turnstile
+### Bloqueio diagnosticado antes da aprovação: prova positiva do Turnstile
 
 Em `scripts/phase7/staging-roundtrip.mjs`, o canário usa `XXXX.DUMMY.TOKEN.XXXX` na captação positiva,
 enquanto a sitekey configurada de staging não é uma chave dummy. O backend recusou a requisição com
@@ -173,11 +173,59 @@ positiva para a etapa Chrome**, preservando suas dependências e mantendo os dem
 independentes antes do challenge. Não trocar a proteção por chaves always-pass, não aceitar dummy
 como positivo, não injetar um token nem declarar o gate aprovado por ausência de erro.
 
-A implementação dessa realocação ainda não foi feita. Antes de um novo run, a matriz versionada e
+Naquele encerramento, a implementação dessa realocação ainda não havia sido feita. Antes de um novo run, a matriz versionada e
 os testes contratuais devem provar a preservação de: captação 201 real; idempotência; persistência,
 consentimento e outbox; RBAC negativo; exportação AAL2; anonimização; cleanup/resíduo; challenge
 SHA/deployment-bound, validade e antirreplay; recuperação durável e evidência terminal obrigatória.
 Não eliminar uma assertiva de API/compatibilidade apenas por existir uma verificação visual parecida.
+
+## Aprovação e matriz da realocação para Chrome real
+
+Em 30/09/2026, o usuário aprovou explicitamente mover a captação positiva e suas verificações
+dependentes para a etapa Chrome real, preservando todos os controles. Esta aprovação resolve a
+decisão de sequência; não aprova um SHA novo, produção, carga comercial ou cutover.
+
+A implementação local usa o formulário sintético da campanha exata no canário de staging. O
+transporte normal serializa o corpo uma vez e, somente após o primeiro HTTP 201 com `duplicate=false`,
+faz uma única duplicação deliberada dos mesmos bytes. Exige outro HTTP 201, `duplicate=true` e a
+mesma referência. Não há retry após falha, extração/injeção de token, chave always-pass ou caminho
+especial no backend. Formulários normais e produção continuam enviando uma única requisição.
+O marcador visual `Idempotência HTTP 201 confirmada.` só aparece após essas duas respostas.
+Ele é uma assertiva do código do candidato, não uma alegação de captura de tráfego pelo operador.
+
+| Controle preservado                                                                                                                                 | Etapa obrigatória                                                              | Evidência vinculada                                                                                            |
+| --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| CAPTCHA ausente/inválido recusado; RBAC editorial, publicação AAL1 recusada, expiração, bulk, restauração e auditoria                               | Faixa automática anterior ao challenge                                         | Roundtrip editorial identifica escopo automático; não declara a captação positiva aprovada                     |
+| Primeiro 201 real, segundo 201 idempotente e mesma referência                                                                                       | Formulário público no Chrome real, com widget genuíno                          | Atestação consumida, texto de sucesso e screenshot vinculados ao SHA/run/attempt/challenge; token nunca retido |
+| Uma persistência, consentimento, vínculo de formulário/ator/SHA/ambiente, histórico inicial e outbox unitários                                      | Bootstrap autenticado após a atestação Chrome                                  | Leitura RLS real e prova de auditoria em `cms-final-coverage.json`                                             |
+| Negativa de atribuição pelo marketing, atribuição comercial, exportação AAL1 recusada, exportação AAL2, anonimização e outbox/auditoria preservados | Após Chrome, compatibilidade legacy/hybrid, percurso semântico e rollback AAL2 | `cms-real-browser-lead-controls.json`, com 13 assertivas obrigatórias e deployment exato                       |
+| Revogação dos três atores temporários; limpeza dos fixtures Chrome; ausência de resíduo                                                             | `finally` das dependências e cleanup/residue compartilhados                    | Leases duráveis, auditoria de encerramento e recuperação/watchdog existentes                                   |
+| Nenhum sucesso terminal com prova ausente, falsa, reusada ou de outro alvo                                                                          | Materialização e selagem terminal                                              | Digest do relatório, bindings exatos, manifesto e upload imutável obrigatórios                                 |
+
+A compatibilidade legacy/hybrid negativa e o percurso autenticado AAL2 do frontend rollback não
+foram removidos. A captação positiva real usa o contrato público selecionado pelo formulário do
+candidato; a ponte de compatibilidade não é reclassificada como prova positiva de envio legado.
+
+Os controles pós-Chrome compartilham o limite existente de 30 minutos com o percurso rollback,
+executando depois dele e falhando se qualquer comando falhar. O teto contratual de 200 minutos
+entre provisionamento e cleanup continua igual, inferior à lease de 240 minutos. O primeiro
+check local detectou a soma indevida de 15 minutos; a implementação foi corrigida, sem alterar o
+teste de limite, o TTL, os 2.100 segundos de espera do watcher ou a validade/antirreplay do challenge.
+
+Fontes atuais consultadas antes da mudança: [MFA do Supabase](https://supabase.com/docs/guides/auth/auth-mfa),
+[migração dos endpoints de logs](https://supabase.com/changelog/48235-migration-of-supabase-management-api-logs-all-analytics-endpoint-to-logs-endpoint)
+e [validação server-side do Turnstile](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/).
+Não houve alteração de CLI, migrations, Auth, RLS, Edge Functions, Node pinado, secrets ou endpoints de logs.
+
+O novo candidato `cccedddc22b895a58f8bca74b649ede3200a1572` passou no `npm run check`: 220 arquivos/
+1.403 testes Vitest, suites Node, evals, lint, tipos e build em 26,41 s; quatro chunks iniciais
+totalizam 799.039 bytes. Permanecem os 16 skips de symlink específicos de Windows. A documentação
+passou com 303 arquivos Markdown, 414 links locais e zero padrões sensíveis. O teste de escopo usa
+a mesma derivação do título para chave que a UI real, recusando o prefixo sintético antigo.
+
+O candidato ainda precisa concluir CI, ponte, deploy e Chrome real; aprovação funcional
+e SLO end-to-end permanecem pendentes. A prontidão do Chrome real foi conferida com sessão
+autenticada em staging; nenhum challenge foi criado durante essa preparação.
 
 ## Encerramento seguro e retomada
 
