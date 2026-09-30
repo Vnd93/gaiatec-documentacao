@@ -23,6 +23,11 @@ relacionados:
 
 ## Resultado e limites
 
+Após o diagnóstico dirigido descrito abaixo, o candidato
+`88e9bcf8a324d35b12dba3c4f8cd522011270d26` corrigiu a fixture G7 com dados governados e isolados.
+Passou no check local completo; a homologação remota desse novo SHA continua pendente.
+Os resultados anteriores permanecem históricos, não autorização reaproveitável.
+
 A realocação aprovada foi implementada em `cccedddc22b895a58f8bca74b649ede3200a1572`, com check
 completo, CI e ponte aprovados. O controle adicional `624eaf0b1256485fbe8ae1174c8219ff94846885`
 também passou no check e CI. O run canônico `36725530364` consumiu os mesmos bytes, mas foi
@@ -340,6 +345,79 @@ ainda não têm prova executada neste candidato. Não gerar atestação, reaprov
 SHA ou marcar o release como verde. Antes de outro run canônico, isolar a latência G11 em diagnóstico
 dirigido; preservar e revalidar o CI, ponte e pacote exatos que continuem válidos. Não repetir o
 deploy cegamente, reconstruir os mesmos artefatos ou reiniciar as Fatias 1–4.
+
+## Diagnóstico dirigido após a recuperação de ccceddd
+
+O passe único [36733465791](https://github.com/Vnd93/gaiatec-cms/actions/runs/36733465791), attempt 1,
+usou controle `624eaf0b1256485fbe8ae1174c8219ff94846885` e candidato
+`cccedddc22b895a58f8bca74b649ede3200a1572`. Executou de 15:00:43 a 15:16:24 UTC: **941 s**,
+11 checks aprovados e dois reprovados. É diagnóstico `approvable=false`, não aprovação terminal.
+Não aplicou migration, não promoveu frontend nem implantou Edge Functions.
+
+O G11 manteve uma janela de 20 aquecimentos e 20 amostras, sem descarte ou alteração de budget:
+leitura administrativa p95 **647 ms / limite 500 ms**, comandos **322 ms / limite 800 ms**.
+Na leitura, RPC p95 639 ms, snapshot SQL p95 404 ms e wall p95 925,91 ms. A melhora em relação
+a 958 ms não torna o resultado aprovado. Nenhuma repetição automática foi autorizada pelo diagnóstico.
+
+O outro bloqueio ficou isolado no ciclo editorial G7: o dry-run de dois produtos sintéticos
+selecionava opções corporativas por service role. A normalização escopada da migration `0078`
+recusava corretamente esses termos para os atores QA. A fixture também precisava usar uma definição
+de atributo homologada do catálogo governado e SKUs sintéticos distintos. Não é autorização para
+adicionar SKU ou importação ao Núcleo de Catálogo: trata-se do canário legado já existente.
+
+A correção reutiliza o provisionador autenticado da fixture Chrome: cinco opções privadas e cinco
+entidades mestras QA, definição/conjunto técnico pertencentes ao ator, prova de catálogo e lease
+durável antes da primeira mutação. Os containers corporativos não são alterados ou adotados como
+dados QA. Somente `ev2.master_data` e `ev2.pim_v2` recebem overrides temporários de usuário, por
+30 minutos; `ev2.catalog_v1` permanece default-off. A limpeza terminal existente continua obrigatória.
+
+O diagnóstico aprovou cleanup/resíduo; o watchdog `36735461416` terminou verde e sua compensação
+ficou skipped. A consulta posterior confirmou 113 migrations/última `0113`, zero leases QA ativas,
+overrides do catálogo, produtos ou snapshots; sem workflow ativo ou fence de recovery.
+
+| Evidência do diagnóstico | Identidade imutável                                                                                |
+| ------------------------ | -------------------------------------------------------------------------------------------------- |
+| Relatórios               | Artefato `11106313192`, SHA-256 `96cbefdbc018faae88be1d44349208c2360763d172679176be1602e459a54409` |
+| Métricas                 | Artefato `11106323538`, SHA-256 `775e3415f42d163c02fb3905d1a2129dfe5f6d8b8a9ca16accb8f76e7322884b` |
+
+### Limites do diagnóstico de infraestrutura
+
+Não havia queries ativas, espera por lock, transações antigas, índices inválidos ou I/O de disco/temp
+na RPC cronometrada. Os crons próximos ao run anterior duraram no máximo 176 ms. O EXPLAIN dirigido
+dos filtros levou 111,595 ms de planejamento e 6,260 ms de execução, mas sem contexto QA ativo;
+**não substitui o gate autenticado**. JIT permaneceu desligado e nenhuma configuração foi alterada.
+
+No dashboard do projeto staging exato, a observação das 15:14 UTC mostrou 406,52 MB de RAM,
+288,51 MB usados, 112,54 MB de cache/buffers e 607,14 MB de swap. O percentual de swap mostrado
+era relativo à RAM, não à capacidade total de swap. CPU 35,60% era uma amostra, não média da janela.
+Commit de memória de 1,67 GB também não prova sozinho pressão física sustentada.
+Segundo a [documentação atual de memória e swap](https://supabase.com/docs/guides/troubleshooting/memory-and-swap-usage-explained-aPNgm0),
+swap pode guardar páginas frias normalmente. Não foi comprovada necessidade de upgrade pago.
+
+O [incidente de latência do Supabase](https://status.supabase.com/) continuava aberto na atualização
+de 30/09 às 14:54 UTC. Pode contribuir para a variabilidade, mas não é causa exclusiva demonstrada.
+Não houve upgrade, migração regional, tuning especulativo, exclusão de histórico ou redução de gates.
+O próximo teste de candidato corrigido deve verificar o G7 e todos os controles aplicáveis; não serve
+para escolher uma janela conveniente de G11 nem permite reutilizar aprovações do SHA anterior.
+
+### Correção local e revisão antes de nova promoção
+
+O commit `0494b6de521a15a0e1c076c71774f633325a998e` implementou os pré-requisitos governados.
+Passou em 38 testes focados, check local completo e
+[CI 36738377833](https://github.com/Vnd93/gaiatec-cms/actions/runs/36738377833), de 15:39:15 a
+15:46:45 UTC, 450 s. Não foi promovido. A revisão seguinte encontrou um detalhe da fixture:
+o ID de valor técnico era clonado entre produtos, mas a projeção possui chave primária global.
+Uma regressão reproduziu a colisão antes da correção e passou com ID distinto por produto.
+
+O commit `88e9bcf8a324d35b12dba3c4f8cd522011270d26` contém esse ajuste mínimo, sem modificar o
+schema ou controles de produto. O novo `npm run check` passou: 220 arquivos/1.403 testes da aplicação,
+suítes Node/contratuais, evals, lint, tipos e build em 19,33 s, com 799.039 bytes iniciais dentro do
+budget. Os skips existentes de symlink no Windows não foram transformados em prova de Linux;
+o CI próprio do candidato continua obrigatório. Runtime Node e CLI pinados preservados.
+
+A validação remota deve consumir exclusivamente o pacote selado do SHA `88e9bcf`, após seu CI,
+com nova vinculação de ponte e diagnóstico. Os pacotes anteriores continuam preservados como
+histórico, não como artefato equivalente do novo candidato.
 
 ## Encerramento histórico anterior — candidato 035350a
 

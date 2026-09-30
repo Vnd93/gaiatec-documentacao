@@ -40,7 +40,29 @@ exigem F1/F2 verdes. `CAT-010`–`CAT-012` exigem F1–F3 verdes. Estados permit
 `planned → in-progress → blocked → ready-for-gate → done`; `done` exige SHA, digest, evidência e
 rollback registrados. `CAT-D010` permanece `deferred` até dois ciclos manuais completos e estáveis.
 
-## Situação vigente — staging controlado de 30 de setembro de 2026
+## Situação vigente — correção da fixture G7 em 30 de setembro de 2026
+
+`CAT-001`–`CAT-010` conservam a implementação integrada e permanecem `ready-for-gate`, não `done`.
+A realocação da captação positiva para Chrome foi **aprovada e implementada** em `ccceddd`;
+não há nova decisão de sequência pendente. O candidato atual
+`88e9bcf8a324d35b12dba3c4f8cd522011270d26` corrige a fixture editorial G7, não reimplementa as
+Fatias 1–4. Check local completo aprovado; homologação remota desse SHA ainda pendente.
+
+O diagnóstico `36733465791` comprovou dois bloqueios: G11 leitura p95 647 ms / 500 ms e termos
+corporativos indevidamente usados pela fixture QA. A correção usa opções/atributos sintéticos
+governados e isolados pelo lease; não relaxa RLS, AAL2 ou validações e não altera o contrato sem SKU
+do novo catálogo. A captação positiva e suas 13 verificações continuam exigindo Chrome real.
+
+`CAT-011` continua `blocked`: composição final, recaptura e aprovação nominal independente não
+podem ser inferidas da autorização técnica. `CAT-012` continua `blocked` por UAT/rollback real,
+não por falta de autorização de staging. Itens 17/18 mantêm `user-confirmed-provisional`; item 20
+exige origem/fabricante verificável. CAT-D010 fica `deferred` até os dois ciclos manuais estáveis.
+
+As 113 migrations de staging e a recuperação anterior estão comprovadas. `ev2.catalog_v1=false`,
+sem carga comercial/publicação/cutover ou produção. Ver o
+[registro de execução e retomada](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Registro histórico preservado — antes da aprovação da realocação em 30 de setembro de 2026
 
 `CAT-001`–`CAT-010` mantêm a implementação integrada, agora em
 `035350ad690dcba40bd4542705a6b184b01b87bc`, com CI e ponte verdes. Migrations/deploy exclusivamente

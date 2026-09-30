@@ -24,7 +24,29 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 30 de setembro de 2026: Chrome implementado; G11 bloqueia homologação
+## Situação vigente — 30 de setembro de 2026: fixture G7 corrigida; validação remota pendente
+
+As Fatias 1–4 e a realocação aprovada da captação positiva para Chrome real já estão implementadas.
+Não reiniciá-las. O diagnóstico dirigido `36733465791` terminou em 941 s, com 11 checks aprovados
+e dois reprovados: G11 de leitura em 647 ms / limite 500 ms e fixture editorial G7 usando termos
+corporativos fora do escopo QA. Cleanup, resíduo e watchdog `36735461416` foram aprovados.
+
+O candidato `88e9bcf8a324d35b12dba3c4f8cd522011270d26` corrige a fixture com termos e atributos
+governados pertencentes ao lease, SKUs sintéticos distintos e identificadores de especificação por
+produto. Passou no check local completo: 220 arquivos/1.403 testes da aplicação, suítes contratuais,
+lint, tipos e build. A regressão de colisão de ID falhou antes e passou depois da correção.
+A homologação remota desse SHA ainda está pendente; CI anterior não aprova bytes alterados.
+
+Permanecem obrigatórios G11, ciclo editorial real, Chrome autenticado, captação positiva e suas
+13 verificações, UAT/rollback e evidência terminal. Não elevar budgets, escolher amostras favoráveis
+ou converter diagnóstico em aprovação. CAT-011 exige aprovação nominal independente; itens 17/18
+são provisórios e falta a origem/fabricante do item 20. CAT-D010 continua adiado.
+
+O [registro de execução](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md)
+separa diagnóstico, correção e entrega. Catálogo default-off; produção, publicação do catálogo,
+carga comercial e cutover permanecem fora do escopo.
+
+## Registro histórico preservado — 30 de setembro de 2026: Chrome implementado; G11 bloqueia homologação
 
 O usuário aprovou mover a captação positiva e suas dependências para Chrome real, sem retirar
 controles. A implementação `cccedddc22b895a58f8bca74b649ede3200a1572` passou no check completo
