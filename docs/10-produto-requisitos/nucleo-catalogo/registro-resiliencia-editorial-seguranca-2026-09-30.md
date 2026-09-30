@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: realocacao-chrome-aprovada-em-validacao
+status: realocacao-chrome-implementada-homologacao-bloqueada-g11
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -19,9 +19,15 @@ relacionados:
   - ../../00-indice/status-atual.md
 ---
 
-# Captação positiva realocada para Chrome; validação em andamento
+# Captação positiva realocada para Chrome; homologação bloqueada em G11
 
 ## Resultado e limites
+
+A realocação aprovada foi implementada em `cccedddc22b895a58f8bca74b649ede3200a1572`, com check
+completo, CI e ponte aprovados. O controle adicional `624eaf0b1256485fbe8ae1174c8219ff94846885`
+também passou no check e CI. O run canônico `36725530364` consumiu os mesmos bytes, mas foi
+interrompido pelo budget de latência G11 antes do Chrome. Finalizer e watchdog recuperaram staging;
+a seção de execução abaixo registra a falha, sem converter CI verde em homologação funcional.
 
 Antes da aprovação de sequência abaixo, o candidato `035350ad690dcba40bd4542705a6b184b01b87bc` foi
 implantado exclusivamente em staging, com o mesmo pacote selado no CI e promovido pela ponte.
@@ -261,11 +267,81 @@ Os 14 s de `observedSeconds` do relatório do attempt 2 medem a retomada das mé
 promoção de 658 s. A ponte inteira, incluindo diagnóstico/retomada, vai de 13:16:53 a 13:38:23 UTC
 (1.290 s). Esses períodos não podem ser apresentados como um caminho feliz de 14 s.
 
-A revisão de controle tem validação própria e não muda nem recompila o candidato já promovido.
-Deploy e Chrome real continuam pendentes; não há aprovação funcional nem SLO end-to-end verde.
-A prontidão do Chrome foi conferida com sessão autenticada em staging, sem gerar challenge antecipado.
+A fotografia anterior ao dispatch registrava a revisão de controle em validação, sem mudança ou
+recompilação do candidato já promovido. Deploy e Chrome estavam pendentes. A prontidão do Chrome
+foi conferida com sessão autenticada em staging, sem gerar challenge antecipado.
 
-## Encerramento seguro e retomada
+### Execução canônica e recuperação após o bloqueio de desempenho
+
+O controle `624eaf0b1256485fbe8ae1174c8219ff94846885` passou no check completo e em 44 testes
+focados de proveniência/compatibilidade. O CI `36724177499` aprovou todas as lanes em 536 s.
+O pacote gerado por esse CI de controle **não substituiu** o pacote do candidato `ccceddd`.
+
+O [run canônico 36725530364](https://github.com/Vnd93/gaiatec-cms/actions/runs/36725530364),
+attempt 1, executou de 13:58:03 a 14:17:35 UTC (1.172 s). Preflight, validação de origem, leitura
+do baseline, recovery durável, verificação dos bytes e provas de migrations passaram. A resolução
+da ponte confirmou produtor 1 e attempt verde 2, preservando o artefato `11098206613` e seu digest.
+
+O G11 herdado reprovou antes de completar a etapa das três janelas G12. A única violação de budget
+registrada foi `adminReadP95Ms=958`, acima de 500 ms. A sequência continuou serial, com exatamente
+20 warmups e uma única janela de 20 medições; não houve descarte de amostras nem retry-until-green.
+
+| Medida p95 na janela reprovada     | Observado | Tratamento                                        |
+| ---------------------------------- | --------: | ------------------------------------------------- |
+| Leitura administrativa no servidor |    958 ms | Reprovada; teto 500 ms preservado                 |
+| RPC administrativa                 |    950 ms | Diagnóstico, não substitui a medida normativa     |
+| Núcleo SQL do snapshot             |    695 ms | Diagnóstico da subfase, sem excluir custo do gate |
+| Rate limit                         |     21 ms | Proteção mantida                                  |
+| Leitura wall                       |  1.316 ms | Reportada separadamente, sem ocultar rede         |
+| Comando no servidor                |    454 ms | Aprovado; teto 800 ms preservado                  |
+
+Os percentis são calculados separadamente e não devem ser somados ou subtraídos para atribuir
+custos exatos. A maior amostra de leitura no servidor foi 1.886 ms; a correspondente subfase SQL
+registrou 1.184 ms. Disponibilidade de G11 foi 100%, outbox lag 0, auditoria 100%, RPO 0 e RTO
+1 minuto. A recusa de review da medição reprovada é o fail-closed esperado, não uma aprovação ausente
+a ser suprida manualmente. As lanes pós-deploy, Chrome e evidência final ficaram skipped.
+
+Finalizer `109928079743` passou em 212 s. O watchdog `36728015014` terminou verde e classificou
+`recoveryRequired=false`; não houve compensação adicional nem nova promoção. A prova terminal
+`11103552620`, digest `sha256:71bef85c5902c046af05d0dc1aab481bb2df05b4b2cdca88bf690827d6eefaec`,
+registrou 100% de disponibilidade, zero 5xx, p95 público 688,970 ms e SHA exato `ccceddd`.
+O relatório de duração `11103168473`, digest
+`sha256:6cfa41a264b8ccf3fd69779e3f9bd4f1cedcf492ce30325bd094bbf15feabd56`, classifica a execução como
+`non-happy-path`; seus 1.168 s foram capturados antes da conclusão final do workflow.
+
+Da abertura do CI do candidato às 13:06:45 até o encerramento desse deploy às 14:17:35 decorreram
+4.250 s (70 min 50 s), incluindo o 502 da ponte, diagnóstico, correção de controle e seu CI.
+Isso excede a meta de 40–60 minutos e **não** constitui SLO de caminho feliz: a homologação falhou.
+
+### Diagnóstico somente leitura e condição de retomada
+
+Após a recuperação, o inventário remoto confirmou zero workflows queued/in_progress/waiting/
+pending/requested nos dois repositórios, zero fences de recovery e zero leases de QA ativas.
+Staging conservou 113 migrations/última `0113`, `ev2.catalog_v1=false`, zero overrides, produtos,
+snapshots e tabelas do catálogo sem RLS. A identidade GitHub `Vnd93`, o holder e os checkouts main
+limpos/sincronizados foram reconfirmados. Produção permaneceu intocada.
+
+A comparação `035350a..ccceddd` não contém alterações em Supabase, G11 ou no orquestrador G12.
+A inspeção de catálogo e estatísticas encontrou zero índices inválidos e zero espera ativa por
+lock. A consulta dos eventos críticos usou o índice parcial existente (`Index Only Scan`,
+zero leituras de disco, 1,578 ms de execução), não justificando criar outro índice para esse trecho.
+As estatísticas acumuladas da RPC cronometrada registram 800 chamadas, média 97,29 ms e máximo
+1.764,49 ms; não são uma janela do run reprovado nem provam estabilidade atual.
+
+Foram consultados o [changelog atual do Supabase](https://supabase.com/changelog), a
+[orientação de inspeção do banco](https://supabase.com/docs/guides/observability/inspect) e o
+[status de latência](https://status.supabase.com/). Em 30/09 havia incidente de latência intermitente
+para clientes no leste dos EUA, ainda sem resolução. Isso é contexto operacional, **não** prova da
+causa exclusiva do custo SQL observado. A versão de banco consultada era 17.6; não foi executado
+upgrade, reindexação, ajuste de configuração, migration, limpeza de histórico ou redução de controle.
+
+A mudança de sequência está entregue, mas a captação positiva real e as 13 verificações dependentes
+ainda não têm prova executada neste candidato. Não gerar atestação, reaproveitar aprovação de outro
+SHA ou marcar o release como verde. Antes de outro run canônico, isolar a latência G11 em diagnóstico
+dirigido; preservar e revalidar o CI, ponte e pacote exatos que continuem válidos. Não repetir o
+deploy cegamente, reconstruir os mesmos artefatos ou reiniciar as Fatias 1–4.
+
+## Encerramento histórico anterior — candidato 035350a
 
 A sonda terminal do candidato final teve 100% de disponibilidade, zero 5xx e p95 público 510,270 ms.
 Após finalizer/watchdog: 113 migrations, última `0113`; flag desligada; zero overrides, produtos,

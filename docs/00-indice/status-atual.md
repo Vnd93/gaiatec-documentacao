@@ -24,7 +24,7 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 30 de setembro de 2026: realocação Chrome implementada
+## Situação vigente — 30 de setembro de 2026: Chrome implementado; G11 bloqueia homologação
 
 O usuário aprovou mover a captação positiva e suas dependências para Chrome real, sem retirar
 controles. A implementação `cccedddc22b895a58f8bca74b649ede3200a1572` passou no check completo
@@ -33,12 +33,25 @@ Não refazer as Fatias 1–4 nem reconstruir o artefato promovido.
 
 A promoção passou no attempt 1; somente a consulta de métricas falhou com HTTP 502. Recuperação,
 backend restaurado, cleanup e watchdog foram comprovados. Uma única retomada **somente de métricas**
-passou no attempt 2, sem novo deploy. O controle de rastreabilidade está sendo validado para vincular
-a prova ao produtor original e o relatório ao attempt verde, recusando qualquer mudança de execução.
+passou no attempt 2, sem novo deploy. O controle `624eaf0b1256485fbe8ae1174c8219ff94846885`
+passou no check completo, em 44 testes focados e no CI `36724177499`. Vincula a prova ao produtor
+original e o relatório ao attempt verde, recusando qualquer mudança de execução.
+
+O [deploy canônico 36725530364](https://github.com/Vnd93/gaiatec-cms/actions/runs/36725530364)
+consumiu o candidato e pacote originais, mas reprovou o **G11: p95 de leitura administrativa 958 ms,
+limite 500 ms**. Comandos passaram em 454 ms / limite 800 ms. A etapa Chrome ficou skipped e não
+houve challenge nem captação positiva atestada. Não repetir automaticamente ou aumentar budgets.
+
+Finalizer aprovado em 212 s e watchdog `36728015014` verde, sem recuperação adicional necessária.
+Sonda terminal: 100% de disponibilidade, zero 5xx, identidade exata e p95 público 688,970 ms.
+O diagnóstico somente leitura confirmou índices válidos e ausência de locks ativos; o custo está
+concentrado no snapshot/RPC. O código Supabase/G11 não mudou desde `035350a`; o incidente de latência
+do Supabase permanece aberto, mas não comprova sozinho a causa. Próximo passo: diagnóstico dirigido
+desse gate antes de outra execução canônica; não reiniciar CI/ponte válidos nem as Fatias 1–4.
 
 O [registro da realocação e retomada](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md)
-contém matriz, testes, artefatos e tempos. O deploy canônico completo e Chrome real ainda não foram
-homologados. Flag desligada; 113 migrations; zero dados comerciais, overrides e leases QA ativas.
+contém matriz, testes, artefatos e tempos. O release completo e Chrome real ainda não foram homologados.
+Flag desligada; 113 migrations; zero dados comerciais, overrides e leases QA ativas.
 Produção, publicação do catálogo, carga comercial e cutover continuam fora do escopo.
 
 ## Registro histórico preservado — 30 de setembro de 2026: G17 anterior aprovado
