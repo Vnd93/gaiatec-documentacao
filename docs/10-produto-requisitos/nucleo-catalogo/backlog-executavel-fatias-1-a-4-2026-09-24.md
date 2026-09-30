@@ -8,7 +8,7 @@ fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-09-28
+ultima_revisao: 2026-09-30
 fonte_canonica: gaiatec-documentacao
 ---
 
@@ -40,7 +40,27 @@ exigem F1/F2 verdes. `CAT-010`–`CAT-012` exigem F1–F3 verdes. Estados permit
 `planned → in-progress → blocked → ready-for-gate → done`; `done` exige SHA, digest, evidência e
 rollback registrados. `CAT-D010` permanece `deferred` até dois ciclos manuais completos e estáveis.
 
-## Situação vigente — integração de 28 de setembro de 2026
+## Situação vigente — staging controlado de 30 de setembro de 2026
+
+`CAT-001`–`CAT-010` mantêm a implementação integrada, agora em
+`035350ad690dcba40bd4542705a6b184b01b87bc`, com CI e ponte verdes. Migrations/deploy exclusivamente
+em staging foram autorizados e executados até `0113`; essa autorização substitui a pendência de
+autorização descrita na fotografia de 28 de setembro abaixo. Não refazer as implementações.
+
+Os gates canônicos G11/G12/G17 passaram, mas o release continua bloqueado no canário de captação
+positiva, que envia token dummy apesar da proteção Turnstile real. Chrome e aprovação terminal não
+executaram. Manter `ready-for-gate`, não marcar `done`. A realocação dessa prova para a etapa Chrome,
+com todas as assertivas de segurança/negócio preservadas, está pendente de decisão e implementação.
+
+`CAT-011` permanece `blocked` por recaptura/aprovação nominal independente. `CAT-012` permanece
+`blocked` por homologação/rollback funcional pendente, **não por falta de autorização de staging**.
+Cleanup de QA foi comprovado nesta execução: zero leases ativas e resíduos comerciais do catálogo,
+flag desligada e RLS preservada. Isso não substitui a prova de rollback funcional de CAT-012.
+
+Ver [evidências e ponto de retomada](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+Itens 17/18 continuam provisórios, item 20 incompleto, CAT-D010 adiado e produção/carga/publicação/cutover proibidos.
+
+## Registro histórico preservado — integração de 28 de setembro de 2026
 
 `CAT-001`–`CAT-010` têm implementação integrada em `486fa5c40baeafe7212914591499245ddef4a5a6`,
 CI `36512509486` verde, e estão `ready-for-gate`, não `done`. A integração fecha as lacunas de

@@ -8,7 +8,7 @@ fase: execucao
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-09-29
+ultima_revisao: 2026-09-30
 fonte_canonica: gaiatec-documentacao
 substitui:
   - gaiatec-status-atual-2026-09-06
@@ -19,11 +19,34 @@ relacionados:
   - ../60-qualidade-auditoria/registro-consolidacao-2026-09-13.md
   - ../10-produto-requisitos/nucleo-catalogo/registro-staging-controlado-fatias-1-a-4-2026-09-29.md
   - ../10-produto-requisitos/nucleo-catalogo/registro-modelo-gratuito-zdr-2026-09-29.md
+  - ../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md
 ---
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 29 de setembro de 2026: modelo gratuito com ZDR
+## Situação vigente — 30 de setembro de 2026: G17 canônico aprovado
+
+O candidato `035350ad690dcba40bd4542705a6b184b01b87bc` está em `main` e em staging. Foram
+entregues correções de leitura pública, patches de segurança e UUIDs completos nas fixtures de IA.
+CI `36658205367` e ponte `36658865515` verdes; mesmo pacote selado, sem rebuild. Não refazer as Fatias 1–4.
+
+O [deploy canônico 36660065421](https://github.com/Vnd93/gaiatec-cms/actions/runs/36660065421)
+passou G11 (29/29), G12 e G17 (12 checks, inferência real Sante gratuita/ZDR). Blog e campanha/formulário
+também passaram, mas a **captação positiva foi recusada pelo Turnstile**: o canário ainda envia token
+dummy antes da etapa Chrome. O release não está homologado; as lanes posteriores ficaram skipped.
+
+Finalizer e watchdog `36661969245` verdes; sonda terminal com 100% de disponibilidade/zero 5xx.
+113 migrations, última `0113`; catálogo default-off, zero overrides, produtos, snapshots e leases QA
+ativas; RLS preservada. Produção, carga comercial, publicação do catálogo e cutover intocados.
+
+A próxima decisão é realocar a captação positiva e suas provas dependentes para a etapa Chrome real,
+preservando todas as negativas, idempotência, RBAC/AAL2, LGPD, cleanup e evidência terminal. Não aceitar
+token dummy, retirar gate ou repetir o run. A pausa da automação histórica não foi confirmada.
+O [registro de correções, tempos, artefatos e retomada](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md)
+detalha a evidência. Aprovação nominal independente e UAT/rollback do catálogo continuam pendentes;
+itens 17/18 provisórios, item 20 incompleto e CAT-D010 adiado.
+
+## Registro histórico preservado — 29 de setembro de 2026: modelo gratuito com ZDR
 
 A autorização de substituição do modelo foi executada exclusivamente em staging. O candidato
 `840049128e28e0d66bdd2725cf9df140a326ff29` passou no CI e bridge; migration `0113` aplicada.
