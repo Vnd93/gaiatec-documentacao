@@ -21,7 +21,21 @@ relacionados:
 
 # Captação positiva realocada para Chrome; homologação bloqueada em G11
 
-## Resultado e limites
+## Resultado vigente: recuperação comprovada, sem aprovação do release
+
+O SHA servido em staging é `88e9bcf8a324d35b12dba3c4f8cd522011270d26`, com check local, CI e
+ponte verdes. Seu diagnóstico único `36742897039` reprovou G11, landing editorial e primeiro cleanup.
+A recuperação prevista terminou limpa. A correção G7 de produtos não foi alcançada pelo run;
+continua sem validação remota. Não houve run canônico subsequente, challenge ou captação positiva.
+
+Uma lacuna de diagnóstico do cleanup foi confirmada e corrigida no código: os rótulos constantes
+das etapas recusadas passam a ser preservados com indicadores de resíduo/auditoria. Nenhuma mensagem
+bruta, payload, identificação de ator ou credencial entra no relatório. O ajuste não muda operações,
+condições de reprovação, retries, RLS, AAL2, budgets ou runtime. A revisão e a validação exatas são
+registradas abaixo. O código em `origin/main` avançou para `830664f6384e6bf15e19b91816b82ccc42ba1ef6`;
+não foi promovido a staging. Não reimplementar Fatias 1–4 nem a realocação Chrome já aprovada.
+
+## Resultado histórico anterior à validação remota da fixture G7
 
 Após o diagnóstico dirigido descrito abaixo, o candidato
 `88e9bcf8a324d35b12dba3c4f8cd522011270d26` corrigiu a fixture G7 com dados governados e isolados.
@@ -418,6 +432,122 @@ o CI próprio do candidato continua obrigatório. Runtime Node e CLI pinados pre
 A validação remota deve consumir exclusivamente o pacote selado do SHA `88e9bcf`, após seu CI,
 com nova vinculação de ponte e diagnóstico. Os pacotes anteriores continuam preservados como
 histórico, não como artefato equivalente do novo candidato.
+
+## Validação remota da fixture G7 — candidato 88e9bcf
+
+| Execução                                                                                 | Resultado                                                | Duração terminal             |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------- | ---------------------------- |
+| [CI 36739513362](https://github.com/Vnd93/gaiatec-cms/actions/runs/36739513362)          | Sucesso, attempt 1, perfil `full-release` fail-closed    | 392 s, 15:48:19–15:54:51 UTC |
+| [Ponte 36740518613](https://github.com/Vnd93/gaiatec-cms/actions/runs/36740518613)       | Sucesso, attempt 1, mesmos bytes selados                 | 756 s, 15:56:22–16:08:58 UTC |
+| [Diagnóstico 36742897039](https://github.com/Vnd93/gaiatec-cms/actions/runs/36742897039) | Reprovado, attempt 1, 10 checks aprovados / 3 reprovados | 859 s, 16:15:40–16:29:59 UTC |
+
+Esses componentes não formam uma cadeia canônica verde: não há cumprimento comprovado do SLO de
+40–60 minutos. O relatório diagnóstico capturou 852 s antes de terminar; o maior step foi o check
+local, 259 s. A ponte mediu 736 s no job de promoção; sua maior etapa foi a prova de A sobre o
+backend existente, 112 s. Não confundir duração parcial, diagnóstico e caminho feliz de release.
+
+### Artefato único e recuperação da ponte
+
+- Pacote CI `11109981732`, SHA-256
+  `c90276c6906ec023e49cc569938994af2cb44c4d3461eb518f8c0fd168e79274`.
+- Dist archive `f04f161c1355674cb89b35944e0d50f530fcd736a7eb88004588b9d38cc89cfb`;
+  dist tree `22b3cb5fff9b42b564e7d78ac09855ec79bd1795ddf942a7a8444f7eb8954ae1`.
+- Prova da ponte `11110484019`, SHA-256
+  `0d569b057ee1cd3fc3119b3a88154a1f212193c53d0bc8e67464abddd7c7c388`.
+- Deployment canônico `85b12a18-538f-4d45-bc2b-b68529c9807e`; preview
+  `3d095702-ae75-4e3d-9684-48ec42f879ad`. Ambos vinculados ao SHA exato.
+- Restauração `11109884383`, SHA-256
+  `80f6c96c93e40eb047f313cf8ab5e7041d15cf2d2127dcf52238385ad08ee919`.
+  Backend restaurado na versão 513, três probes `public-v2` HTTP 200 consecutivos; cleanup e resíduo
+  das fixtures aprovados. Watchdog `36742084820` skipped após sucesso, sem compensação necessária.
+
+A ponte comprovou compatibilidade com backend legado e fail-closed sem token. Não comprovou envio
+positivo nem UAT do novo catálogo. Antes do diagnóstico: aliases g12/g17 servindo SHA exato,
+checkouts limpos/sincronizados, GitHub Vnd93, zero operações concorrentes e fences.
+
+### Diagnóstico reprovado e encerramento seguro
+
+G11 manteve 20 aquecimentos e 20 amostras de leitura, com 10 comandos (uma mutação e nove replays
+idempotentes). Leitura p95 **4.924 ms / limite 500 ms**, RPC 4.915 ms, snapshot SQL 2.439 ms e wall
+5.208,98 ms. Comandos passaram em **277 ms / limite 800 ms**, wall 833,30 ms. Aquecimentos ficaram
+entre 61–415 ms; todas as leituras medidas ficaram entre 818–5.965 ms. Não houve descarte,
+novo aquecimento seletivo, mudança de budget ou retry-until-green. A causa exclusiva não está provada.
+
+O ciclo G7 confirmou shell, RBAC, recusa de publicação AAL1, formulário versionado e blog
+agendado/publicado/restaurado. Parou em landing HTTP 503 / API HTTP 200, antes de testar os produtos
+governados. Portanto, o ajuste da fixture ainda não foi validado remotamente. G17 aprovou 12 checks,
+mas não substitui essa falha. O incidente público de latência do Supabase continuava aberto;
+não foi usado como desculpa para promover, nem como prova de necessidade de upgrade pago.
+
+O primeiro cleanup retornou `QA_CMS_FIXTURE_CLEANUP_INCOMPLETE`. A retomada de recuperação já
+prevista no workflow passou, suspendeu cinco atores, preservou dois eventos de auditoria e provou
+resíduo ativo zero em todas as categorias. O diagnóstico permanece reprovado pelo primeiro resultado.
+O relatório original não conservou o rótulo da etapa recusada; não é possível reconstruir sua causa
+exata a partir do erro genérico. A correção de observabilidade não inventa esse dado histórico.
+
+Watchdog `36744646809` passou; compensação ficou skipped. Consulta posterior confirmou as 14 leases
+criadas no diagnóstico como `cleaned`, sem falhas de lease registradas; zero leases ativas. Catálogo
+default-off, sem overrides, produtos ou snapshots; 113 migrations/última `0113`, sem workflow ativo
+ou fence. Chrome real confirmou acesso autenticado e a mensagem de preparação do catálogo, sem
+mudança da flag. Produção e carga/publicação/cutover comercial não foram tocados.
+
+| Evidência                 | Identidade imutável                                                                       |
+| ------------------------- | ----------------------------------------------------------------------------------------- |
+| Relatórios do diagnóstico | `11111637812`, SHA-256 `0a3626414b445d522ec70e8cc8ed88006890b776a72e1d782dd7485cd555265b` |
+| Métricas do diagnóstico   | `11111911974`, SHA-256 `ad830193a9216a32e04888376150eaaca79971bd6bb488865952399532f156aa` |
+
+Não houve outra promoção ou repetição de gate após essa falha. A próxima execução depende de
+estabilidade diagnosticada, nova validação dos bytes alterados e preservação integral dos gates.
+Continuam pendentes o aprovador funcional independente de CAT-D009, a origem/fabricante do item 20,
+Chrome positivo e UAT/rollback. Itens 17/18 provisórios; CAT-D010 adiado. A pausa da automação antiga
+não foi confirmada: duas consultas ao serviço expiraram, sem alteração de configuração ou criação
+de agendamento duplicado.
+
+## Correção mínima da evidência de cleanup — 830664f
+
+O commit `830664f6384e6bf15e19b91816b82ccc42ba1ef6` preserva o erro bloqueante
+`QA_CMS_FIXTURE_CLEANUP_INCOMPLETE` e adiciona ao relatório somente códigos de etapas permitidos
+em uma lista fixa, deduplicados, e indicadores booleanos de verificação de resíduo/auditoria.
+Valores desconhecidos viram `QA_CMS_FIXTURE_UNKNOWN_CLEANUP_STEP`; mensagens brutas e payloads
+não são serializados. Erros não produzidos pelo tipo interno não podem fornecer esse diagnóstico.
+
+Revisão do diff limitada a `scripts/qa/cms-browser-fixture.mjs` e seu teste: nenhuma alteração em
+migrations, workflows, ambiente, bibliotecas, operações de cleanup, condições de falha, número de
+retries ou autorização. Mesmo com resíduo zero, uma etapa recusada mantém a reprovação original.
+Essa correção não reconstrói retroativamente a etapa que falhou no run `36742897039`.
+
+Validação local concluída:
+
+- Três regressões novas: códigos deduplicados com gate reprovado; ausência de dados sensíveis ou
+  diagnóstico forjado; distinção entre verificação ausente e prova terminal limpa.
+- 41 testes focados passaram no runner nativo, cobrindo fixture, transporte de conclusão de lease
+  e pré-requisitos dos produtos. A regressão foi observada falhando antes da implementação.
+- `npm run check` integral passou: 220 arquivos Vitest / 1.403 testes, suites Node e contratos,
+  evals, lint, tipos e build. Build em 18,84 s, quatro chunks iniciais / 799.039 bytes; Excel e PDF
+  continuam lazy. Os skips existentes de symlink no Windows não foram convertidos em aprovações.
+- Formatação e `git diff --check` passaram. GitHub Vnd93, repositórios canônicos em `main`, fetch
+  sem divergência, mudanças alheias não incluídas. Commit e push sem force, stash ou rebuild de
+  artefatos remotos.
+
+O [CI 36746568215](https://github.com/Vnd93/gaiatec-cms/actions/runs/36746568215) terminou verde,
+attempt 1, em **480 s** (16:45:46–16:53:46 UTC). Durações dos jobs: plano 31 s, quality 333 s,
+browser 93 s, banco 169 s, runtime Edge 153 s, pacote 91 s e métricas 13 s. Os jobs independentes
+se sobrepõem; não somar suas durações como caminho crítico. Quality foi a maior etapa desta CI,
+com 263 s no check. A seleção manteve `full-release`/`bootstrap-full` fail-closed. O SLO registrado
+é `component-only`, não aprovação do caminho feliz completo.
+
+O pacote selado novo é `11113216731`, SHA-256
+`d673e5f6226331fc6bf8b2e802b92675018b31c731603db8118df8826c0e823a`.
+Dist archive `100d70dd5291d2799dd3c232f19e38e5c9cc16a761a5e16c7a66e6854dc264ec`;
+dist tree `7850590d782cce60088ff5f95ea767f3159a10bd2f0dbf94cd4647ac3976d7f8`.
+Seleção imutável `11112942147`, SHA-256
+`acaeb203ccecfb3ca214e997ff2cc9237bf011f359ad72704761a09d31095af4`;
+métricas `11112309704`, SHA-256
+`ac237ba06e0a043ba0284774c4180869c0465a6712de4aeadc588d7295758253`.
+Esses artefatos pertencem somente a `830664f`; não substituem as evidências do staging `88e9bcf`.
+Nenhuma ponte ou promoção desse SHA foi disparada.
+O frontend live continua em `88e9bcf`, não no novo commit. Deploy permanece bloqueado pelos gates
+operacionais reprovados; a correção de diagnóstico não é uma resolução presumida de G11 ou do 503.
 
 ## Encerramento histórico anterior — candidato 035350a
 

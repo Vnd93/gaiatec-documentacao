@@ -40,7 +40,26 @@ exigem F1/F2 verdes. `CAT-010`–`CAT-012` exigem F1–F3 verdes. Estados permit
 `planned → in-progress → blocked → ready-for-gate → done`; `done` exige SHA, digest, evidência e
 rollback registrados. `CAT-D010` permanece `deferred` até dois ciclos manuais completos e estáveis.
 
-## Situação vigente — correção da fixture G7 em 30 de setembro de 2026
+## Situação vigente — diagnóstico terminal de 30 de setembro de 2026
+
+`CAT-001`–`CAT-010` permanecem implementados e `ready-for-gate`, não `done`. A realocação para
+Chrome foi aprovada e implementada; não reabrir essa decisão nem as Fatias 1–4. O SHA de staging
+`88e9bcf8a324d35b12dba3c4f8cd522011270d26` tem CI e ponte verdes, com pacote único e recuperação
+comprovada. O diagnóstico `36742897039` reprovou G11, landing HTTP 503 e primeiro cleanup; a
+retomada de cleanup prevista passou e deixou resíduo zero. Não houve novo run canônico.
+
+A fixture de produtos corrigida **não chegou a ser exercitada remotamente**: G7 parou antes dela.
+G17 aprovou 12 checks, mas não substitui os gates reprovados nem a homologação Chrome positiva.
+Uma correção adicional de diagnóstico preserva códigos seguros das etapas de cleanup, sem mudar
+operações ou critérios. Ver SHA, testes e limites no
+[registro de execução](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+`CAT-011` continua bloqueado por recaptura e aprovação funcional independente. `CAT-012` depende
+de UAT e rollback real, não de nova autorização genérica para staging. Itens 17/18 continuam
+`user-confirmed-provisional`; falta a origem/fabricante verificável do item 20. CAT-D010 segue
+`deferred`. Catálogo default-off e vazio; nenhuma publicação, carga comercial, produção ou cutover.
+
+## Registro histórico preservado — correção local da fixture G7
 
 `CAT-001`–`CAT-010` conservam a implementação integrada e permanecem `ready-for-gate`, não `done`.
 A realocação da captação positiva para Chrome foi **aprovada e implementada** em `ccceddd`;

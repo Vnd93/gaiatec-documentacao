@@ -24,7 +24,39 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 30 de setembro de 2026: fixture G7 corrigida; validação remota pendente
+## Situação vigente — 30 de setembro de 2026: staging recuperado; homologação ainda reprovada
+
+As Fatias 1–4 e a realocação aprovada da captação positiva para Chrome real estão implementadas.
+Não reiniciá-las. O candidato `88e9bcf8a324d35b12dba3c4f8cd522011270d26` passou no check completo,
+no CI `36739513362` e na ponte `36740518613`, que promoveu o pacote selado sem rebuild.
+
+O [diagnóstico único 36742897039](https://github.com/Vnd93/gaiatec-cms/actions/runs/36742897039)
+terminou em 859 s: 10 checks passaram e três reprovaram. G11 leitura p95 **4.924 ms / limite 500 ms**;
+landing editorial HTTP 503, embora sua API retornasse 200; primeira tentativa de cleanup incompleta.
+A landing interrompeu G7 **antes dos produtos**: não há prova remota da correção de pré-requisitos.
+O diagnóstico não aprova o release e não foi seguido por novo deploy canônico ou retry de gates.
+
+A retomada de cleanup já prevista no workflow passou, revogou cinco atores e comprovou resíduo zero.
+Watchdog `36744646809` verde; 14 leases do diagnóstico estão limpas. Estado posterior: 113 migrations,
+última `0113`, flag `ev2.catalog_v1=false`, zero overrides, produtos, snapshots ou leases QA ativas;
+nenhum workflow ativo ou fence. Chrome real confirmou sessão autenticada e barreira default-off,
+não UAT funcional nem captação positiva. Produção e carga/publicação/cutover do catálogo intocados.
+
+Foi identificada uma lacuna adicional de diagnóstico: os códigos das etapas recusadas no cleanup
+eram descartados. A correção preserva somente rótulos fixos e indicadores sem dados sensíveis;
+não altera a limpeza, seus gates ou retries. Está publicada em `origin/main` no SHA
+`830664f6384e6bf15e19b91816b82ccc42ba1ef6`, com check local completo e 41 testes focados verdes.
+O CI `36746568215` terminou integralmente verde, attempt 1, em 480 s. Esse SHA **não foi promovido**:
+staging permanece em `88e9bcf`.
+Sua validação e revisão exata estão no
+[registro de execução](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+Faltam estabilidade e diagnóstico dos gates operacionais, Chrome positivo e UAT/rollback. CAT-011
+exige aprovador funcional independente e recaptura; itens 17/18 seguem provisórios e o item 20 precisa
+de fabricante/origem verificável. CAT-D010 continua adiado. A pausa da automação histórica não foi
+confirmada: a consulta ao serviço não respondeu, e nenhum agendamento substituto foi criado.
+
+## Registro histórico preservado — antes da validação remota da fixture G7
 
 As Fatias 1–4 e a realocação aprovada da captação positiva para Chrome real já estão implementadas.
 Não reiniciá-las. O diagnóstico dirigido `36733465791` terminou em 941 s, com 11 checks aprovados

@@ -8,7 +8,7 @@ fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-09-28
+ultima_revisao: 2026-09-30
 fonte_canonica: gaiatec-documentacao
 decisoes: CAT-D001-CAT-D010
 ---
@@ -55,7 +55,22 @@ leitura, Chrome e evidência). O SLO de caminho feliz é 40–60 minutos; qualqu
 identificar o gargalo e nunca relaxar segurança. O primeiro cutover permanece bloqueado enquanto a
 lista nominal não tiver 100% de cadastro, revisão e aprovação.
 
-## Checkpoint vigente da integração — 28 de setembro de 2026
+## Checkpoint vigente — 30 de setembro de 2026
+
+As migrations/deploy controlados foram autorizados posteriormente, exclusivamente em staging.
+O ambiente tem 113 migrations, última `0113`; o frontend servido é
+`88e9bcf8a324d35b12dba3c4f8cd522011270d26`, com CI `36739513362` e ponte `36740518613` verdes.
+O deployment `85b12a18-538f-4d45-bc2b-b68529c9807e` consumiu o mesmo pacote selado `11109981732`.
+Os digests completos e a cadeia de recuperação estão no
+[registro de execução de 30/09](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+O diagnóstico `36742897039` é `approvable=false`: 10 checks passaram, três reprovaram, e G7 não
+alcançou o trecho de produtos. Cleanup de recuperação e resíduo zero comprovados; isso não aprova
+o release. A verificação de Chrome real confirmou apenas sessão e barreira default-off. Não houve
+challenge nem captação positiva atestada. `CAT-001`–`CAT-010` seguem `ready-for-gate`;
+`CAT-011`/`CAT-012` continuam bloqueados nos gates nominais e de UAT/rollback. Nenhuma fatia é `done`.
+
+## Checkpoint histórico da integração — 28 de setembro de 2026
 
 O SHA `486fa5c40baeafe7212914591499245ddef4a5a6` reúne a implementação funcional das Fatias
 1–4. CI `36512509486` integralmente verde, 1.351 testes Vitest, 2.110 pgTAP e runtime das 34
