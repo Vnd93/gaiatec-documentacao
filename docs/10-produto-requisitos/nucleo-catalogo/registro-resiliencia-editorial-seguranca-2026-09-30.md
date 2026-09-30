@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: realocacao-chrome-implementada-homologacao-bloqueada-g11
+status: g11-g7-aprovados-homologacao-pendente-a11y-chrome
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -19,9 +19,129 @@ relacionados:
   - ../../00-indice/status-atual.md
 ---
 
-# Captação positiva realocada para Chrome; homologação bloqueada em G11
+# G11 e G7 aprovados; homologação de acessibilidade e Chrome pendente
 
-## Resultado vigente: recuperação comprovada, sem aprovação do release
+## Resultado vigente — correção de conflitos, evidência Auth e diagnóstico de acessibilidade
+
+O candidato servido em staging é `a516874d8d92748b137cce5981a51dc341311695`. O controle
+`ae70f19e63982ddca1e8094da7499a1337f703b5` corrigiu o caminho de saída da evidência Auth,
+sem alterar a política de autenticação ou reconstruir o pacote promovido. **G11 passou em dois
+runs canônicos e G7 passou nos 13 checks do primeiro deles**. Esses resultados substituem as
+pendências históricas de G11 e da fixture de produtos, mas não aprovam o release completo.
+
+O último run, `36770201729`, reprovou uma asserção de heading visível em 5.000 ms no teste
+automatizado de acessibilidade desktop: 46 testes passaram, três tiveram skips previstos e um
+falhou. A versão executada não identificou a rota no erro; o contexto/trace não estava no artefato
+retido. Não há base para atribuir uma causa definitiva ou afirmar uma correção de runtime.
+G7, pós-deploy e Chrome não foram alcançados nesse run; não houve challenge nem captação positiva.
+
+Finalizer e watchdog `36772833385` terminaram verdes. A sonda terminal confirmou SHA exato,
+100% de disponibilidade, zero 5xx e p95 público de 636,084 ms. O estado recuperado tem 114 migrations,
+última `0114`; `ev2.catalog_v1=false`; zero overrides, produtos/snapshots do novo catálogo,
+leases QA ativas, consultas concorrentes ou lock waits. Nenhum workflow ativo ou fence permaneceu.
+Produção, carga comercial, publicação do catálogo e cutover não foram tocados.
+
+### Causa comprovada e correção de transporte dos conflitos
+
+A janela anterior de 62 segundos continha 5.360 erros `40001` em dois backends, associados à
+recusa sintética da fence canônica de remoção de documento. A documentação oficial do Supabase
+explica o [retry infinito de erros customizados 40001 no PostgREST 14](https://supabase.com/docs/guides/troubleshooting/high-cpu-and-infinite-transaction-retries-when-using-custom-error-codes-in-rpc-functions-77326b).
+Esse mecanismo foi comprovado; não foi presumido como causa exclusiva de toda latência ou HTTP 503.
+
+A migration aditiva `0114_cms_business_conflict_transport.sql` muda somente 68 recusas de negócio
+em 47 funções para `PT409`. Confere assinaturas, contagem, definições completas e metadados de
+`pg_proc`, aborta em drift e preserva falhas reais de serialização. É atômica, com lock timeout
+de 5 s e statement timeout de 30 s. Digest SHA-256:
+`54c7999e4d6c16f5b715d5d38a98622c27d0a9e25013368807057b0457a64377`.
+Edge e limpeza reconhecem a combinação exata de código/mensagem; as mesmas fences continuam
+recusando escrita indevida com HTTP 409. RLS, AAL2, auditoria, rollback e cleanup não foram reduzidos.
+
+Após a aplicação, a janela `19:15:41Z–19:44:00Z` teve zero erros `40001`, dois `PT409` e uma recusa
+da fence documental, sem a tempestade de retries. O resumo dos advisors permaneceu igual ao
+baseline: 51 INFO `rls_enabled_no_policy`, um WARN de execução anônima de função security-definer,
+43 WARN de execução autenticada e um WARN de proteção de senha vazada. Não equivale a dívida
+de segurança zero; não houve relaxamento dos controles para liberar o gate.
+
+O check completo de `a516874` passou em 203,94 s: 221 arquivos/1.414 testes Vitest, 131 QA,
+770 testes aprovados na fase 12 com 16 skips Windows existentes, demais contratos/evals/lint/tipos
+e build de 25,94 s. CI aprovou 66 arquivos/2.147 testes pgTAP e runtime das 34 Edge Functions.
+Node 22.23.2, pin Node 22, CLI Supabase 2.116.0 e locks foram preservados.
+
+### Cadeia exata e tempos observados
+
+| Run                                                                          | Escopo                          | Resultado                                            | Duração |
+| ---------------------------------------------------------------------------- | ------------------------------- | ---------------------------------------------------- | ------- |
+| [36761718743](https://github.com/Vnd93/gaiatec-cms/actions/runs/36761718743) | CI `a516874`                    | verde, attempt 1                                     | 449 s   |
+| [36762840647](https://github.com/Vnd93/gaiatec-cms/actions/runs/36762840647) | ponte do pacote original        | verde; backend restaurado e resíduo zero             | 651 s   |
+| [36764422820](https://github.com/Vnd93/gaiatec-cms/actions/runs/36764422820) | canônico `a516874`              | G11/G12/G7 verdes; montagem da evidência Auth falhou | 1.689 s |
+| [36768904371](https://github.com/Vnd93/gaiatec-cms/actions/runs/36768904371) | CI do controle `ae70f19`        | verde, attempt 1                                     | 594 s   |
+| [36770201729](https://github.com/Vnd93/gaiatec-cms/actions/runs/36770201729) | canônico com controle corrigido | G11/G12/Auth verdes; heading do teste a11y reprovado | 1.348 s |
+
+As durações da tabela são da execução remota completa; os relatórios de métricas dos dois
+canônicos capturaram 1.684 s e 1.343 s antes do fechamento do próprio job. Ambos são caminhos
+incompletos, **não prova do SLO feliz de 40–60 minutos**. No último run, deploy levou 963 s,
+G11/G12 dentro dele 274 s e regressões públicas 107 s; não somar etapas internas novamente.
+No CI do controle, instalação de Chromium levou 367 s: gargalo de preparação, não tempo do CMS.
+
+- Pacote original `11118493996`, SHA-256
+  `74668b2dbe8ff866e51e9e24c804e9955d2aa34a51b1c4230f9e0d6f4f343828`.
+- Dist archive SHA-256 `da317ccd216fd9b8269087b934f37f7b2909bfb8ea4f5a66ae0fb5067afd9277`;
+  dist tree `a8dbff15cc12575d5d6510a7f069a3ff61ceb5cc4fa72e1c270296336488b3b2`.
+- Deployment canônico da ponte `7e9fb1c3-1ab8-4093-ac51-6ca720dd92f5`.
+- Evidência da ponte `11120560339`, SHA-256
+  `bdf4ea50620e9868ebecafa0231f101439b5e7f4ffccf88e6588834e0714369a`.
+- Recuperação da ponte `11120680113`, SHA-256
+  `112e4d2426c9cff36ae9f98d445ee9d9b1ee84bb55256d1761c401c71c3e46d0`.
+- Terminal do primeiro canônico `11122435878`, SHA-256
+  `f3fffbdd156d24f2c84bb0827cc13e13bf647af7e585573f33a01de24c2fa2a9`.
+- Preliminar do último canônico `11123588265`, SHA-256
+  `2129195ca34899c59bfafb7767f47403836c2fa2005c3ace1148f1457ce5eef2`.
+- Terminal do último canônico `11123953313`, SHA-256
+  `85e8e99db924bb10cea8e0d65c2f87b5957aed0dbaa195f75c7fd37ba48af19f`.
+- Métricas do último canônico `11123778561`, SHA-256
+  `7de3ac0f3b68bcd6064282a7258724916fc9f3df20dd0a019a6591196c4feef2`.
+
+Os dois canônicos consumiram o mesmo pacote e ponte; não houve rebuild equivalente ou nova ponte.
+Recovery durável e sua cópia remota foram verificados antes de cada mutação. O segundo run só
+foi disparado após diagnosticar e corrigir a falha exata do primeiro e comprovar recuperação.
+
+### Gates aprovados, correção Auth e limite do diagnóstico atual
+
+G11 teve 29/29 checks aprovados nos dois runs: leitura p95 189/300 ms, limite 500 ms; comandos
+800/254 ms, limite 800 ms. O primeiro valor de comando foi exatamente 800 ms, sem arredondamento
+para aprovar. Protocolo, warmups, amostras e limites permaneceram iguais. No último G12, as três
+janelas públicas tiveram p95 de 724,655/603,626/586,862 ms, disponibilidade 100% e zero 5xx.
+
+G7 do primeiro canônico aprovou todos os 13 checks, incluindo a fixture de produtos governados,
+termos sob lease, atributos, idempotência e não exposição de campos privados. Essa evidência é
+do primeiro run; não preencher G7 skipped do segundo como se tivesse executado.
+
+A falha Auth do primeiro canônico era somente de localização: o produtor gravava no diretório
+temporário enquanto consumidores exigiam o workspace. `ae70f19` corrige o destino e acrescenta
+quatro testes executáveis que falharam antes e passaram depois. 45 testes focados passaram, com
+um skip Windows existente; check integral aprovado, build 18,11 s. No segundo run, o artefato
+contém `g12-staging-auth.json`, origem/redirects exatos de staging e signup público desabilitado.
+Não mudou CLI, API, configuração de Auth ou política de segurança.
+
+O diagnóstico de acessibilidade foi limitado a uma travessia das seis rotas em Chrome real e a
+uma execução somente leitura dos 50 testes públicos com os mesmos dois workers, zero retries
+e limites originais. Todas as seis rotas exibiram H1; os testes tiveram **47 aprovações e três
+skips previstos em 1,3 min**. O ajuste local de diagnóstico inclui a rota nas asserções e confere
+HTTP 200/404 antes de cada scan completo Axe. Nenhum prazo, teste ou severidade foi reduzido;
+traces de rede, vídeos e screenshots brutos foram desabilitados apenas nesse diagnóstico para
+não persistir dados sensíveis. Isso não substitui evidência terminal ou explica a falha anterior.
+
+Na janela da reprovação, os logs unificados Supabase tinham 699 respostas 200 e quatro 404 da
+função pública, sem 5xx; execução máxima observada de 4.290 ms. Isso não prova qual resposta foi
+entregue pelo Cloudflare ao navegador. O [incidente de latência do Supabase](https://status.supabase.com/)
+seguia aberto, mas não foi adotado como causa definitiva. Não iniciar loop de reexecução.
+
+Continuam pendentes homologação canônica verde, captação positiva Chrome e suas dependências,
+recaptura/aprovação nominal e UAT/rollback. Mesmo papel de cadastro/aprovação, Tmeasurement no item
+20 e autorização técnica de staging já estão resolvidos. Itens 17/18 permanecem provisórios;
+CAT-D010 continua adiado. As Fatias 1–4 implementadas não precisam ser refeitas.
+
+## Resultado histórico — antes da correção de conflitos e das validações G11/G7
 
 O SHA servido em staging é `88e9bcf8a324d35b12dba3c4f8cd522011270d26`, com check local, CI e
 ponte verdes. Seu diagnóstico único `36742897039` reprovou G11, landing editorial e primeiro cleanup.
@@ -35,7 +155,7 @@ condições de reprovação, retries, RLS, AAL2, budgets ou runtime. A revisão 
 registradas abaixo. O código em `origin/main` avançou para `830664f6384e6bf15e19b91816b82ccc42ba1ef6`;
 não foi promovido a staging. Não reimplementar Fatias 1–4 nem a realocação Chrome já aprovada.
 
-## Esclarecimentos funcionais posteriores — 30 de setembro de 2026
+## Esclarecimentos funcionais históricos — 30 de setembro de 2026
 
 O usuário informou **Tmeasurement** como fabricante do item 20 e confirmou que cadastro e aprovação
 pertencem ao mesmo papel. Os contratos existentes aceitam `ownerRole` e `approverRole` iguais.

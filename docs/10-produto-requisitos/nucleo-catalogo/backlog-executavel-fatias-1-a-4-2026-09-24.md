@@ -40,7 +40,24 @@ exigem F1/F2 verdes. `CAT-010`–`CAT-012` exigem F1–F3 verdes. Estados permit
 `planned → in-progress → blocked → ready-for-gate → done`; `done` exige SHA, digest, evidência e
 rollback registrados. `CAT-D010` permanece `deferred` até dois ciclos manuais completos e estáveis.
 
-## Situação vigente — esclarecimentos de 30 de setembro de 2026
+## Situação vigente — gates e recuperação de 30 de setembro de 2026
+
+`CAT-001`–`CAT-010` permanecem implementados e `ready-for-gate`. A correção de transporte dos
+conflitos de negócio em `a516874` foi aplicada exclusivamente em staging como migration `0114`;
+CI, ponte, G11 e G7 de produtos têm evidência remota aprovada. O controle `ae70f19` corrigiu a
+localização do relatório Auth com regressões, sem mudar autenticação ou o pacote promovido.
+
+O run `36770201729` parou no heading do teste automatizado a11y, antes de Chrome. Recuperação,
+watchdog, resíduo zero e estado default-off comprovados. Diagnóstico único posterior dos testes
+públicos: 47 aprovados, três skips, sem retry ou ampliação de prazo. Não equivale a homologação;
+ver [SHAs, artefatos, tempos e limites](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+`CAT-011` continua bloqueado por recaptura/aprovação nominal, e `CAT-012` por UAT/rollback real.
+O mesmo papel pode cadastrar/aprovar, conforme esclarecimento abaixo; Tmeasurement no item 20
+já está confirmado. Não reabrir essas decisões. Nenhuma fatia é `done` antes da evidência exigida.
+Itens 17/18 provisórios, CAT-D010 adiado, catálogo desligado e sem carga/publicação/cutover.
+
+## Registro histórico preservado — esclarecimentos de 30 de setembro de 2026
 
 `CAT-001`–`CAT-010` continuam implementados e `ready-for-gate`, sem reinício das Fatias 1–4.
 O usuário confirmou o mesmo papel para cadastro/aprovação; CAT-D003 já permite ao Administrador

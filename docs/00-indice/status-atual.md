@@ -24,7 +24,33 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 30 de setembro de 2026: responsabilidade e fabricante esclarecidos
+## Situação vigente — 30 de setembro de 2026: G11 e G7 aprovados; homologação ainda pendente
+
+As Fatias 1–4 continuam implementadas. Staging serve `a516874d8d92748b137cce5981a51dc341311695`,
+com 114 migrations e catálogo default-off/vazio. A migration `0114` elimina retries indevidos de
+recusas de negócio `40001`, preservando fences, RLS, AAL2 e auditoria. A janela após a correção
+teve zero desses erros, contra 5.360 em 62 segundos antes. CI e ponte do pacote selado passaram.
+
+G11 passou nos dois runs canônicos: leitura p95 189/300 ms, limite 500 ms; comandos 800/254 ms,
+limite 800 ms. G7 aprovou os 13 checks no primeiro run, inclusive produtos governados. A falha
+seguinte de localização da evidência Auth foi corrigida em `ae70f19`, com regressões e CI verdes.
+O mesmo pacote e ponte foram reaproveitados, sem reconstrução.
+
+O último canônico [36770201729](https://github.com/Vnd93/gaiatec-cms/actions/runs/36770201729)
+parou numa asserção de H1 visível do teste automatizado de acessibilidade: 46 passaram, três skips,
+uma falha. A rota não estava identificada no erro original. Finalizer/watchdog e recuperação
+terminaram verdes, com disponibilidade 100%, zero 5xx, zero resíduo e nenhuma operação concorrente.
+Um diagnóstico único posterior, sem mutação, passou 47 testes com três skips, sem ampliar prazos
+ou repetir amostras. Isso não explica definitivamente a falha nem aprova o release.
+
+Chrome positivo, suas verificações dependentes e homologação terminal ainda não executaram.
+`CAT-001`–`CAT-010` permanecem `ready-for-gate`; CAT-011 exige recaptura/aprovação nominal e CAT-012
+UAT/rollback. Mesmo papel para cadastro/aprovação e fabricante Tmeasurement do item 20 já estão
+esclarecidos. Itens 17/18 continuam provisórios e CAT-D010 adiado. Produção, carga, publicação do
+catálogo e cutover permanecem intocados. Evidências, SHAs, digests e tempos estão no
+[registro atualizado](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Registro histórico preservado — responsabilidade e fabricante esclarecidos
 
 O usuário confirmou o mesmo papel funcional para cadastro e aprovação do Catálogo. A decisão
 CAT-D003 já permite ao Administrador publicar o próprio conteúdo, com auditoria; não exigir segunda

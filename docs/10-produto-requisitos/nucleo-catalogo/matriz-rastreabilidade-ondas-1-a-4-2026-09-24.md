@@ -55,7 +55,26 @@ leitura, Chrome e evidência). O SLO de caminho feliz é 40–60 minutos; qualqu
 identificar o gargalo e nunca relaxar segurança. O primeiro cutover permanece bloqueado enquanto a
 lista nominal não tiver 100% de cadastro, revisão e aprovação.
 
-## Checkpoint vigente — 30 de setembro de 2026
+## Checkpoint vigente — após G11/G7 e recuperação de 30 de setembro de 2026
+
+Staging serve `a516874d8d92748b137cce5981a51dc341311695`, com 114 migrations/última `0114`,
+flag desligada e zero produtos/snapshots/overrides do novo núcleo. Pacote `11118493996`, ponte
+`36762840647` e deployment `7e9fb1c3-1ab8-4093-ac51-6ca720dd92f5`; mesmos bytes nos dois runs
+canônicos. Digests completos e duração por etapa no
+[registro de execução](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+G11 foi aprovado em `36764422820` e `36770201729`; G7 foi aprovado no primeiro e ficou skipped
+no segundo. A correção de evidência Auth `ae70f19e63982ddca1e8094da7499a1337f703b5` tem CI
+`36768904371` verde e prova remota do caminho correto. O último run reprovou o heading do teste
+a11y e não emitiu challenge Chrome. Finalizer/watchdog, sonda terminal e resíduo zero passaram.
+Diagnóstico único posterior verde não é evidência terminal ou UAT e não autoriza promover gates.
+
+Não reimplementar as Fatias 1–4 nem reabrir permissões de staging, o mesmo papel para cadastro/
+aprovação ou fabricante Tmeasurement do item 20. `CAT-001`–`CAT-010`: `ready-for-gate`;
+`CAT-011`/`CAT-012`: recaptura/aprovação nominal e UAT/rollback pendentes. Nenhuma fatia é `done`;
+catálogo default-off, sem carga comercial, publicação, cutover ou produção.
+
+## Checkpoint histórico — antes da correção de conflitos e da validação G7
 
 As migrations/deploy controlados foram autorizados posteriormente, exclusivamente em staging.
 O ambiente tem 113 migrations, última `0113`; o frontend servido é
