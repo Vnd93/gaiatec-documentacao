@@ -40,7 +40,21 @@ exigem F1/F2 verdes. `CAT-010`–`CAT-012` exigem F1–F3 verdes. Estados permit
 `planned → in-progress → blocked → ready-for-gate → done`; `done` exige SHA, digest, evidência e
 rollback registrados. `CAT-D010` permanece `deferred` até dois ciclos manuais completos e estáveis.
 
-## Situação vigente — gates e recuperação de 30 de setembro de 2026
+## Situação vigente — correção e recuperação editorial de 30 de setembro de 2026
+
+`CAT-001`–`CAT-010` seguem implementados e `ready-for-gate`. O canônico `36778600629` aprovou
+G11 29/29, G7 13/13, 47 testes públicos e pós-deploy; falhou no seletor do teste editorial antes
+do Chrome real. Defeitos de cleanup/proveniência e janela temporal foram diagnosticados sem
+relaxar controles. Watchdog `36781981846`, tentativa 2, verde após reparação exata: 19 leases
+encerrados e zero resíduo/fences. O release reprovado não foi repetido.
+
+Candidato corrigido `aad5922c3efcf37c998d1280c4ad804c7896c593`: check completo e regressões locais
+verdes; CI, pgTAP novo, pacote/ponte/canônico e Chrome real ainda pendentes para esse SHA.
+`CAT-011` exige recaptura/aprovação nominal; `CAT-012`, UAT/rollback. Mesmo papel, Tmeasurement,
+itens 17/18 provisórios e CAT-D010 adiado preservados. Catálogo default-off, sem carga comercial,
+publicação, cutover ou produção. Ver [provas e tempos](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Registro histórico preservado — gates G11/G7 e recuperação anterior
 
 `CAT-001`–`CAT-010` permanecem implementados e `ready-for-gate`. A correção de transporte dos
 conflitos de negócio em `a516874` foi aplicada exclusivamente em staging como migration `0114`;

@@ -55,7 +55,23 @@ leitura, Chrome e evidência). O SLO de caminho feliz é 40–60 minutos; qualqu
 identificar o gargalo e nunca relaxar segurança. O primeiro cutover permanece bloqueado enquanto a
 lista nominal não tiver 100% de cadastro, revisão e aprovação.
 
-## Checkpoint vigente — após G11/G7 e recuperação de 30 de setembro de 2026
+## Checkpoint vigente — recuperação editorial e candidato `aad5922`
+
+Staging recuperado: `39a82162574195a4bd778cf7d76cc70984bc144a`, pacote `11124908964`, ponte
+`36777260148`, deployment `2f8209f7-973f-48e7-a45f-595143e7ae6d`, 114 migrations, catálogo
+desligado/vazio. Canônico `36778600629`: G11 29/29, G7 13/13, 47 testes públicos e ambos os gates
+pós-deploy aprovados; seletor editorial/cleanup reprovados antes de Chrome. Watchdog
+`36781981846` tentativa 2 verde, artefato `11129420596` com digest verificado, 19 leases encerrados,
+zero resíduos/fences. Não confundir recuperação aprovada com homologação do release.
+
+Candidato `aad5922c3efcf37c998d1280c4ad804c7896c593`, cinco arquivos QA/testes, check completo local
+verde e regressões red/green para seletores, proveniência e expiração segura. Seu CI/pacote e
+gates remotos ainda são pendentes; aprovação do SHA anterior não é transferida. Digests completos,
+tempos e limites no [registro de execução](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+`CAT-001`–`CAT-010`: `ready-for-gate`; CAT-011: recaptura/aprovação; CAT-012: Chrome/UAT/rollback.
+Feature flag desligada; sem carga/publicação comercial, cutover ou produção.
+
+## Checkpoint histórico — após G11/G7 e recuperação anterior de 30 de setembro de 2026
 
 Staging serve `a516874d8d92748b137cce5981a51dc341311695`, com 114 migrations/última `0114`,
 flag desligada e zero produtos/snapshots/overrides do novo núcleo. Pacote `11118493996`, ponte

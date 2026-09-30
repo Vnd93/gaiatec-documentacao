@@ -24,7 +24,32 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 30 de setembro de 2026: G11 e G7 aprovados; homologação ainda pendente
+## Situação vigente — 30 de setembro de 2026: recuperação editorial comprovada; candidato corrigido
+
+As Fatias 1–4 continuam implementadas, sem reinício. O canônico
+[36778600629](https://github.com/Vnd93/gaiatec-cms/actions/runs/36778600629), candidato
+`39a82162574195a4bd778cf7d76cc70984bc144a`, aprovou G11 (29/29), G7 (13/13), os 47 testes
+públicos aplicáveis e ambos os gates pós-deploy. Parou antes do Chrome real em um seletor
+ambíguo do teste editorial. A limpeza expôs dois defeitos adicionais: resolução ambígua de
+proveniência no SQL e redução indevida da janela temporal do lease durante recovery.
+
+A recuperação foi restrita ao único ator/conteúdo sintético ainda ativo, mantendo todas as
+verificações. O [watchdog 36781981846, tentativa 2](https://github.com/Vnd93/gaiatec-cms/actions/runs/36781981846)
+terminou verde: 19 leases encerrados, zero resíduo, fences removidos pelo fluxo oficial,
+disponibilidade 100%, zero 5xx. Staging permanece em `39a8216`; o catálogo segue desligado e vazio.
+
+A correção mínima está em `aad5922c3efcf37c998d1280c4ad804c7896c593`, com check completo aprovado,
+regressões red/green e sete verificações PostgreSQL acrescentadas para o CI. Não muda runtime da
+aplicação, migrations, RLS, Auth, dependências ou limites. CI/pacote/ponte/canônico desse novo SHA
+ainda devem executar; Chrome positivo e evidência terminal permanecem pendentes. Resultados do
+SHA anterior não são aprovação do novo candidato.
+
+`CAT-001`–`CAT-010` seguem `ready-for-gate`; CAT-011 exige recaptura/aprovação nominal e CAT-012
+UAT/rollback real. Mesmo papel para cadastro/aprovação, Tmeasurement no item 20 e itens 17/18
+provisórios estão preservados. Produção, carga, publicação comercial, cutover e CAT-D010 continuam
+fora da execução. Ver [evidências e tempos](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Registro histórico preservado — G11/G7 aprovados e diagnóstico de acessibilidade
 
 As Fatias 1–4 continuam implementadas. Staging serve `a516874d8d92748b137cce5981a51dc341311695`,
 com 114 migrations e catálogo default-off/vazio. A migration `0114` elimina retries indevidos de

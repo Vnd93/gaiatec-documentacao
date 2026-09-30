@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: g11-g7-aprovados-homologacao-pendente-a11y-chrome
+status: recuperacao-editorial-comprovada-novo-candidato-pendente-chrome
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -19,9 +19,90 @@ relacionados:
   - ../../00-indice/status-atual.md
 ---
 
-# G11 e G7 aprovados; homologação de acessibilidade e Chrome pendente
+# Resiliência editorial e homologação controlada de staging
 
-## Resultado vigente — correção de conflitos, evidência Auth e diagnóstico de acessibilidade
+## Resultado vigente — recuperação editorial comprovada e candidato `aad5922`
+
+O canônico `36778600629`, SHA `39a82162574195a4bd778cf7d76cc70984bc144a`, passou G11
+29/29 (leitura p95 227/500 ms; comandos 388/800 ms), G7 13/13, 47 testes públicos aplicáveis
+(três skips preexistentes), canário autenticado/CSP e os dois gates pós-deploy somente leitura.
+As três janelas G12 tiveram disponibilidade 100%, zero 5xx e p95 de
+585,663/637,479/549,313 ms. Não houve challenge nem captação positiva em Chrome real.
+
+A etapa editorial automatizada falhou porque `getByLabel('Modelo 1')` selecionava nove campos;
+outros três rótulos da mesma sequência estavam desatualizados. O cleanup encontrou dois defeitos
+independentes: o alias `provenance` resolvia para a coluna externa (array), não para seu elemento;
+o recovery encurtava `expires_at` para `created_at + 1 microsecond`, invalidando a janela de
+criação exigida pela limpeza de rascunhos e taxonomias. Marcadores de ator/run/SHA estavam exatos;
+não se tratava de proveniência ausente ou autorização para relaxá-la.
+
+### Recuperação e prova terminal
+
+Após comprovar ausência de workflows concorrentes e existência do recovery durável original,
+uma transação restrita ao único ator e post sintéticos ainda ativos executou a limpeza estrita
+com referência qualificada ao elemento JSON e a função instalada de conclusão do lease.
+Não alterou expiração, schema, permissões, auditoria ou fences manualmente. A tentativa anterior
+que ainda usava o alias ambíguo foi integralmente revertida. O PostgreSQL real demonstrou a causa
+e confirmou recusa de referências ausentes, de outro run ou de outro SHA.
+
+Resultado: 19 leases `cleaned`, zero leases ativos, sessões, overrides, rascunhos progressivos,
+conteúdo não arquivado, projeções públicas e taxonomia de blog da execução. Os 19 eventos de
+auditoria de cleanup foram preservados. Somente o job de compensação do watchdog foi retomado
+uma vez após a reparação comprovada; não se repetiu o release reprovado.
+
+- [Watchdog 36781981846, tentativa 2](https://github.com/Vnd93/gaiatec-cms/actions/runs/36781981846):
+  compensação verde em 186 s, classificação em 14 s; recovery `already-terminal`, zero restantes.
+- Sonda terminal: SHA exato, 100% disponibilidade, zero 5xx, p95 614,661 ms, nenhuma violação.
+- Upload imutável e remoção oficial HMAC/CAS dos fences passaram; zero operação ativa ou lock wait.
+- Artefato da tentativa 1 `11127982827`, SHA-256
+  `be23860b757e8d6fdd01a3e28c51c46a496edf40775ba25d31017bf37d08f7bf`, preservado.
+- Artefato da tentativa 2 `11129420596`, SHA-256
+  `5f58f48d955a88e2a35c9eddf523d73673ac54608042b5ff900bbb8d3a9d3d31`, baixado e verificado.
+- Recovery durável original `11126179421`, SHA-256
+  `dad1f22ccf7d2e1f12ddabf3abd48c4c67d6eb7476e909840368af2ca53b11b4`.
+
+### Correção versionada e validação
+
+`aad5922c3efcf37c998d1280c4ad804c7896c593` altera somente cinco arquivos de QA/testes:
+seis seletores exatos com rótulos atuais; elemento JSON explicitamente qualificado; expiração
+`least(expires_at, clock_timestamp())`, sem estender leases expirados nem destruir a janela
+válida; regressões executáveis ligadas ao gerador SQL e ao componente real. Os testes reproduziram
+os defeitos antes da correção e passaram depois. Limites, retries e controles não foram reduzidos.
+
+Check completo local aprovado: 221 arquivos/1.415 testes Vitest, 133 testes QA, demais contratos,
+evals, formato, lint, tipos e build (18,14 s; 799.039 bytes iniciais). Testes focados: 25 de fixture
+e seis do componente, todos verdes. Sete testes pgTAP novos exercitam resolução de nomes e janela
+temporal; sua execução está pendente no CI, pois Docker não está disponível localmente. Nenhuma
+migration, configuração Auth/RLS, runtime da aplicação, dependência ou pin Node/CLI mudou.
+
+### Cadeia do candidato anterior e tempos
+
+| Run                                                                          | Escopo                   | Resultado                                                          | Duração                          |
+| ---------------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------ | -------------------------------- |
+| [36775695014](https://github.com/Vnd93/gaiatec-cms/actions/runs/36775695014) | CI `39a8216`             | sete jobs verdes; perfil full-release                              | 539 s                            |
+| [36777260148](https://github.com/Vnd93/gaiatec-cms/actions/runs/36777260148) | ponte do pacote original | verde; mesmos bytes e resíduo zero                                 | 614 s                            |
+| [36778600629](https://github.com/Vnd93/gaiatec-cms/actions/runs/36778600629) | canônico `39a8216`       | G11/G12/G7/pós-deploy verdes; browser editorial/cleanup reprovados | 1.909 s até atualização terminal |
+
+No canônico: preflight 39 s, source 63 s, baseline 116 s, deploy 1.263 s, pós-deploy frontend
+82 s/backend 41 s, browser 311 s (teste mutante 119 s), finalizer 27 s e métricas 13 s. Jobs
+paralelos e etapas internas não devem ser somados como caminho crítico. No CI, instalar Chromium
+consumiu 330 s dos 418 s do job browser. O caminho feliz de 40–60 minutos **não foi homologado**.
+
+Pacote `11124908964`, SHA-256
+`4dd6a3807a5280d8f4a627b1bfe67547073a95a3c30bcd2f9c5a98846482fa4a`;
+dist archive `888d43d41074a59525a9f84cb229d9e5b17c0379c12c5395e5e100f2a6e88353`;
+deployment da ponte `2f8209f7-973f-48e7-a45f-595143e7ae6d`. Ponte e canônico consumiram esses mesmos
+bytes, sem rebuild. Evidência da ponte `11126591324`, SHA-256
+`ae337cf876d4438d3bc50395eea2ba219a045f4f349a07d82d281f781dd2f41b`; restore `11126736168`,
+SHA-256 `dcb68b78df3dc73f64cc877817670249141aac9aeed570a76f2bf27e5588bf50`.
+
+O novo SHA exige CI, pacote, ponte, gates automáticos e Chrome real próprios. Não herdar aprovação
+do SHA anterior. Staging segue `39a8216`, catálogo desligado/vazio e 114 migrations. Não reabrir
+Fatias 1–4, permissões de staging, mesmo papel de cadastro/aprovação ou Tmeasurement. Recaptura
+nominal, UAT/rollback e evidência terminal continuam pendentes; nenhuma carga/publicação comercial,
+cutover ou produção foi executada.
+
+## Registro histórico preservado — conflitos, evidência Auth e diagnóstico de acessibilidade
 
 O candidato servido em staging é `a516874d8d92748b137cce5981a51dc341311695`. O controle
 `ae70f19e63982ddca1e8094da7499a1337f703b5` corrigiu o caminho de saída da evidência Auth,
