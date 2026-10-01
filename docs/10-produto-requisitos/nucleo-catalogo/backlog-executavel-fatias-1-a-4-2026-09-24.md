@@ -40,7 +40,22 @@ exigem F1/F2 verdes. `CAT-010`–`CAT-012` exigem F1–F3 verdes. Estados permit
 `planned → in-progress → blocked → ready-for-gate → done`; `done` exige SHA, digest, evidência e
 rollback registrados. `CAT-D010` permanece `deferred` até dois ciclos manuais completos e estáveis.
 
-## Situação vigente — staging recuperado, regressões de navegador em validação
+## Situação vigente — candidato `7efbedb` recuperado; G11 e homologação pendentes
+
+`7efbedb41e7141a628ceab8fe03beeb17bb340ff` passou CI `36794205281` (378 s) e ponte
+`36794950630` (552 s), com pacote original `11133348365`, sem rebuild. O canônico `36795885719`
+reprovou G11 comandos: p95 5.366 ms / limite 800 ms; leitura 137 ms / limite 500 ms. Finalizer,
+watchdog `36797142872` e sonda terminal passaram; catálogo desligado/vazio e zero resíduo ativo.
+Chrome e gates dependentes não executaram. Não repetir a cadeia sem fato novo e revalidar os
+checkpoints antes de reutilizá-los. Ver [diagnóstico e provas](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+CAT-001–010 seguem implementados e `ready-for-gate`, não `done`. CAT-011 avançou com
+[índice de fontes e ambiguidades](lista-nominal-prioritaria-cat-d009-2026-09-24.md), ainda sem
+recaptura/aprovação completa. CAT-012 depende de UAT/rollback real. As Fatias 1–4 não foram
+refeitas, itens 17/18 continuam provisórios e CAT-D010 adiado. Nenhuma carga/publicação comercial,
+cutover ou produção foi executada.
+
+## Situação histórica — staging recuperado, regressões de navegador em validação
 
 `9719f52` passou CI `36786871713` e ponte `36787751031` com o pacote original `11130611711`.
 O canônico `36789268672` passou deploy/G11/G7/pós-deploy e falhou antes do Chrome na seleção

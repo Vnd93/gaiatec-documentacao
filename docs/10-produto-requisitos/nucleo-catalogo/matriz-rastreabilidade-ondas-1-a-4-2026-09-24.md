@@ -55,7 +55,24 @@ leitura, Chrome e evidência). O SLO de caminho feliz é 40–60 minutos; qualqu
 identificar o gargalo e nunca relaxar segurança. O primeiro cutover permanece bloqueado enquanto a
 lista nominal não tiver 100% de cadastro, revisão e aprovação.
 
-## Checkpoint vigente — `9719f52` recuperado e seletores sob regressão real
+## Checkpoint vigente — `7efbedb`, G11 reprovado e recuperação terminal verde
+
+SHA `7efbedb41e7141a628ceab8fe03beeb17bb340ff`; CI `36794205281` verde; pacote único
+`11133348365`, SHA-256 `57a5bcbd4f214a4568517b63d4e663781de3b37b1004109e913d57b65e970cf4`;
+ponte `36794950630` verde, deployment `54fc78bb-8cde-461b-9fa9-ae67ac2c7907`, sem rebuild.
+Canônico `36795885719`: leitura G11 137/500 ms, comandos 5.366/800 ms, reprovado antes de Chrome.
+Finalizer/watchdog `36797142872` verdes. Artefato terminal `11134650148`, SHA-256
+`bac2352646e1f25e42877c044d8f9728326ab5e3e0e701129899e3bd6b34cad3`, verificado localmente:
+82 respostas, disponibilidade 100%, zero 5xx, SHA exato e nenhuma violação.
+
+114 migrations, catálogo default-off/vazio, zero resíduo ativo ou concorrência. A recuperação não
+substitui o gate de desempenho nem Chrome real. A causa exclusiva da latência não está demonstrada;
+não há autorização técnica para reduzir budgets ou repetir o run sem diagnóstico/fato novo.
+CI/ponte só podem ser reutilizados após revalidação do SHA, digests e estado do ambiente.
+CAT-001–010 seguem `ready-for-gate`; CAT-011/012, Chrome/UAT/rollback e evidência de sucesso
+continuam pendentes. Tempos e fontes no [registro](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint histórico — `9719f52` recuperado e seletores sob regressão real
 
 SHA `9719f52d756ba447751398238b2e9dab61df02dc`, CI `36786871713`, pacote `11130611711`
 (`5a2735c55d82b3974a4602c2bd5450010ad337f821ada541a413c54f6cec6265`), ponte `36787751031`,

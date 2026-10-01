@@ -24,7 +24,34 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 30 de setembro de 2026: staging recuperado e regressões no navegador
+## Situação vigente — 30 de setembro de 2026: candidato validado na CI, G11 reprovado e recuperado
+
+Candidato exato `7efbedb41e7141a628ceab8fe03beeb17bb340ff`: CI
+[36794205281](https://github.com/Vnd93/gaiatec-cms/actions/runs/36794205281) verde em 378 s e
+ponte [36794950630](https://github.com/Vnd93/gaiatec-cms/actions/runs/36794950630) verde em 552 s.
+O pacote único `11133348365` foi promovido sem rebuild para o deployment de staging
+`54fc78bb-8cde-461b-9fa9-ae67ac2c7907`.
+
+O canônico [36795885719](https://github.com/Vnd93/gaiatec-cms/actions/runs/36795885719)
+reprovou G11: comandos p95 **5.366 ms / limite 800 ms**; leitura **137 ms / limite 500 ms**.
+Chrome real e os gates dependentes não executaram. Finalizer e watchdog `36797142872` terminaram
+verdes; a sonda terminal verificou 82 respostas, disponibilidade 100%, zero 5xx, p95 590,213 ms
+e SHA exato. Recuperação aprovada não equivale a homologação do candidato.
+
+Em 01/10/2026 às 00:58 UTC (30/09, 21:58 em São Paulo): 114 migrations, catálogo default-off,
+zero overrides/produtos/snapshots, leases QA ativos, queries concorrentes e lock waits. GitHub
+sem workflows ativos ou fences. O incidente oficial de latência do API Gateway permanece aberto;
+sua coincidência com a falha é contexto, não causa exclusiva comprovada. Não houve nova tentativa,
+mudança de limite, descarte de amostras ou alteração de infraestrutura.
+
+CAT-001–010 continuam implementados e `ready-for-gate`, não `done`. O índice de fontes na
+[lista nominal](../10-produto-requisitos/nucleo-catalogo/lista-nominal-prioritaria-cat-d009-2026-09-24.md)
+avança a preparação da recaptura sem aprovar identidades ambíguas ou carregar produtos.
+CAT-011/012, Chrome positivo, UAT/rollback e evidência terminal de sucesso continuam pendentes.
+Sem produção, carga/publicação comercial ou cutover. Ver
+[provas, tempos e critério de retomada](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Registro histórico preservado — staging recuperado e regressões no navegador
 
 O candidato `9719f52d756ba447751398238b2e9dab61df02dc` passou CI e ponte de staging,
 promovendo o pacote único `11130611711`, sem rebuild. O canônico

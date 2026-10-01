@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: recuperacao-editorial-comprovada-novo-candidato-pendente-chrome
+status: g11-latencia-reprovada-recuperacao-comprovada-pendente-chrome
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -21,7 +21,98 @@ relacionados:
 
 # Resiliência editorial e homologação controlada de staging
 
-## Resultado vigente — recuperação de `9719f52` e regressão no motor do navegador
+## Resultado vigente — `7efbedb`, G11 reprovado e recuperação comprovada
+
+Checkpoint de 01/10/2026, 00:58 UTC, ainda 30/09 em São Paulo. As Fatias 1–4 e as correções
+anteriores não foram reiniciadas. O código da aplicação não mudou durante este diagnóstico.
+
+### Cadeia do candidato e tempos reais
+
+SHA de controle/candidato: `7efbedb41e7141a628ceab8fe03beeb17bb340ff`.
+
+| Etapa                  | Execução                                                                                  | Resultado                                                                                         | Duração                               |
+| ---------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| CI                     | [36794205281](https://github.com/Vnd93/gaiatec-cms/actions/runs/36794205281), tentativa 1 | Sete jobs verdes; 67 arquivos/2.154 testes pgTAP; browser 65 aprovados e 39 skips previstos       | 378 s                                 |
+| Ponte de staging       | [36794950630](https://github.com/Vnd93/gaiatec-cms/actions/runs/36794950630), tentativa 1 | Pacote original promovido; backend restaurado; três provas public-v2 HTTP 200 e cleanup aprovados | 552 s                                 |
+| Canônico               | [36795885719](https://github.com/Vnd93/gaiatec-cms/actions/runs/36795885719), tentativa 1 | G11 comandos reprovado; dependências/Chrome não executados                                        | 904 s, incluindo finalização/métricas |
+| Job de deploy canônico | `110159751766`                                                                            | Reprovado antes de Chrome                                                                         | 594 s                                 |
+| Finalizer              | `110162344931`                                                                            | Recuperação e prova terminal aprovadas                                                            | 145 s                                 |
+| Watchdog               | [36797142872](https://github.com/Vnd93/gaiatec-cms/actions/runs/36797142872)              | Verde; compensação adicional dispensada pelo estado terminal                                      | Sem nova mutação                      |
+
+CI: 00:03:14–00:09:32 UTC; ponte: 00:11:58–00:21:10 UTC; canônico:
+00:22:51–00:37:55 UTC. A duração menor do canônico que os 2.076 s do run anterior **não é ganho
+de desempenho**: ele parou antes. O SLO de caminho feliz 40–60 minutos continua sem comprovação
+para esta entrega; a etapa limitante observada é G11 comandos, não o Chrome.
+
+- Pacote `11133348365`, SHA-256
+  `57a5bcbd4f214a4568517b63d4e663781de3b37b1004109e913d57b65e970cf4`.
+- Seleção de perfil `full-release`, artefato `11133183636`, SHA-256
+  `1d1daf07b4ea57176f4709674adb9586dc00faad7c8ca5e647b251b79adc4393`.
+- Deployment de staging `54fc78bb-8cde-461b-9fa9-ae67ac2c7907`; nenhum rebuild equivalente.
+- Prova da ponte `11134025233`, SHA-256
+  `2bb5be70ab2f95f926b6940aefacc2fd88a5bbfbd40468979e9f858ec27870e4`.
+- Restauração da ponte `11133856297`, SHA-256
+  `53d8b34f26fe96c2e388bff33f143f19575d8cf2e421100ee1f56c4043a52910`.
+- Evidência preliminar canônica `11133584246`, SHA-256
+  `ec398d6ed90711c1a3661e5587ac25692acae734153ac56ed0638004fcd165f1`.
+- Evidência terminal `11134650148`, SHA-256
+  `bac2352646e1f25e42877c044d8f9728326ab5e3e0e701129899e3bd6b34cad3`.
+
+Os arquivos locais de seleção, prova/restauração, preliminar e terminal tiveram seus digests
+comparados com os artefatos remotos. Nenhuma aprovação dependente foi herdada de outro SHA.
+
+### Falha e limites do diagnóstico
+
+G11 leitura p95 **137 ms**, orçamento 500 ms. Comandos p95 **5.366 ms**, orçamento 800 ms.
+A amostragem serial preservou uma mutação e nove replays idempotentes, sem retries ou exclusão
+de observações. Série de comandos, em milissegundos:
+`600, 405, 364, 201, 182, 436, 218, 5366, 2644, 1387`.
+
+Na oitava amostra: servidor 5.366 ms, autenticação 104 ms, RPC 5.257 ms, rate limit 259 ms,
+núcleo SQL 1.637 ms e duração externa 5.692,54 ms. Há tempo elevado dentro e fora do núcleo SQL;
+não é correto atribuir tudo à rede do navegador. Checks funcionais/segurança e cleanup da fase
+passaram; não houve nova tempestade SQLSTATE `40001` nem cron multissegundo no intervalo.
+Leitura, cache cumulativo, ausência de locks após o run e os checks funcionais não aprovam o
+orçamento reprovado de comandos.
+
+O [incidente oficial do API Gateway no leste dos EUA](https://status.supabase.com/incidents/w91bvbjhqf0f)
+continuava aberto, com última atualização em 30/09 às 21:26 UTC. O provedor descreve latência
+intermitente para clientes nessa região. Há coincidência temporal, mas não prova de causa única.
+O projeto de staging permanece em `us-east-2`; não houve migração de região ou upgrade de plano.
+
+A mensagem `Thread killed by timeout manager` do PostgREST não prova falha de consulta:
+o [registro primário do PostgREST](https://github.com/PostgREST/postgrest/issues/4799) explica
+sua ocorrência em operação normal e a correção de logging. Métricas de infraestrutura consultadas
+em Chrome real, somente leitura, não demonstraram saturação sustentada de CPU, IOPS ou conexões.
+Swap/comprometimento de memória e estatísticas acumuladas são sinais para investigação, não
+justificativa isolada para alterar recursos, descartar amostras ou otimizar uma query sem prova.
+
+### Recuperação e próximo passo verificável
+
+Finalizer: 74 checks de banco, 114 migrations/última `0114`, configuração Auth verificada,
+signup público desligado, funções reconciliadas, secrets preservados e zero valores divulgados.
+Prova terminal: 82 respostas, disponibilidade 100%, zero 5xx, p95 público **590,213 ms**,
+headers/manifesto/SHA exatos, CSP/noindex válidos e nenhuma violação. Watchdog verde, sem
+compensação adicional. O challenge Chrome não foi emitido e nenhum watcher novo foi iniciado.
+
+Após a recuperação: GitHub `Vnd93`, mesmo holder, fetch/fast-forward, ambas as árvores canônicas
+limpas e iguais a `origin/main`; zero workflows nos cinco estados não terminais e zero fences.
+Consulta de staging às 00:58:17 UTC: `ev2.catalog_v1=false`, zero overrides, produtos, snapshots,
+leases QA ativos, queries concorrentes e lock waits. Produção permanece intocada.
+
+Não repetir CI, ponte ou canônico por tentativa e erro. Antes de um novo canônico, exigir mudança
+material no diagnóstico ou recuperação comprovada do provedor, confirmar todo o estado remoto e
+reavaliar a validade dos checkpoints por SHA/digest/deployment/snapshot. Só checkpoints independentes
+ainda válidos podem ser reutilizados; conservar o pacote selado, um escritor, recovery prévio e
+todos os budgets. Chrome real just-in-time continua obrigatório após os gates automáticos.
+
+CAT-001–010: `ready-for-gate`; CAT-011: recaptura/aprovação nominal; CAT-012: UAT/rollback.
+O [índice de fontes nominais](lista-nominal-prioritaria-cat-d009-2026-09-24.md) registra pesquisa
+e ambiguidades sem carga, publicação, aprovação fictícia ou fonte mista. Não há nova pendência de
+definir papel de aprovação ou fabricante Tmeasurement. Itens 17/18 seguem provisórios; CAT-D010
+continua adiado até os ciclos manuais estáveis. **O sistema ainda não está homologado como concluído.**
+
+## Registro histórico preservado — recuperação de `9719f52` e regressão no motor do navegador
 
 ### Execuções e artefatos exatos
 
