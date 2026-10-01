@@ -24,7 +24,32 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 30 de setembro de 2026: candidato final de seletores `9719f52`
+## Situação vigente — 30 de setembro de 2026: staging recuperado e regressões no navegador
+
+O candidato `9719f52d756ba447751398238b2e9dab61df02dc` passou CI e ponte de staging,
+promovendo o pacote único `11130611711`, sem rebuild. O canônico
+[36789268672](https://github.com/Vnd93/gaiatec-cms/actions/runs/36789268672) aprovou deploy,
+G11 29/29, G7 e ambos os gates pós-deploy. Parou antes do Chrome real: o seletor exato de
+rótulo do campo booleano não encontra o `select` no Playwright, embora passe no teste de componente.
+
+Finalizer e [watchdog 36792304154](https://github.com/Vnd93/gaiatec-cms/actions/runs/36792304154)
+terminaram verdes. A sonda terminal comprovou SHA exato, 100% de disponibilidade, zero 5xx e
+p95 649,283 ms. Não há workflows ativos, fences, atores QA ativos ou lock waits; 114 migrations,
+catálogo desligado, zero overrides, produtos e snapshots. Produção permanece intocada.
+
+A correção local fica restrita aos testes. Regressões com os componentes reais renderizados e
+Chromium reproduzem a falha booleana e quatro problemas subsequentes de seleção na campanha
+(modelo aprovado, visibilidade em busca, formulário e título). Os mesmos helpers usados pelo E2E
+passam nos cinco tipos de atributo e nos campos de campanha em desktop/mobile. O candidato
+`7efbedb41e7141a628ceab8fe03beeb17bb340ff` passou o check completo (221 arquivos/1.418 testes
+Vitest, demais suítes, build 18,16 s) e 20 testes Chromium sem retry em 11,4 s. CI/pacote/ponte/
+canônico desse novo SHA ainda estão pendentes; não é aprovação de staging ou Chrome real.
+
+As Fatias 1–4 não foram refeitas. CAT-001–010 permanecem `ready-for-gate`; recaptura/aprovação
+nominal e UAT/rollback real continuam pendentes. Sem carga/publicação comercial ou cutover.
+Ver [SHAs, digests e tempos](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Registro histórico preservado — candidato de seletores `9719f52`, antes dos gates remotos
 
 O CI [36785393868](https://github.com/Vnd93/gaiatec-cms/actions/runs/36785393868) aprovou o
 candidato `aad5922` em 454 s: sete jobs, 67 arquivos/2.154 testes PostgreSQL, incluindo as sete

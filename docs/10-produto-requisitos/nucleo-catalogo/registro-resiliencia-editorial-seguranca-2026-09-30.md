@@ -21,7 +21,69 @@ relacionados:
 
 # Resiliência editorial e homologação controlada de staging
 
-## Resultado vigente — revisão completa dos seletores, candidato `9719f52`
+## Resultado vigente — recuperação de `9719f52` e regressão no motor do navegador
+
+### Execuções e artefatos exatos
+
+- [CI 36786871713](https://github.com/Vnd93/gaiatec-cms/actions/runs/36786871713): verde,
+  482 s; sete jobs, 67 arquivos/2.154 testes pgTAP, incluindo as sete regressões de recovery.
+- Pacote único `11130611711`, SHA-256
+  `5a2735c55d82b3974a4602c2bd5450010ad337f821ada541a413c54f6cec6265`, produzido pelo CI para
+  `9719f52d756ba447751398238b2e9dab61df02dc`.
+- [Ponte 36787751031](https://github.com/Vnd93/gaiatec-cms/actions/runs/36787751031): verde,
+  610 s, sem rebuild, deployment `ca57dc36-6359-4c92-a8fb-5f65c7b7fb9b`. Backend restaurado na
+  versão 535, três provas HTTP 200/public-v2, cleanup e resíduo aprovados.
+- Prova da ponte `11130089504`, SHA-256
+  `b786254013baa871db915ddc109de1efedc6767f134f0a1ee7ba15fbbb95934a`; restauração `11129999687`,
+  SHA-256 `1dcaa9ef5d4e4d3d2b56fc930561f607a13a7c0fd0c57ad19e2cb0730ef13ea6`; arquivos locais verificados.
+- [Canônico 36789268672](https://github.com/Vnd93/gaiatec-cms/actions/runs/36789268672):
+  23:05:56–23:40:32 UTC, 2.076 s incluindo recuperação. Deploy verde em 1.137 s, G11 29/29
+  (leitura 104/500 ms; comandos 355/800 ms), G7 aprovado, ambos os gates pós-deploy verdes.
+  O gargalo terminal foi a localização de um campo no teste editorial; não houve challenge Chrome.
+
+### Falha, diagnóstico e recuperação
+
+`getByLabel("Valor", { exact: true })` encontra zero controles para o `select` booleano:
+o Playwright inclui o texto das opções na busca por rótulo, diferentemente do React Testing Library.
+O papel acessível `combobox` com nome exato `Valor` encontra um controle. Reprodução no componente
+real em Chromium: quatro tipos passaram e o booleano falhou antes da correção.
+
+O ciclo de autenticação passou. O cleanup de ambos os atores e do rendezvous passou sem reparação
+manual; o finalizer marcou o recovery de navegador `already-terminal`. O watchdog `36792304154`
+terminou verde, sem compensação adicional. Artefato terminal `11132346032`, SHA-256
+`40ad42815919b34a52e12cf80ac1a57c5a51fecae6ff1077276db1bf0cb9dea9`, baixado e verificado:
+82 respostas, 100% disponibilidade, zero 5xx, p95 649,283 ms, SHA/headers exatos e nenhuma violação.
+
+Após o estado terminal: Vnd93, fetch, ambas as árvores limpas em main/origin, zero operações nos
+cinco estados não terminais, zero fences, 114 migrations, catálogo default-off e vazio, zero leases
+QA ativos, queries concorrentes e lock waits. O mesmo holder manteve o lease; não houve takeover.
+
+### Correção restrita aos testes
+
+O preenchimento de atributos foi extraído para um helper compartilhado entre o E2E de staging e
+a regressão de navegador. Booleano usa papel/nome acessíveis; texto, decimal, enum e faixa conservam
+a semântica original. Testes de componente continuam provando persistência do valor e preservação
+do tipo, proveniência e homologação. A renderização local não substitui Chrome autenticado real.
+
+A revisão da sequência ainda não alcançada encontrou e reproduziu quatro problemas de campanha:
+rótulos antigos de modelo aprovado e indexação; busca exata por rótulo de formulário nativo; e
+título ambíguo com campos homônimos dos blocos. Os seletores agora compartilham helpers e isolam
+a identificação da campanha dos blocos. Também são conferidos os demais rótulos estáticos da criação.
+Regressões desktop/mobile passaram sem retry. Nenhum runtime, migration, workflow, pin, timeout
+de release, RLS, MFA/AAL2 ou gate foi alterado.
+
+O candidato `7efbedb41e7141a628ceab8fe03beeb17bb340ff` contém seis arquivos de testes,
+311 inserções/30 remoções, diff revisado. Check completo verde: 221 arquivos/1.418 testes Vitest,
+demais suítes/contratos/evals, lint/tipos/format e build de 18,16 s (799.039 bytes iniciais).
+Os 20 casos Chromium desktop/mobile passaram em 11,4 s, dois workers e zero retries. Os novos
+harnesses usam cache isolado, não carregam variáveis da aplicação e não abrem HTTP/WebSocket.
+CI e entrega remota do novo SHA ainda estão pendentes; nenhum resultado anterior foi transferido.
+
+Novo SHA exige validação e evidências próprias; o run reprovado não será repetido cegamente.
+Chrome positivo, dependências posteriores, evidência terminal de sucesso e CAT-011/012 continuam
+pendentes. Não houve carga/publicação comercial, ativação global do catálogo, cutover ou produção.
+
+## Registro histórico preservado — revisão dos seletores, candidato `9719f52`
 
 O CI [36785393868](https://github.com/Vnd93/gaiatec-cms/actions/runs/36785393868), attempt 1 de
 `aad5922c3efcf37c998d1280c4ad804c7896c593`, terminou verde em 454 s (22:24:33–22:32:07 UTC).

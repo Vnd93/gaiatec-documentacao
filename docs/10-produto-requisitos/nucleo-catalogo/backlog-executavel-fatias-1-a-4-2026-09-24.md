@@ -40,7 +40,21 @@ exigem F1/F2 verdes. `CAT-010`–`CAT-012` exigem F1–F3 verdes. Estados permit
 `planned → in-progress → blocked → ready-for-gate → done`; `done` exige SHA, digest, evidência e
 rollback registrados. `CAT-D010` permanece `deferred` até dois ciclos manuais completos e estáveis.
 
-## Situação vigente — revisão de seletores concluída, candidato `9719f52`
+## Situação vigente — staging recuperado, regressões de navegador em validação
+
+`9719f52` passou CI `36786871713` e ponte `36787751031` com o pacote original `11130611711`.
+O canônico `36789268672` passou deploy/G11/G7/pós-deploy e falhou antes do Chrome na seleção
+do atributo booleano. Finalizer e watchdog `36792304154` recuperaram o estado, sem resíduo ou
+concorrência; catálogo desligado e vazio. A correção local de testes reproduz a diferença real entre
+RTL/Playwright e os seletores subsequentes de campanha antes de nova validação remota.
+Novo candidato `7efbedb41e7141a628ceab8fe03beeb17bb340ff`: check completo e 20 regressões
+Chromium aprovados; CI/pacote/ponte/canônico desse SHA ainda pendentes.
+
+CAT-001–010 seguem `ready-for-gate`, não `done`. CAT-011 exige recaptura/aprovação nominal;
+CAT-012 exige UAT/rollback real. As Fatias 1–4 não foram reiniciadas. Produção/carga/publicação/cutover
+continuam fora do escopo. Evidência completa no [registro](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Situação histórica — revisão de seletores concluída, candidato `9719f52`
 
 `aad5922` passou CI `36785393868` (454 s, sete jobs, 2.154 testes pgTAP), mas não foi promovido.
 A revisão anterior ao deploy encontrou e reproduziu a ambiguidade adicional de “Valor”. Correção

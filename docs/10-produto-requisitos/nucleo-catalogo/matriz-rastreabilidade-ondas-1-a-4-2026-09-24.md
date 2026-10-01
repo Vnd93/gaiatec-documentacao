@@ -55,7 +55,22 @@ leitura, Chrome e evidência). O SLO de caminho feliz é 40–60 minutos; qualqu
 identificar o gargalo e nunca relaxar segurança. O primeiro cutover permanece bloqueado enquanto a
 lista nominal não tiver 100% de cadastro, revisão e aprovação.
 
-## Checkpoint vigente — candidato `9719f52`, antes de nova promoção
+## Checkpoint vigente — `9719f52` recuperado e seletores sob regressão real
+
+SHA `9719f52d756ba447751398238b2e9dab61df02dc`, CI `36786871713`, pacote `11130611711`
+(`5a2735c55d82b3974a4602c2bd5450010ad337f821ada541a413c54f6cec6265`), ponte `36787751031`,
+deployment `ca57dc36-6359-4c92-a8fb-5f65c7b7fb9b`. Canônico `36789268672` reprovado antes do
+Chrome por seletor booleano; G11/G7 e pós-deploy passaram. Recovery/finalizer/watchdog verdes,
+artefato terminal `11132346032` verificado, zero resíduo, catálogo default-off/vazio.
+
+Correção local somente de testes: helpers compartilhados com o E2E e regressões Chromium dos
+componentes reais para atributos/campanha. Mudança do SHA exige novas evidências dependentes;
+20 casos desktop/mobile verdes não equivalem a homologação autenticada em staging.
+Novo candidato `7efbedb41e7141a628ceab8fe03beeb17bb340ff`, seis arquivos de testes, check
+completo verde; CI e cadeia remota do novo SHA ainda pendentes.
+CAT-001–010 seguem `ready-for-gate`; CAT-011/012 e Chrome/UAT/rollback ainda pendentes.
+
+## Checkpoint histórico — candidato `9719f52`, antes de nova promoção
 
 `9719f52d756ba447751398238b2e9dab61df02dc` corrige somente os seletores de valor técnico e
 acrescenta três regressões executáveis; check completo local verde com 1.418 testes Vitest.
