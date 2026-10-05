@@ -8,7 +8,7 @@ fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-09-30
+ultima_revisao: 2026-10-05
 fonte_canonica: gaiatec-documentacao
 decisoes: CAT-D001-CAT-D010
 ---
@@ -55,7 +55,24 @@ leitura, Chrome e evidência). O SLO de caminho feliz é 40–60 minutos; qualqu
 identificar o gargalo e nunca relaxar segurança. O primeiro cutover permanece bloqueado enquanto a
 lista nominal não tiver 100% de cadastro, revisão e aprovação.
 
-## Checkpoint vigente — `7efbedb`, G11 reprovado e recuperação terminal verde
+## Checkpoint vigente — 5 de outubro de 2026, mesmo SHA e novo estado terminal seguro
+
+SHA `7efbedb41e7141a628ceab8fe03beeb17bb340ff`, CI `36794205281`, pacote `11133348365` e
+ponte `36794950630` revalidados, sem rebuild ou mudança de deployment. A única nova execução
+canônica, `37350070838`, reprovou comandos G11 em 5.241/800 ms, com leitura em 156/500 ms;
+Auth 4.984 ms e RPC 241 ms na amostra lenta. Não houve exclusão de amostra ou mudança de limite.
+
+Finalizer/watchdog `37352296308` verdes; terminal `11362602801`, SHA-256
+`80fac1cac29ac1a9bd52231265f6eeef3693afadbea57bf83d5d06ac3506403b`, verificado localmente:
+82 respostas, disponibilidade 100%, zero 5xx, SHA exato e nenhuma violação. Catálogo desligado,
+zero produtos/snapshots/overrides e resíduo QA ativo; 114 migrations, sem concorrência ou fences.
+
+Chrome e gates dependentes não executaram. CAT-001–010 permanecem `ready-for-gate`, CAT-011/012
+pendentes. Nova validação exige diagnóstico material e revalidação dos checkpoints; a causa exclusiva
+não foi demonstrada. Não repetir fatias, CI ou ponte já válidos nem tratar recovery como aprovação.
+[Tempos, custódia e continuidade](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint histórico — `7efbedb`, G11 reprovado e recuperação terminal verde
 
 SHA `7efbedb41e7141a628ceab8fe03beeb17bb340ff`; CI `36794205281` verde; pacote único
 `11133348365`, SHA-256 `57a5bcbd4f214a4568517b63d4e663781de3b37b1004109e913d57b65e970cf4`;

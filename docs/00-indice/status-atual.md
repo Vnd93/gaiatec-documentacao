@@ -8,7 +8,7 @@ fase: execucao
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-09-30
+ultima_revisao: 2026-10-05
 fonte_canonica: gaiatec-documentacao
 substitui:
   - gaiatec-status-atual-2026-09-06
@@ -24,7 +24,32 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 30 de setembro de 2026: candidato validado na CI, G11 reprovado e recuperado
+## Situação vigente — 5 de outubro de 2026: retomada exata, G11 reprovado e staging recuperado
+
+As Fatias 1–4 e as correções anteriores não foram refeitas. O candidato continua
+`7efbedb41e7141a628ceab8fe03beeb17bb340ff`: CI `36794205281`, pacote único `11133348365` e
+ponte `36794950630` revalidados e reutilizados, sem rebuild. Depois da mitigação de rede publicada
+pelo Supabase em 01/10 às 20:23 UTC, foi executado **um** novo canônico controlado de staging:
+[37350070838](https://github.com/Vnd93/gaiatec-cms/actions/runs/37350070838), tentativa 1.
+
+O run reprovou G11 comandos: **5.241 ms / limite 800 ms**; leitura passou em **156 / 500 ms**.
+A décima amostra concentrou 4.984 ms na autenticação, 241 ms na RPC e 30.038,35 ms externos.
+Não houve descarte, redução de limite ou repetição após a falha. Os logs agregados e a revisão
+do caminho de autenticação não isolam a causa; é necessária correlação da requisição com o
+provedor antes de escolher uma correção ou outra execução. O incidente público ainda aberto é
+contexto, não prova de causalidade exclusiva. Ver [diagnóstico e roteiro de continuidade](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+Finalizer e watchdog `37352296308` verdes. Prova terminal: 82 respostas, disponibilidade 100%,
+zero 5xx, SHA exato, p95 público 786,767 ms e todos os budgets por rota aprovados. Estado posterior:
+114 migrations, `ev2.catalog_v1=false`, zero overrides/produtos/snapshots, leases QA ativos,
+queries concorrentes ou lock waits; GitHub sem operação ativa ou fence. Produção intocada.
+
+CAT-001–010 permanecem implementados e `ready-for-gate`, não `done`. Chrome positivo e suas
+verificações dependentes não executaram; CAT-011 exige fontes/recaptura/aprovação nominal e
+CAT-012 exige UAT/rollback real. Mesmo papel de cadastro/aprovação, Tmeasurement e itens 17/18
+provisórios permanecem registrados. Sem carga/publicação comercial ou cutover.
+
+## Registro histórico preservado — 30 de setembro de 2026: candidato validado na CI, G11 reprovado e recuperado
 
 Candidato exato `7efbedb41e7141a628ceab8fe03beeb17bb340ff`: CI
 [36794205281](https://github.com/Vnd93/gaiatec-cms/actions/runs/36794205281) verde em 378 s e
@@ -395,7 +420,18 @@ produção. Consulte [ambientes e execução](ambientes-e-execucao.md).
 - Cópias soltas e a antiga pasta local `FONTE_DE_VERDADE` são material histórico, não instrução
   operacional vigente.
 
-## Próxima ação de desenvolvimento
+## Próxima ação vigente de desenvolvimento — 5 de outubro de 2026
+
+Partir de `7efbedb`, não do run histórico abaixo. Correlacionar a latência de autenticação/transporte
+de `37350070838` com o provedor, usando a janela UTC e métricas sanitizadas do registro vigente.
+Não há correção de código comprovada nem autorização para relaxar controles ou repetir o canônico
+sem fato novo. Quando houver diagnóstico material, revalidar lease, estado remoto e checkpoints;
+preservar o pacote original se os bytes não mudarem. Depois dos gates automáticos verdes,
+executar Chrome real just-in-time, captação positiva e dependências. Só após o pipeline completo
+verde, seguir com CAT-011/012, proveniência, cleanup e rollback próprios. Não declarar finalizado
+antes dessas provas.
+
+## Próxima ação histórica — superada pelos checkpoints acima
 
 Retomar a partir do SHA atual, investigar a falha do passo “Run the complete authenticated mutating
 editorial cycle first” no run 34771260324 e corrigir somente a causa comprovada. Revalidar CI e o

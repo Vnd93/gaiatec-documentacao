@@ -8,7 +8,7 @@ fase: nucleo-catalogo
 ambiente: staging
 responsavel: Vnd93
 data_criacao: 2026-09-30
-ultima_revisao: 2026-09-30
+ultima_revisao: 2026-10-05
 fonte_canonica: gaiatec-documentacao
 substitui: []
 relacionados:
@@ -21,7 +21,135 @@ relacionados:
 
 # Resiliência editorial e homologação controlada de staging
 
-## Resultado vigente — `7efbedb`, G11 reprovado e recuperação comprovada
+## Resultado vigente — retomada de 5 de outubro de 2026 no mesmo `7efbedb`
+
+Não foram reiniciadas as Fatias 1–4 nem reconstruídos os artefatos. GitHub `Vnd93`, holder original
+explicitamente registrado, ambos os repositórios canônicos limpos em `main`, fetch e fast-forward
+confirmados. Os cinco estados não terminais de workflows estavam vazios em ambos os repositórios,
+sem fences, leases QA ativos ou operação de banco concorrente. TTL não foi usado como autorização.
+
+O fato novo que justificou uma única revalidação foi a
+[mitigação de rede informada pelo Supabase](https://status.supabase.com/incidents/w91bvbjhqf0f)
+em 01/10 às 20:23 UTC, posterior ao run anterior. A atualização de 02/10 às 21:06 UTC ainda
+relata casos de latência elevada: não foi presumida resolução completa nem causa exclusiva.
+Nenhum upgrade pago, mudança regional, mudança de runtime Node/CLI ou alteração de Auth/RLS
+foi realizado. Após a nova reprovação, não houve segundo disparo.
+
+### Checkpoints reutilizados e execução única
+
+SHA de controle/candidato/rollback: `7efbedb41e7141a628ceab8fe03beeb17bb340ff`. Os validadores
+do repositório aprovaram novamente CI `36794205281`, tentativa 1; pacote `11133348365`, ainda
+válido; ponte `36794950630`, tentativa 1; prova `11134025233`; e deployment
+`54fc78bb-8cde-461b-9fa9-ae67ac2c7907`. Os digests históricos abaixo continuam os mesmos.
+Health de staging retornou 200 com SHA exato. O Chrome real estava autenticado e exibiu o estado
+de preparação/default-off, mas essa observação não substitui o challenge ou UAT.
+
+O [canônico 37350070838](https://github.com/Vnd93/gaiatec-cms/actions/runs/37350070838), tentativa 1,
+foi disparado uma vez, usando o pacote original e a ponte existente. Perfil `full-release`,
+snapshot live novo, CAS, faixa de mutação exclusiva e recovery durável antes de qualquer mutação
+permaneceram obrigatórios. Não houve alteração de código ou rebuild.
+
+| Etapa                             | Resultado                               | Duração               |
+| --------------------------------- | --------------------------------------- | --------------------- |
+| Preflight                         | verde                                   | 36 s                  |
+| Validação de fonte                | verde, paralela à validação live        | 79 s                  |
+| Validação do baseline live        | verde                                   | 124 s                 |
+| Deploy serial                     | reprovado no G11                        | 686 s                 |
+| G11/janelas G12, dentro do deploy | interrompido pelo orçamento de comandos | 130 s                 |
+| Finalizer                         | recuperação e evidência terminal verdes | 187 s                 |
+| Métricas                          | verde                                   | 11 s                  |
+| Canônico até atualização terminal | 17:39:34–17:57:15 UTC                   | 1.061 s               |
+| Watchdog `37352296308`            | verde; compensação adicional skipped    | 17:57:17–17:57:38 UTC |
+
+O relatório de métricas foi capturado aos 1.056 s, antes de sua própria finalização. O run anterior
+levou 904 s; a diferença de 157 s não mede melhora/regressão do caminho feliz, pois ambos pararam
+antes de completar a cadeia. O SLO segue `component-only`/`non-happy-path`, sem comprovação de
+release completo em 40–60 minutos. Jobs paralelos e etapas internas não devem ser somados novamente.
+Pós-deploy, Chrome e evidência de aprovação ficaram skipped; o challenge não foi emitido.
+
+### G11 e diagnóstico sanitizado
+
+Leitura: p95 servidor **156 ms / limite 500 ms**, p95 externo 415 ms. Comandos: p95 servidor
+**5.241 ms / limite 800 ms**, p95 externo 30.038 ms. Disponibilidade 100%, outbox lag 0,
+auditoria 100%, RPO 0 e RTO 1 minuto. A reprovação `measurement_requires_independent_review`
+foi preservada. Amostragem original: 20 warmups e 20 leituras medidas; dez comandos seriais,
+uma mutação e nove replays idempotentes, todos HTTP 200, sem descarte ou retry.
+
+Série completa dos comandos, em ms: `493, 449, 369, 364, 511, 564, 236, 194, 395, 5241`.
+Na décima amostra: autenticação **4.984 ms**, RPC **241 ms**, rate limit **11 ms**, núcleo SQL
+**35 ms**, duração externa **30.038,35 ms**. Diferentemente da oitava amostra do run anterior
+(RPC 5.257 ms), a demora medida agora se concentra antes da operação de banco. Isso não prova
+que as duas falhas tenham a mesma causa.
+
+Revisão de `cms-leads`, `cms-auth` e `cms-edge-fetch` no candidato exato: o tempo de autenticação
+inclui `getUser(token)` real; não há retry local nesse caminho. `boundedFetch()` usa deadline de
+30 s, com repetição idempotente desabilitada por padrão; o canário também não repete a chamada.
+Não substituir a validação remota por claims em cache, reduzir controles, descartar a amostra lenta
+ou aumentar o orçamento para aprovar o gate.
+
+Consultas somente leitura usaram exclusivamente o stream unificado `query_logs`, sem dependência
+de endpoints de logs removidos. Janela 17:50–17:54 UTC: 27 registros Auth `/user`, todos HTTP 200,
+maior duração do handler 123,780639 ms e p95 116,253994 ms. A unidade foi conferida no
+[logger oficial do Auth](https://github.com/supabase/auth/blob/ce9a8eee0cc042be8c7a42981a7ddae631e41d91/internal/observability/request-logger.go),
+que registra `elapsed.Nanoseconds()`. Isso é evidência agregada, não correlação individual com a
+décima amostra nem confirmação da versão hospedada do Auth. Entre 17:51:30 e 17:53:10 UTC, os
+34 logs Auth, 225 logs de funções e sete de Postgres consultados não continham menções a timeout,
+limite de CPU ou memória. Ausência de mensagem não exclui fila/latência de infraestrutura.
+
+**Causa exclusiva não demonstrada.** O tempo externo, a autenticação observada pela Edge e os
+handlers registrados pelo provedor medem fronteiras diferentes. Não subtrair esses agregados para
+afirmar tempo de rede exato. O próximo diagnóstico útil é a correlação do provedor na janela
+17:51:30–17:53:10 UTC: gateway/PoP, encaminhamento Edge→Auth, fila/espera e duração do handler.
+Fornecer somente SHA, run, janela UTC e métricas deste registro; nunca tokens, cookies, usuários
+sintéticos, payloads ou logs brutos. Nenhum chamado externo foi enviado nesta sessão.
+
+### Recuperação e custódia das evidências
+
+Finalizer `111904400325`: 74 checks de banco, 114 migrations/última `0114`, configuração Auth e
+signup público desabilitado verificados; inventário de funções reconciliado sem nova mutação nessa
+reconciliação; secrets preservados sem valores divulgados. O
+[watchdog 37352296308](https://github.com/Vnd93/gaiatec-cms/actions/runs/37352296308) confirmou
+o estado terminal seguro e dispensou compensação adicional.
+
+Sonda terminal: **82 respostas, 100% de disponibilidade, zero 5xx, p95 público 786,767 ms**;
+todos os budgets por rota, SHA em headers/manifesto/health, CSP e noindex passaram, sem violações.
+Após recovery: 114 migrations, flag global desligada, zero overrides/produtos/snapshots do catálogo,
+leases QA ativos, queries concorrentes ou lock waits. Nova leitura às 18:08:13 UTC, conforme o
+timestamp retornado pelo banco, confirmou os mesmos contadores. GitHub sem workflows não terminais
+ou fences. Produção, carga/publicação comercial e cutover não foram tocados.
+
+| Evidência                         | Artefato      | SHA-256 do arquivo verificado localmente                           |
+| --------------------------------- | ------------- | ------------------------------------------------------------------ |
+| Terminal/recovery                 | `11362602801` | `80fac1cac29ac1a9bd52231265f6eeef3693afadbea57bf83d5d06ac3506403b` |
+| Preliminar, incluindo vetores G11 | `11363001127` | `72cf467a1dae2d7203fc56f782ccb119405923481f1bab9e44f3a8c1edd3f144` |
+| Métricas por etapa                | `11363151718` | `3b4a93950dfd436fcbb36a9c831d90c207e34d4d2ca7e776a301f2c664fb1c9c` |
+
+Os arquivos estão preservados no diretório ignorado
+`gaiatec-cms/outputs/catalog-staging-7efbedb-37350070838-evidence`; nenhum payload bruto foi
+adicionado ao Git. Recuperação verde não transforma o canônico reprovado em homologação.
+
+### Continuidade sem reiniciar trabalho concluído
+
+1. Obter correlação do provedor ou outra evidência material que sustente uma correção. Não repetir
+   CI, ponte ou canônico apenas para encontrar uma janela favorável. Qualquer mudança de SHA/bytes
+   invalida os gates dependentes; checkpoint independente só é reutilizável após nova verificação.
+2. Depois de corrigir/comprovar estabilidade, revalidar holder, ausência de operações e fences,
+   SHA/digests/deployment/snapshot. Só então executar uma nova validação canônica controlada.
+3. Com gates automáticos verdes, executar challenge just-in-time, Chrome real autenticado,
+   captação positiva e suas verificações, cleanup e evidência terminal. A sessão Chrome atual,
+   sozinha, não satisfaz esse gate.
+4. CAT-001–010 seguem `ready-for-gate`. CAT-011 depende dos originais/mídias autorizadas e da
+   recaptura/aprovação nominal; CAT-012 depende de UAT e rollback reais, com fixture, recuperação
+   e proveniência próprias. Não confundir o inventário de cobertura com execução de UAT.
+
+Não há pendência genérica de permissão de staging, de um segundo papel de aprovação ou do
+fabricante Tmeasurement. Itens 17/18 continuam provisórios; CAT-D010 permanece adiado.
+A consulta da automação `cms-organiza-o-p-s-handoff` retornou somente o cartão, e seu registro
+local não foi encontrado; pausa **não confirmada**, sem recriar agendamento ou sobrescrever campos
+desconhecidos. Se ainda estiver ativa, deve ser pausada no cartão enquanto houver esse bloqueio.
+O sistema continua sem homologação final; não foi declarado pronto para produção.
+
+## Registro histórico preservado — `7efbedb` em 1º de outubro, G11 reprovado e recuperação comprovada
 
 Checkpoint de 01/10/2026, 00:58 UTC, ainda 30/09 em São Paulo. As Fatias 1–4 e as correções
 anteriores não foram reiniciadas. O código da aplicação não mudou durante este diagnóstico.

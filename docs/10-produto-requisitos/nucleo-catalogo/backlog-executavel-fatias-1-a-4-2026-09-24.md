@@ -8,7 +8,7 @@ fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-09-30
+ultima_revisao: 2026-10-05
 fonte_canonica: gaiatec-documentacao
 ---
 
@@ -40,7 +40,21 @@ exigem F1/F2 verdes. `CAT-010`–`CAT-012` exigem F1–F3 verdes. Estados permit
 `planned → in-progress → blocked → ready-for-gate → done`; `done` exige SHA, digest, evidência e
 rollback registrados. `CAT-D010` permanece `deferred` até dois ciclos manuais completos e estáveis.
 
-## Situação vigente — candidato `7efbedb` recuperado; G11 e homologação pendentes
+## Situação vigente — 5 de outubro de 2026, continuidade sem reinício das fatias
+
+O mesmo `7efbedb` foi revalidado uma vez em staging após nova mitigação de rede do provedor,
+reutilizando CI `36794205281`, pacote `11133348365` e ponte `36794950630` após verificar sua
+validade. O canônico `37350070838` reprovou G11 comandos (5.241/800 ms); leitura 156/500 ms.
+Na amostra lenta: Auth 4.984 ms, RPC 241 ms. Finalizer/watchdog `37352296308` verdes, catálogo
+default-off/vazio, zero resíduo ou concorrência. Não houve retry após a falha nem alteração de código.
+
+CAT-001–010 continuam implementados e `ready-for-gate`; CAT-011, recaptura/aprovação nominal;
+CAT-012, Chrome/UAT/rollback. Nenhum item foi promovido a `done` por recuperação verde. Antes
+de outro canônico, obter diagnóstico material/correlação com o provedor. Depois, revalidar os
+checkpoints, preservar o pacote único e completar a cadeia com todos os gates. Ver
+[evidências e roteiro exato](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Situação histórica — candidato `7efbedb` recuperado; G11 e homologação pendentes
 
 `7efbedb41e7141a628ceab8fe03beeb17bb340ff` passou CI `36794205281` (378 s) e ponte
 `36794950630` (552 s), com pacote original `11133348365`, sem rebuild. O canônico `36795885719`
