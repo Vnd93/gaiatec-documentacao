@@ -40,7 +40,25 @@ exigem F1/F2 verdes. `CAT-010`–`CAT-012` exigem F1–F3 verdes. Estados permit
 `planned → in-progress → blocked → ready-for-gate → done`; `done` exige SHA, digest, evidência e
 rollback registrados. `CAT-D010` permanece `deferred` até dois ciclos manuais completos e estáveis.
 
-## Situação vigente — 5 de outubro de 2026, continuidade sem reinício das fatias
+## Situação vigente — 5 de outubro de 2026, orçamento aprovado e homologação bloqueada por runners
+
+Candidato `0a3027b`, migration 0115 e teto de comandos de staging em 2.000 ms, autorizado;
+produção/local em 800 ms e leitura em 500 ms, sem alteração de segurança ou amostragem.
+CI `37359438103` e ponte `37360387443` verdes, pacote único `11366810234`, sem rebuild.
+O canônico `37362073565` aprovou G11 29/29 (comandos 309 ms; leitura 354 ms), G12 e
+pós-deploy; Chrome e métricas ficaram sem runner e foram cancelados. Finalizer verde e recovery
+comprovado; watchdog `37369660884` terminal, fail-closed sem mutação depois da ausência do
+classificador e do estado já limpo. Não houve retry cego nem repetição das fatias.
+
+CAT-001–010 continuam `ready-for-gate`, não `done`. CAT-011 avançou na identificação de
+fontes primárias dos itens 6–8 e do modelo ILT24/item 11, mas recaptura e aprovação não
+foram substituídas pela pesquisa. CAT-012 continua dependente de Chrome/UAT/rollback reais.
+Catálogo desligado/vazio, sem resíduos ativos ou operações concorrentes; produção intocada.
+Próximo gate: recuperação material de runners e revalidação dos checkpoints antes da continuação.
+[Provas, tempos e limites](registro-resiliencia-editorial-seguranca-2026-09-30.md) e
+[fontes nominais](lista-nominal-prioritaria-cat-d009-2026-09-24.md).
+
+## Situação histórica — 5 de outubro de 2026, `7efbedb` sem reinício das fatias
 
 O mesmo `7efbedb` foi revalidado uma vez em staging após nova mitigação de rede do provedor,
 reutilizando CI `36794205281`, pacote `11133348365` e ponte `36794950630` após verificar sua

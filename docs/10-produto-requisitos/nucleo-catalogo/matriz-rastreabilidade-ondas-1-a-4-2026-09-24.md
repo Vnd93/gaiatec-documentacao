@@ -55,7 +55,31 @@ leitura, Chrome e evidência). O SLO de caminho feliz é 40–60 minutos; qualqu
 identificar o gargalo e nunca relaxar segurança. O primeiro cutover permanece bloqueado enquanto a
 lista nominal não tiver 100% de cadastro, revisão e aprovação.
 
-## Checkpoint vigente — 5 de outubro de 2026, mesmo SHA e novo estado terminal seguro
+## Checkpoint vigente — 5 de outubro de 2026, `0a3027b` e pacote imutável
+
+SHA `0a3027b8156ed1bc7d787994c02a27ed3a3a1d49`, perfil `full-release`, CI
+`37359438103/1`, ponte `37360387443/1`; pacote original `11366810234`, SHA-256
+`cf2379eac7581d37cf853fd412a7ead47ebff44457475aa85f4d5a13a84cc9d0`.
+Deployment `dec9415f-1322-428f-8044-9f9e32848f3b`; nenhum rebuild equivalente.
+
+O canônico `37362073565/1` aprovou G11 29/29, G12, mutação serial e pós-deploy.
+Comandos p95 309 ms / novo teto autorizado de 2.000 ms **somente em staging**; leitura
+354/500 ms; produção/local continuam com comandos em 800 ms. A reprovação anterior de
+5.241 ms permanece no histórico. Migration 0115 hash-bound, amostragem e segurança preservadas.
+
+Chrome/métricas cancelados sem runner; finalizer aprovado. Terminal `11368827500`, SHA-256
+`c3981da03665504417daea8ea352cf7dc81b22256b200895b126875dc93d2ad4`, verificado:
+82 respostas, disponibilidade 100%, zero 5xx, SHA exato. Watchdog `37369660884` terminal
+fail-closed sem mutação; seu classificador não recebeu runner e o estado já fora limpo pelo
+finalizer. Não se declara watchdog verde, homologação ou SLO completo.
+
+Estado conferido após ambos terminais: 115 migrations/0115, default-off, zero produtos/snapshots,
+overrides/leases QA ativos, concorrência ou fences. Artefatos/CI/ponte válidos devem ser
+preservados; recuperação do provedor e nova fotografia live antecedem qualquer continuação.
+CAT-001–010 `ready-for-gate`; CAT-011/012 pendentes.
+[Tempos, custódia e continuidade](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint histórico — 5 de outubro de 2026, mesmo `7efbedb` e novo estado terminal seguro
 
 SHA `7efbedb41e7141a628ceab8fe03beeb17bb340ff`, CI `36794205281`, pacote `11133348365` e
 ponte `36794950630` revalidados, sem rebuild ou mudança de deployment. A única nova execução

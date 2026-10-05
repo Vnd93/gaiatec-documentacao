@@ -24,7 +24,41 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 5 de outubro de 2026: retomada exata, G11 reprovado e staging recuperado
+## Situação vigente — 5 de outubro de 2026: comandos até 2 s em staging, G11/G12 verdes e Chrome pendente
+
+A autorização de latência foi implementada no candidato
+`0a3027b8156ed1bc7d787994c02a27ed3a3a1d49`: **p95 de comandos em staging ≤ 2.000 ms**;
+produção/local continuam em 800 ms e leitura administrativa em 500 ms. Segurança, MFA/AAL2,
+RLS, auditoria, revisão independente, protocolo de amostragem, recovery e cleanup preservados.
+A migration aditiva 0115 foi aplicada somente em staging. As Fatias 1–4 não foram reiniciadas.
+
+CI [37359438103](https://github.com/Vnd93/gaiatec-cms/actions/runs/37359438103) e ponte
+[37360387443](https://github.com/Vnd93/gaiatec-cms/actions/runs/37360387443) verdes; pacote
+original `11366810234`, sem rebuild. O canônico
+[37362073565](https://github.com/Vnd93/gaiatec-cms/actions/runs/37362073565) aprovou G11
+**29/29**, G12, regressões públicas e os dois gates pós-deploy. Comandos p95 **309/2.000 ms**;
+leitura **354/500 ms**. A melhora observada não é atribuída à mudança de limite e o run anterior
+de 5.241 ms continua reprovado.
+
+Chrome e métricas foram cancelados pelo GitHub sem receber runner, em contexto de
+[incidente oficial de Actions](https://www.githubstatus.com/incidents/3q1yb5m7ltvb).
+O canônico terminou em `failure`: 70 min 22 s; cadeia desde a CI, 91 min 32 s,
+incluindo 40 min 23 s de filas conhecidas no caminho crítico. Não há SLO final nem homologação
+Chrome aprovados. Finalizer verde, evidência terminal verificada: 82 respostas, 100% de
+disponibilidade, zero 5xx, SHA exato e p95 público 733,498 ms.
+
+O watchdog `37369660884` também terminou: classificador sem runner; compensação confirmou
+estado de recovery já removido pelo finalizer e falhou de forma fechada, sem mutação. Ele não
+é contado como verde. Nova conferência: 115 migrations/0115, `ev2.catalog_v1=false`, zero
+produtos/snapshots, overrides/leases QA ativos, concorrência, lock waits ou fences. Histórico e
+auditoria preservados. Nenhum retry cego, carga/publicação comercial, cutover ou ação em produção.
+
+Suporte sanitizado enviado ao Supabase por autorização, com acesso ao projeto desabilitado.
+CAT-001–010 seguem `ready-for-gate`; CAT-011 exige recaptura/aprovação nominal, com avanço
+nas [fontes dos itens 6–8 e 11](../10-produto-requisitos/nucleo-catalogo/lista-nominal-prioritaria-cat-d009-2026-09-24.md).
+CAT-012 exige Chrome/UAT/rollback. [Digests, tempos, provas e retomada exata](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Registro histórico preservado — 5 de outubro de 2026: `7efbedb`, G11 reprovado e staging recuperado
 
 As Fatias 1–4 e as correções anteriores não foram refeitas. O candidato continua
 `7efbedb41e7141a628ceab8fe03beeb17bb340ff`: CI `36794205281`, pacote único `11133348365` e
@@ -420,7 +454,18 @@ produção. Consulte [ambientes e execução](ambientes-e-execucao.md).
 - Cópias soltas e a antiga pasta local `FONTE_DE_VERDADE` são material histórico, não instrução
   operacional vigente.
 
-## Próxima ação vigente de desenvolvimento — 5 de outubro de 2026
+## Próxima ação vigente de desenvolvimento — 5 de outubro de 2026, candidato `0a3027b`
+
+Aguardar melhora material na alocação de runners do GitHub e revalidar lease, zero operação
+concorrente, recovery/fences, SHA, pacote, ponte e deployment live. Reutilizar apenas checkpoints
+independentes ainda válidos do `0a3027b`; nunca reconstruir o pacote nem refazer as Fatias 1–4.
+Gates live, segurança, amostragem e cleanup devem ter provas válidas para a nova execução.
+Chrome real continua just-in-time após os gates prévios e watcher pronto, com captação positiva,
+antirreplay e verificações dependentes. Só então concluir CAT-011/012 com fontes, revisão,
+UAT/rollback e evidência próprios. Catálogo default-off; sem carga/publicação comercial,
+cutover ou produção. Recuperação verde não significa projeto finalizado.
+
+## Próxima ação histórica — 5 de outubro de 2026, antes do orçamento autorizado
 
 Partir de `7efbedb`, não do run histórico abaixo. Correlacionar a latência de autenticação/transporte
 de `37350070838` com o provedor, usando a janela UTC e métricas sanitizadas do registro vigente.

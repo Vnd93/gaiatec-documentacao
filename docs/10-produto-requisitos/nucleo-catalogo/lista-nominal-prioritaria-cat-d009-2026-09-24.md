@@ -8,7 +8,7 @@ fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-09-30
+ultima_revisao: 2026-10-05
 fonte_canonica: gaiatec-documentacao
 ---
 
@@ -64,6 +64,55 @@ sem recaptura da documentação do produto exato e verificação dos direitos de
 Histórico preservado: antes desse esclarecimento, o item 20 estava `bloqueado-completude` por
 fabricante/origem ausente. Essa pendência foi resolvida; o estado atual é `pendente-recaptura`, como
 os demais candidatos não provisórios, e não `aprovado`. Nenhum SKU foi incorporado à lista.
+
+## Atualização documental — 5 de outubro de 2026, itens 6–8 e 11
+
+As três fichas oficiais foram lidas textualmente e conferidas visualmente no Chrome, incluindo
+as tabelas e rodapés da página 2. URLs de upload não foram usadas como substituto da revisão.
+
+| Item | Ficha primária exata                                                                       | Revisão impressa | Ressalva que impede aprovação automática                                                                                                   |
+| ---- | ------------------------------------------------------------------------------------------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 6    | [MT-025 v2 ES](https://www.inventia.pl/es/wp-content/uploads/2025/12/MT-025-v2-ES.pdf)     | 02.2025          | RS-485 opcional; não transferir características da v3 para a v2                                                                            |
+| 7    | [MT-025 v3 PL](https://www.inventia.pl/wp-content/uploads/2026/07/MT-025-v3-PL-7.2026.pdf) | 03.2026          | Confirmar variante de modem, LTE450/S0 e configuração fornecida                                                                            |
+| 8    | [MT-331 ES](https://www.inventia.pl/es/wp-content/uploads/2025/12/MT-331-ES.pdf)           | 03.2025          | Modem/bateria variam; a segunda linha de temperatura omite a capacidade da bateria, também na imagem, e não será completada por inferência |
+
+Nenhuma ficha autoriza uso de mídia ou prova a configuração comercial. Os três itens permanecem
+`pendente-recaptura`; identificar a fonte/revisão não equivale a cadastro, aprovação, UAT ou
+liberação de CAT-D009.
+
+### Conferência específica do item 7
+
+A [página primária do MT-025 v3](https://www.inventia.pl/mt-025-v3-kompaktowy-modul-telemetryczny-do-monitorowania-sterowania-i-alarmowania/)
+voltou a responder e disponibiliza a
+[ficha oficial MT-025 v3 PL](https://www.inventia.pl/wp-content/uploads/2026/07/MT-025-v3-PL-7.2026.pdf).
+A leitura textual e a inspeção visual no Chrome confirmaram duas páginas e **revisão 03.2026**
+no rodapé da página 2. O nome do arquivo contém `7.2026`; não foi confundido com a revisão
+declarada no documento.
+
+A tabela da página 2 informa proteção **IP20** e duas alternativas de modem, SIMCom 7672G
+ou SIM7070G, dependentes da variante encomendada. LTE450 e S0 são opcionais, não características
+automaticamente incluídas. A ficha de família não comprova qual configuração será fornecida,
+direitos de mídia ou aprovação da linha. A documentação completa indicada no site exige acesso
+ao portal BOK; não foi criada conta nem enviado dado ao fabricante.
+
+Avanço comprovado: fonte primária e revisão da ficha identificadas. O item 7 continua
+`pendente-recaptura`: configuração, classificação, direitos, cadastro/revisão e UAT ainda não
+estão concluídos. A consulta foi somente leitura, sem carga, publicação ou mudança de flag.
+As páginas de downloads Chemins e DOAS-2000 consultadas novamente continuaram com timeout;
+isso não comprova ausência de documentos no fabricante.
+
+### Identidade primária do item 11
+
+O [folheto oficial Canyon ILT](https://canyonhydro.com/products/CANYON_ILT-SystemPackages_US_web.pdf),
+ligado pela [página do fabricante](https://canyonhydro.com/products/in-line-hydro-turbine.html),
+foi conferido visualmente no Chrome. A página 4 lista explicitamente **ILT24**, associado a
+tubulação de 24 polegadas, na tabela de modelos; não se trata de inferência a partir do intervalo
+geral da família. As dimensões são referenciais e o próprio fabricante exclui seu uso para
+construção. A identidade nominal está documentada, mas configuração fornecida, dimensionamento,
+direitos de mídia e revisão funcional permanecem pendentes. O item continua
+`pendente-recaptura`; nenhum valor foi carregado no CMS.
+
+O índice de 30/09 abaixo permanece como registro histórico da pesquisa anterior.
 
 ## Índice de fontes para recaptura — 30 de setembro de 2026
 

@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: g11-latencia-reprovada-recuperacao-comprovada-pendente-chrome
+status: g11-g12-aprovados-recuperacao-comprovada-chrome-bloqueado-infra
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -21,7 +21,171 @@ relacionados:
 
 # Resiliência editorial e homologação controlada de staging
 
-## Resultado vigente — retomada de 5 de outubro de 2026 no mesmo `7efbedb`
+## Resultado vigente — 5 de outubro de 2026: teto de comandos aprovado, G11/G12 verdes e Chrome bloqueado por runner
+
+O responsável autorizou prosseguir com o diagnóstico sanitizado ao suporte e aceitou latência de
+1–2 segundos. A implementação limita essa decisão ao **p95 de comandos em staging ≤ 2.000 ms**.
+Produção/local continuam em 800 ms e leitura administrativa em 500 ms. A autorização não muda
+segurança, amostragem, revisão independente, rollback, cleanup ou os critérios de Chrome real.
+Não há autorização de publicação/carga comercial, ativação global do catálogo, cutover ou produção.
+
+### Mudança mínima, rastreabilidade e validação
+
+Candidato exato `0a3027b8156ed1bc7d787994c02a27ed3a3a1d49`, commit
+[feat(staging): scope command p95 to 2s](https://github.com/Vnd93/gaiatec-cms/commit/0a3027b8156ed1bc7d787994c02a27ed3a3a1d49).
+As Fatias 1–4 não foram refeitas. A alteração cobre o contrato de capabilities, os validadores
+G11/G12 e a migration aditiva `0115_cms_staging_command_latency_budget.sql`, sem ampliar
+qualquer permissão. A compatibilidade aceita o capability antigo de staging durante a ponte;
+2.000 ms é rejeitado para capabilities de produção/local.
+
+A migration exige os hashes anteriores exatos de duas funções, altera somente as expressões
+do orçamento e comprova hashes posteriores e atributos de segurança inalterados. Usa transação,
+lock timeout de 5 s e statement timeout de 30 s. SHA-256 do arquivo:
+`b05a643511d481bb55ebd9b7c7d7f7064b28ea6d58ddffc0c5bfa0cce88f8b08`.
+Owner-only, search_path, ACLs, RLS, MFA/AAL2, auditoria e revisão independente permanecem exigidos.
+O mesmo papel de cadastro/aprovação funcional do catálogo não dispensa a separação do revisor G11.
+
+O [changelog](https://supabase.com/changelog) e a
+[documentação oficial de funções](https://supabase.com/docs/guides/database/functions) foram
+consultados antes da mudança. Node 22.23.2, pin do repositório e Supabase CLI 2.116.0 preservados;
+nenhuma dependência de endpoint de logs removido. Nenhuma alteração foi aplicada em produção.
+
+Check completo local verde: 221 arquivos/1.419 testes Vitest, suítes Node/contratos/segurança,
+lint, tipos e build; build 26,29 s, bundle inicial 799.039 bytes em quatro chunks. A suíte phase12
+registrou 793 testes, 777 aprovados e 16 skips de symlink específicos da plataforma, zero falhas.
+A CI passou 68 arquivos/2.175 testes pgTAP, incluindo 21 asserções do novo orçamento: 2.000
+aceito somente em staging, 2.001 e o outlier histórico 5.241 rejeitados, leitura 501 rejeitada,
+segurança/restore/P0/auditoria/SHA e proibição de autoaprovação mantidos.
+
+### Um pacote, uma ponte e um canônico
+
+| Etapa                                      | Run/tentativa                                                                  | Resultado                             | Duração                               |
+| ------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------- | ------------------------------------- |
+| CI                                         | [37359438103/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37359438103) | verde                                 | 374 s                                 |
+| Ponte frontend/backend                     | [37360387443/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37360387443) | verde, sem rebuild                    | 719 s                                 |
+| Preflight canônico                         | [37362073565/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37362073565) | verde                                 | 49 s                                  |
+| Fonte / baseline live                      | mesmo canônico                                                                 | verdes, independentes                 | 72 / 117 s                            |
+| Deploy serial                              | mesmo canônico                                                                 | verde                                 | 1.236 s                               |
+| G11 e três janelas G12, internos ao deploy | mesmo canônico                                                                 | verdes                                | 291 s                                 |
+| Pós-deploy backend / frontend              | mesmo canônico                                                                 | verdes                                | 50 / 108 s, após filas de 616 / 620 s |
+| Chrome real                                | mesmo canônico                                                                 | cancelado sem runner, sem steps       | 902 s em fila                         |
+| Finalizer                                  | mesmo canônico                                                                 | recuperação comprovada                | 176 s                                 |
+| Métricas                                   | mesmo canônico                                                                 | cancelado sem runner, sem steps       | 901 s em fila                         |
+| Canônico completo                          | mesmo canônico                                                                 | failure de infraestrutura, recuperado | 4.222 s / 70 min 22 s                 |
+
+Tempos obtidos dos metadados reais do GitHub: canônico de 19:15:14 a 20:25:36 UTC;
+cadeia desde o início da CI às 18:54:04 UTC, **5.492 s / 91 min 32 s**, sem homologação final.
+Filas conhecidas no caminho crítico somaram 2.423 s: 620 s no pós-deploy paralelo, 902 s no
+Chrome e 901 s nas métricas. Essas esperas não são retiradas do tempo observado. O relatório
+remoto de métricas não foi produzido porque seu job também não recebeu runner. Portanto não
+existe evidência de SLO happy-path verde; o gargalo de infraestrutura permanece explícito.
+As durações internas e paralelas não são somadas duas vezes. Candidato e rollback do canônico
+usaram o mesmo SHA `0a3027b`, conforme o contrato do workflow. O pacote original da CI foi
+verificado e promovido com os mesmos bytes, sem rebuild equivalente. Novos gates live e snapshot
+não reutilizaram aprovação do SHA anterior.
+
+| Evidência imutável                | ID            | SHA-256                                                            |
+| --------------------------------- | ------------- | ------------------------------------------------------------------ |
+| Pacote frontend original da CI    | `11366810234` | `cf2379eac7581d37cf853fd412a7ead47ebff44457475aa85f4d5a13a84cc9d0` |
+| Prova da ponte                    | `11366369796` | `91d15905980bd8a105f0d26a493f39a9cde03ce94c9ff3ac0e6e5da8ca02cfc2` |
+| Evidência preliminar/G11/G12      | `11368385579` | `7bb85abddd756e1efbd8109314f2372511ab110d3c1daf498c2da56db3c38cac` |
+| Evidência terminal de recuperação | `11368827500` | `c3981da03665504417daea8ea352cf7dc81b22256b200895b126875dc93d2ad4` |
+
+Deployment da ponte: `dec9415f-1322-428f-8044-9f9e32848f3b`, criado em
+05/10 às 19:10:39.535 UTC, commit message `g12-staging-bridge-run-37360387443-1`.
+Arquivo frontend selado SHA-256 `5a4764b185deac43e789651b6848a2d19470b47f298888954413fa96968d1edc`;
+árvore `7998935d344a4c4a0efd0985bb0dd75949fbec1394d294ee0521732328786f49`.
+Prova da ponte, preliminar e terminal baixadas e verificadas localmente pelo digest; as identidades
+não são intercambiáveis com os artefatos do candidato anterior.
+
+### Medições novas, histórico preservado
+
+G11 **29/29** e `G12_CANARY_PASS`. Disponibilidade 100%, auditoria 100%, outbox lag 0,
+RPO 0 e RTO 1 minuto. As três janelas G12 tiveram 82 respostas cada, 100% de disponibilidade,
+zero 5xx e p95 de 629,560 / 619,345 / 570,896 ms. Regressões públicas: 47 testes aprovados
+em 1,7 minuto. Gates de CSP, canário autenticado, ciclo editorial, migrations e compatibilidade
+de rollback passaram.
+
+| Métrica               | Run histórico `37350070838` / `7efbedb` | Run novo `37362073565` / `0a3027b` | Orçamento vigente            |
+| --------------------- | --------------------------------------- | ---------------------------------- | ---------------------------- |
+| Comandos p95 servidor | 5.241 ms, reprovado                     | 309 ms, aprovado                   | 2.000 ms, apenas staging     |
+| Comandos p95 externo  | 30.038,35 ms                            | 644,78 ms                          | diagnóstico de ponta a ponta |
+| Leitura p95 servidor  | 156 ms, aprovado                        | 354 ms, aprovado                   | 500 ms, inalterado           |
+| Leitura p95 externo   | 415 ms                                  | 638,16 ms                          | diagnóstico de ponta a ponta |
+
+Série completa nova de comandos, em ms: `309, 274, 269, 262, 246, 240, 262, 264, 304, 273`.
+Protocolo preservado: nearest-rank p95, 20 warmups/20 leituras medidas e dez comandos seriais,
+uma mutação/nove replays idempotentes. Warmups continuam separados conforme o protocolo anterior;
+nenhuma amostra medida foi excluída nem chamada repetida para melhorar o resultado.
+
+**A mudança de limite não causou a redução do tempo observado.** São execuções diferentes,
+com variabilidade de infraestrutura; o outlier histórico de 5.241 ms ainda reprovaria o teto de
+2.000 ms. Sua reprovação e o diagnóstico anterior permanecem imutáveis, sem reclassificação retroativa.
+
+### Interrupção de infraestrutura e recuperação
+
+O GitHub registrou no check `111951783572`: “The job was not acquired by Runner of type
+hosted even after multiple attempts”. O job Chrome ficou em fila de 19:52:16 a 20:07:18 UTC,
+sem runner, steps ou challenge. O check de métricas `111958090077` confirmou a mesma
+falha de aquisição após 901 s de fila; nenhum relatório remoto foi inventado em seu lugar. Isso comprova falha de aquisição de runner; não é falha de um
+teste Chrome executado. O
+[incidente oficial de Actions](https://www.githubstatus.com/incidents/3q1yb5m7ltvb),
+iniciado às 19:11:58 UTC, relata atrasos de alocação de runners. Não foi feito retry cego,
+cancelamento manual, troca de runtime ou redução de gates.
+
+Finalizer `111956958793` aprovado entre 20:07:38 e 20:10:34 UTC. Backend forward recuperado,
+115 migrations até 0115 e 75 verificações de banco aprovadas. Compensação do frontend skipped:
+o deployment da ponte foi preservado. Sonda terminal: 82 respostas, disponibilidade 100%, zero
+5xx, p95 público 733,498 ms, SHA exato e nenhuma violação. Recovery/fences/rendezvous foram
+comparados e limpos pelo fluxo durável.
+
+Conferência somente leitura após o finalizer: `ev2.catalog_v1=false`, zero produtos/snapshots,
+overrides ativos, leases QA ativos, outras queries ativas ou lock waits. Registros históricos de
+overrides expirados e tombstones de auditoria permanecem preservados; “resíduo zero” significa
+zero resíduo **ativo**, não exclusão da auditoria. Esta precisão também se aplica às fotografias
+anteriores que usavam “zero overrides” de forma abreviada.
+
+Chrome real autenticado exibiu o estado de preparação/default-off do Núcleo de Catálogo.
+A captura recortada não contém perfil ou dados pessoais. Essa observação não substitui a
+captação positiva, seu challenge, antirreplay, UAT ou a evidência terminal de aprovação.
+
+O [watchdog 37369660884/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37369660884)
+terminou em `failure` às 20:46:41 UTC (1.262 s). Seu classificador foi cancelado após 901 s sem
+runner. A compensação recebeu runner depois, executou por 43 s e confirmou
+`g12.recovery_state.confirmed_absent`: o finalizer aprovado já havia removido esse estado.
+Sem a classificação, o watchdog encerrou **fail-closed**, com todas as etapas mutantes skipped;
+não houve nova compensação nem artefato terminal próprio. Esse watchdog não é contado como verde
+nem sua ausência de estado é usada isoladamente como prova de recovery. A recuperação se apoia
+no finalizer e na evidência terminal verificada acima.
+
+Após o encerramento, a conferência das cinco classes de workflow ativo nos dois repositórios
+retornou zero; recovery/fences/rendezvous também vazios. Nova consulta read-only confirmou
+115 migrations/0115, catálogo default-off, zero produtos/snapshots, overrides e leases QA ativos,
+queries concorrentes e lock waits. O incidente de Actions seguia em investigação; não foi
+iniciado outro canônico. A entrega documental não reconstrói nem altera o candidato.
+
+### Suporte autorizado e continuidade exata
+
+A solicitação de suporte foi enviada pelo Chrome real ao projeto Supabase de staging, categoria
+Performance/Low, com diagnóstico sanitizado de Auth/Edge. A UI confirmou o envio, mas não
+exibiu número de ticket. Acesso de suporte ao projeto foi desabilitado antes do envio; nenhum
+segredo, identificador de pessoa, payload pessoal, upgrade pago ou mudança regional foi enviado
+ou autorizado. A ausência anterior de ticket fica preservada no histórico abaixo.
+
+CAT-001–010 permanecem implementados e `ready-for-gate`, não `done`. CAT-011 exige
+fontes/recaptura/aprovação nominal e CAT-012 exige Chrome/UAT/rollback real. Tmeasurement,
+mesmo papel de cadastro/aprovação e itens 17/18 `user-confirmed-provisional` continuam válidos.
+CAT-D010 permanece adiado até dois ciclos manuais completos e estáveis.
+
+Canônico e watchdog estão terminais. Retomar a validação somente após melhora material da
+disponibilidade de runners e nova confirmação de recuperação e zero concorrência/fences. Revalidar SHA,
+artefato, ponte e deployment live antes de reutilizar os checkpoints independentes; mudanças de
+bytes ou ambiente invalidam os gates dependentes. Preservar CI, pacote e ponte válidos do
+`0a3027b`, sem reconstruir nem reiniciar as Fatias 1–4. O challenge Chrome deve continuar
+just-in-time, após os gates prévios e watcher pronto. Não declarar SLO de 40–60 minutos ou
+homologação completa com um run interrompido por infraestrutura.
+
+## Registro histórico preservado — retomada de 5 de outubro de 2026 no mesmo `7efbedb`
 
 Não foram reiniciadas as Fatias 1–4 nem reconstruídos os artefatos. GitHub `Vnd93`, holder original
 explicitamente registrado, ambos os repositórios canônicos limpos em `main`, fetch e fast-forward
