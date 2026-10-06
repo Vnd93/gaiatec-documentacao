@@ -24,7 +24,30 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Estado vigente após o diagnóstico de expiração e latência
+## Estado vigente — leitura de staging autorizada até 2 segundos
+
+Em 6 de outubro, o responsável confirmou que o teto de 2.000 ms também se aplica
+ao p95 das leituras administrativas, exclusivamente em staging. A implementação
+é `5bf1ffc5de7c774da7d7f99582df629c1c5e89d8`: migration aditiva 0116, capability
+compatível com o orçamento anterior e gates G11/G12 vinculados ao ambiente exato.
+Local e produção mantêm 500 ms; comandos mantêm 2.000 ms em staging e 800 ms nos
+demais ambientes. MFA/AAL2, RLS, auditoria, revisão independente, amostragem,
+rollback, Chrome real e cleanup não mudam.
+
+Revisão do diff e `npm run check` integral aprovados: 224 arquivos/1.453 testes
+Vitest, demais contratos/evals, lint, tipos e build dentro do orçamento de 799.039
+bytes iniciais. Os testes pgTAP da migration ainda dependem da CI com PostgreSQL.
+Próximo gate: CI própria do novo SHA, pacote único selado, ponte compatível e
+canônico de staging. A migration ainda não foi aplicada remotamente neste checkpoint.
+Os runs antigos continuam reprovados sob seus limites originais; não são
+reclassificados nem usados como homologação do novo candidato.
+
+Fatias 1–4 e aprovação funcional das 20 linhas permanecem preservadas. Catálogo
+global default-off; sem carga/publicação comercial, cutover ou produção. Ainda
+faltam homologação Chrome/UAT/rollback e recaptura técnica.
+[Escopo, hashes e evidências](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado após o diagnóstico de expiração e latência
 
 O candidato `80cd1cfeef749d546da4b9413c1461e1f761d87d` tem CI `37413734179`
 e ponte `37414450752` verdes, com o pacote original `11389982761`, sem rebuild.

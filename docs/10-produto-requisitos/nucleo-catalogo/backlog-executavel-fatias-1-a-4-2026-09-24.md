@@ -49,7 +49,23 @@ CAT-012 continua exigindo Chrome/UAT/rollback. A aprovação não transforma ess
 `done` nem revoga as restrições de carga/publicação/cutover. Itens 17/18 mantêm a ressalva
 documental provisória. [Registro da aprovação](lista-nominal-prioritaria-cat-d009-2026-09-24.md).
 
-## Checkpoint vigente após a validação remota da expiração
+## Checkpoint vigente — autorização de leitura e candidato 5bf1ffc
+
+A autorização explícita de 6 de outubro inclui leitura administrativa p95 de até
+2.000 ms apenas em staging. Implementação CMS
+`5bf1ffc5de7c774da7d7f99582df629c1c5e89d8`: 0116 aditiva, contratos compatíveis
+e G11/G12 ambientais, sem alterar os 500 ms de local/produção ou limites de comandos.
+Validação local integral verde, com 1.453 testes Vitest. A CI deve executar os novos
+pgTAP antes de qualquer migration remota; pacote, ponte e canônico serão próprios
+desse SHA. Não converter falhas históricas em aprovação nem refazer fatias concluídas.
+
+CAT-001–010 continuam `ready-for-gate`; CAT-011 preserva aprovação funcional e
+pendência de recaptura/evidência; CAT-012 exige Chrome/UAT/rollback. CAT-D010 segue
+`deferred`. Todos os controles de segurança, amostragem, recuperação e resíduo zero
+permanecem. Flag global desligada; sem carga/publicação comercial, fonte mista,
+cutover ou produção. [Registro técnico](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado após a validação remota da expiração
 
 CMS `80cd1cf`: CI `37413734179` e ponte `37414450752` verdes, pacote original
 `11389982761`. O canônico `37415633407` reprovou em G11; recuperação e watchdog

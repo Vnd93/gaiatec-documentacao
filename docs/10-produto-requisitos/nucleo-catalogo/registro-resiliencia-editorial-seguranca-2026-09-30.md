@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: staging-recuperado-expiracao-validada-g11-leitura-bloqueada
+status: leitura-staging-autorizada-candidato-em-validacao
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -20,6 +20,59 @@ relacionados:
 ---
 
 # Resiliência editorial e homologação controlada de staging
+
+## Autorização de leitura de staging e candidato 5bf1ffc — 6 de outubro
+
+Após a pergunta específica sobre estender às leituras administrativas de staging
+o teto de 2 segundos, o responsável respondeu: “Autorizado, prossiga e me entregue
+pronto”. Essa decisão é restrita a staging. Não autoriza produção, publicação,
+carga comercial, cutover, ativação global do catálogo ou dispensa de controles.
+
+Implementação `5bf1ffc5de7c774da7d7f99582df629c1c5e89d8`, sucessora de `80cd1cf`:
+
+- Leitura administrativa p95: até 2.000 ms em `staging`; 500 ms em local, produção
+  ou ambiente desconhecido. G12 exige também a etapa `staging-canary`.
+- Comandos: inalterados, 2.000 ms em staging e 800 ms nos demais ambientes.
+- Frontend aceita as capabilities antiga e nova durante a ponte, mas rejeita
+  o orçamento de 2.000 ms fora de staging. Nenhuma alteração em runtime, dependência,
+  workflow, Edge Function, MFA/AAL2, RLS, ACL, auditoria ou revisão independente.
+- A migration 0116 substitui somente duas expressões nas funções existentes,
+  exigindo os hashes exatos de 0115 e preservando todos os demais atributos de
+  `pg_proc`. Timeout de lock de 5 s e de statement de 30 s; falha fecha a transação.
+- Gates remotos conferem os corpos completos sucessores, search path,
+  security-definer e execução restrita ao owner. Amostragem e percentil não mudam.
+- Regressões exercitam 2.000/2.001 ms, ambientes desconhecidos, limites de comandos,
+  segurança, auditoria, revisão independente, SHA e catálogo default-off.
+
+Migration `0116_cms_staging_read_latency_budget.sql`, SHA-256
+`0a60f9c67f03f6abe893373bbb03e42e86d5e03d4afecda5bc643cad0a1a0204`.
+Hashes de corpo antes → depois:
+
+| Função owner-only                          | Corpo 0115                                                         | Corpo 0116                                                         |
+| ------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `cms_system_capability_unscoped_0076`      | `d756d2f3d45ad9cd84b5597a83ae120b5d20912cb494667deaaf1805c98cc5cf` | `c7f2b54924d42eee69f1275323f980170d266cc9609d8e8669ae67d4ae3a70c0` |
+| `cms_execute_system_command_unscoped_0076` | `e771baa3f64069ac3ca1759ee83a47f95df85d1f1cce3af3310d5655ef43eff0` | `dee24278b56cacaa1c72febbf12bcc9fb23e381b37a052620f1b8964996942cb` |
+
+Revisão do diff concluída; 42 testes Node focados e cinco testes de contrato verdes.
+`npm run check` integral passou: 224 arquivos/1.453 testes Vitest, demais suítes
+Node e evals, lint, tipos e build de 799.039 bytes iniciais. Os testes SQL não foram
+executados localmente por ausência de Docker; a CI PostgreSQL é bloqueante para
+o deploy. Nenhuma migration remota aplicada até este checkpoint.
+
+Documentação/changelog atual do Supabase consultados: [CLI db push](https://supabase.com/docs/reference/cli/supabase-db-push),
+[breaking changes PostgreSQL](https://supabase.com/changelog/postgres-15-19-17-11-breaking-changes)
+e [migração do endpoint de logs](https://supabase.com/changelog/48235-migration-of-supabase-management-api-logs-all-analytics-endpoint-to-logs-endpoint).
+CLI 2.116.0 e Node 22 preservados; sem upgrade de PostgreSQL nem uso dos endpoints removidos.
+
+Preflight: GitHub Vnd93, mesmo holder/handoff, ambas as árvores limpas em main,
+fetch/fast-forward, nenhum workflow nos cinco estados ativos, nenhum fence de
+recuperação e nenhum observador local de release. Staging com 115 migrations/0115,
+flag desligada e zero produtos, snapshots, leases QA ou overrides ativos.
+
+O novo SHA exige CI, pacote único, ponte e canônico próprios. Os resultados históricos
+de 2.406 ms e 737 ms continuam reprovados sob 500 ms, sem edição das evidências.
+Aprovação funcional das 20 linhas e Fatias 1–4 preservadas; Chrome/UAT/rollback e
+recaptura técnica ainda pendentes. Produção permanece intocada.
 
 ## Candidato 80cd1cf e diagnóstico terminal de 6 de outubro
 
