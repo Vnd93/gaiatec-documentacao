@@ -8,7 +8,7 @@ fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-10-05
+ultima_revisao: 2026-10-06
 fonte_canonica: gaiatec-documentacao
 ---
 
@@ -83,6 +83,28 @@ sem recaptura da documentação do produto exato e verificação dos direitos de
 Histórico preservado: antes desse esclarecimento, o item 20 estava `bloqueado-completude` por
 fabricante/origem ausente. Essa pendência foi resolvida; o estado atual é `pendente-recaptura`, como
 os demais candidatos não provisórios, e não `aprovado`. Nenhum SKU foi incorporado à lista.
+
+## Fontes primárias adicionais em 6 de outubro
+
+As seguintes identidades foram conferidas em páginas de fabricantes, sem carga
+de produtos ou mídia. Uma página de família não comprova configuração fornecida,
+equivalência OEM, revisão de manual ou direito de uso de imagens.
+
+| Item | Fonte primária                                                                                                                                                                        | Identidade e limite da evidência                                                                                                                                               |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1    | [Eranntex DOAS-2000](https://www.eranntexgas.com/doas-2000-online-differential-ultraviolet-gas-analyzer.html)                                                                         | Modelo DOAS-2000 confirmado; configurações padrão e opcionais distintas; revisão de manual ainda não comprovada                                                                |
+| 5    | [Eranntex estação compacta](https://www.eranntexgas.com/micro-ambient-air-monitoring-station.html)                                                                                    | Cabeçalho TH-2000-A; tabela de configuração cita TH-2000-AQI com alimentação 220 V. Não presumir uma configuração única nem resolver por inferência as diferenças de descrição |
+| 9    | [Ruyang detector portátil de THT](https://ruyangkeji.com/chanpinzhongxin/scsjc/72.html)                                                                                               | Página lida em Chrome real identifica DG100 para THT. GPS/Beidou, pressão e recursos de dados são opcionais; não foi observado manual com revisão                              |
+| 13   | [PQWT GX900](https://www.pqwtcs.com/Products/pqwt-gx900-underground-cable-fault-locator-plastic-pipe-metal-pipe-detection-device-handheld-wireless-pipeline-locator)                  | Família GX900 e conjunto receptor/transmissor identificados; configuração fornecida e revisão permanecem pendentes                                                             |
+| 19   | [Q&T medidor portátil QT621](https://www.qtmeters.com/flowmeter/flow-meter/ultrasonic-flow-meter/dynamic-flow-measurement-handheld-digital-water-portable-ultrasonic-flow-meter.html) | QT621 identificado; correspondência com GATSONIC-P 621Q não comprovada                                                                                                         |
+
+Benetech GM86 continua sem fonte técnica recuperada: loja oficial respondeu 403,
+e o domínio do fabricante falhou por timeout/reset. Não foram transferidas
+especificações de revendedor. Também não foi localizada correspondência primária
+exata JVLER AB-TC1000/NTP; o homônimo Netter não será usado como substituto.
+Tmeasurement permanece confirmado pelo usuário; não se infere o vínculo OEM de
+GATSONIC-SLM. A aprovação funcional das 20 linhas não foi reaberta. O saldo é
+documental/técnico, com itens 17/18 provisórios e sem autorização de carga/publicação.
 
 ## Atualização documental — 06/10 UTC, manuais primários dos itens 2/3
 

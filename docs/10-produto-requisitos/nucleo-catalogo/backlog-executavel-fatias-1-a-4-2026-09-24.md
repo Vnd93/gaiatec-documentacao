@@ -49,7 +49,27 @@ CAT-012 continua exigindo Chrome/UAT/rollback. A aprovação não transforma ess
 `done` nem revoga as restrições de carga/publicação/cutover. Itens 17/18 mantêm a ressalva
 documental provisória. [Registro da aprovação](lista-nominal-prioritaria-cat-d009-2026-09-24.md).
 
-## Checkpoint vigente da verificação de expiração editorial
+## Checkpoint vigente após a validação remota da expiração
+
+CMS `80cd1cf`: CI `37413734179` e ponte `37414450752` verdes, pacote original
+`11389982761`. O canônico `37415633407` reprovou em G11; recuperação e watchdog
+passaram. O diagnóstico único `37417658843` confirmou a correção editorial: quatro
+campanhas verificadas por item/revisão e HTTP 301/404/410/302, 13 verificações do
+ciclo editorial aprovadas, sem retry de mutação. Não reabrir essa correção nem as fatias.
+
+Doze dos treze gates diagnósticos passaram. A leitura administrativa p95 de 737 ms
+continua acima de 500 ms; comandos mediram 647 ms, dentro dos 2.000 ms de staging.
+Cleanup/resíduo e watchdog `37418625814` passaram. Staging está limpo e default-off.
+Nova execução canônica exige estabilidade comprovada ou decisão explícita sobre
+o orçamento de leitura; a autorização anterior foi aplicada somente a comandos.
+Nenhum limite foi alterado nem um diagnóstico foi usado como aprovação de release.
+
+CAT-001–010 permanecem `ready-for-gate`; CAT-011 tem aprovação funcional satisfeita
+e recaptura/evidência pendentes; CAT-012 exige Chrome/UAT/rollback. CAT-D010 segue
+`deferred`. Sem publicação/carga comercial, fonte mista, cutover ou produção.
+[Evidências e tempos](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado da verificação de expiração editorial
 
 O canônico `37410264055/1` passou no gate de revogação RDO (1.262 ms) e nos gates
 automáticos anteriores à expiração editorial. Reprovou porque o teste contava apenas

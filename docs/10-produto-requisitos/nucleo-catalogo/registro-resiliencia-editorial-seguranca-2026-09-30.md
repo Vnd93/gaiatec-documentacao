@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: staging-recuperado-correcao-gate-expiracao-em-validacao
+status: staging-recuperado-expiracao-validada-g11-leitura-bloqueada
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -20,6 +20,99 @@ relacionados:
 ---
 
 # Resiliência editorial e homologação controlada de staging
+
+## Candidato 80cd1cf e diagnóstico terminal de 6 de outubro
+
+O SHA exato é `80cd1cfeef749d546da4b9413c1461e1f761d87d`. A
+[CI 37413734179/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37413734179)
+passou em 410 s (04:26:41–04:33:31 UTC), com sete jobs verdes. A
+[ponte 37414450752/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37414450752)
+passou em 762 s (04:35:41–04:48:23 UTC). Deployment
+`9f2fbd29-c958-4eea-878c-7bac8fa82fa4`, pacote original `11389982761`, SHA-256
+`b1fee9b78fcf5f6d31e319a6bae4f07f9461b28e969504450dcf57a9e62a7ae1`.
+Prova da ponte `11390982706`, SHA-256
+`12c9bd2ab89f9fba39f4a060d99726996412ea512aa2ba6d980c5aa429607a8f`.
+Seleção, digests, SHA e attempts foram conferidos. Nenhum rebuild equivalente.
+
+O [canônico 37415633407/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37415633407)
+reprovou após 1.038 s (04:50:49–05:08:07 UTC). Preflight 42 s, fonte 54 s e
+baseline vivo 136 s passaram; deploy 658 s. O passo de três janelas G12/G11
+parou após 112 s: leitura administrativa p95 de 2.406 ms / 500 ms; comandos
+387 ms / 2.000 ms. RPC p95 2.399 ms, núcleo SQL 2.267 ms e ponta a ponta
+2.709 ms. Não houve challenge Chrome nem atestado.
+
+Finalizador `112116974403` passou em 175 s; watchdog `37417033039`, em 20 s.
+Sonda terminal: 82 respostas, 100% de disponibilidade, zero 5xx, p95 público
+506,155 ms, SHA exato e zero violações. Staging recuperado antes do diagnóstico.
+
+### Diagnóstico único sem deploy
+
+Após recuperação e confirmação de zero concorrência, o
+[diagnóstico 37417658843/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37417658843)
+executou uma única passada, sem migration, deploy, troca de segredo ou pacote.
+Terminou em `failure` após 701 s (05:15:48–05:27:29 UTC): 12/13 gates passaram.
+O resultado dos gates usa o **outcome consolidado**, não o campo `conclusion`
+do passo com `continue-on-error`, que pode aparecer como `success` mesmo reprovado.
+
+O ciclo editorial passou em 153 s, com 13 verificações. A expiração confirmou
+quatro campanhas e revisões exatas, ausência de publicação/projeção, recibos
+individuais e respostas 301/404/410/302. Bastou uma observação; a chamada explícita
+expirou quatro nessa rodada. A regressão local cobre a concorrência do worker
+observada no run anterior. Não houve repetição de mutação ou alteração de cron.
+O canário operacional passou 12 checks. Captação positiva não foi simulada:
+permanece exigida na etapa Chrome real com os controles dependentes.
+
+G11 voltou a reprovar somente o orçamento de leitura; os dados não sustentam
+uma correção especulativa de SQL nem a repetição de releases até obter verde.
+
+| Medida G11                | Canônico | Diagnóstico |                   Limite vigente |
+| ------------------------- | -------: | ----------: | -------------------------------: |
+| Leitura p95 servidor      | 2.406 ms |      737 ms |                           500 ms |
+| Comando p95 servidor      |   387 ms |      647 ms |              2.000 ms em staging |
+| Leitura p95 RPC           | 2.399 ms |      729 ms | diagnóstico, não gate substituto |
+| Leitura p95 núcleo SQL    | 2.267 ms |      483 ms | diagnóstico, não gate substituto |
+| Leitura p95 ponta a ponta | 2.709 ms | 1.062,61 ms | diagnóstico, não gate substituto |
+
+Protocolo inalterado: nearest-rank p95, 20 warmups e 20 leituras medidas, dez
+comandos seriais (uma mutação e nove replays idempotentes), sem descarte de amostras.
+Vetor de leitura do diagnóstico, em ms:
+`133, 121, 142, 111, 104, 103, 81, 101, 116, 90, 90, 96, 56, 95, 88, 108, 103, 277, 737, 1910`.
+Comandos: `427, 222, 568, 331, 497, 358, 215, 218, 647, 271`.
+Disponibilidade 100%, outbox lag zero, auditoria 100%, RPO zero e RTO de um minuto.
+
+Logs unificados limitados a 05:21:00–05:22:30 UTC mostram picos também em
+`cms-session` (máximo 2.244 ms) e `cms-public` (1.719 ms), sem 5xx nessa janela.
+São agregados entre serviços, não uma correlação individual de causa. O
+[incidente oficial do Supabase](https://status.supabase.com/incidents/w91bvbjhqf0f)
+continuava em monitoramento após a mitigação de 05/10 às 18:45 UTC. Sua participação
+nesta falha não está comprovada. Não foi alterada capacidade, região, consulta ou proteção.
+
+### Limpeza, artefatos e próximo gate
+
+Cleanup e resíduo passaram; watchdog `37418625814` passou em 18 s, sem compensação
+mutante para o diagnóstico. A sonda pública passou com 82 respostas, zero 5xx,
+100% de disponibilidade e p95 de 500,825 ms. A conferência independente confirmou
+115 migrations/0115, catálogo global desligado, zero produtos/snapshots, leases QA
+ou overrides ativos, clientes não ociosos, lock waits, workflows ativos nos dois
+repositórios e fences G12. Auditoria sintética permanece retida, sem resíduo ativo.
+
+| Evidência               | Artefato      | SHA-256 do ZIP verificado                                          |
+| ----------------------- | ------------- | ------------------------------------------------------------------ |
+| Canônico terminal       | `11391861765` | `ba009547d575ddc14ca43d964ced9a07a6f372c62d483125ee38e60c0a690d52` |
+| Canônico preliminar     | `11392130380` | `843d6d7255154503adac9490cf27c6bc7ab504e2173e982a075b09881a53e4c0` |
+| Canônico métricas       | `11391146482` | `af648fcc9b14f1c4e9cd15abd7b650fa282d9574c8ca5667d6bcaf419ea1ae26` |
+| Diagnóstico consolidado | `11391684737` | `06f8da6737df6eb8571f2ed37aae1de051a98b919bdd3b14ca0cf4c063fc49bb` |
+| Diagnóstico métricas    | `11391073696` | `6810b81e39c67b1a9d875dc98fa0e319e8a7c344a27acb6a6e3f7d31d5b00e4e` |
+
+Métricas observaram 1.034 s no canônico e 697 s no diagnóstico antes do término
+dos respectivos jobs; os totais terminais foram 1.038/701 s. Diagnóstico é
+`component-only`, não SLO de caminho feliz nem aprovação de release.
+Não foi iniciado outro canônico. O esclarecimento solicitado ao responsável é
+se o teto de até 2 s deve incluir leitura administrativa **apenas em staging**;
+até resposta explícita, permanecem 500 ms para leitura e 2.000 ms para comandos.
+Alterar orçamento exigirá novo SHA, regressões e sua própria cadeia de validação,
+sem reclassificar resultados anteriores. Manter todos os demais gates, Chrome/UAT,
+rollback e recaptura nominal, flag desligada e produção intocada.
 
 ## Expiração editorial e concorrência legítima do worker
 

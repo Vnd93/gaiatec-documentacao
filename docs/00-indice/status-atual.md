@@ -24,7 +24,35 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Estado vigente e correção da verificação de expiração
+## Estado vigente após o diagnóstico de expiração e latência
+
+O candidato `80cd1cfeef749d546da4b9413c1461e1f761d87d` tem CI `37413734179`
+e ponte `37414450752` verdes, com o pacote original `11389982761`, sem rebuild.
+O canônico `37415633407` reprovou na leitura administrativa: p95 de 2.406 ms,
+acima dos 500 ms vigentes. Finalizador e watchdog passaram e recuperaram staging.
+
+O [diagnóstico 37417658843/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37417658843)
+terminou em 701 s com **12 de 13 gates aprovados**. O ciclo editorial passou em
+13 verificações, incluindo as quatro campanhas, suas revisões e rotas HTTP
+301/404/410/302. A correção da expiração está exercitada remotamente; não refazê-la.
+G11 continua reprovado: leitura p95 de 737 ms / 500 ms; comandos 647 ms / 2.000 ms.
+O diagnóstico não publica, não sela nem aprova release. A captação positiva e seus
+controles dependentes continuam obrigatórios na etapa Chrome real.
+
+Cleanup, resíduo zero e watchdog `37418625814` passaram. A sonda pública mediu
+82 respostas, disponibilidade de 100%, zero 5xx e p95 de 500,825 ms. Conferência
+independente: 115 migrations/0115, catálogo desligado e vazio, sem overrides ou
+leases QA ativos, operações concorrentes ou fences. Produção permanece intocada.
+
+Não haverá repetição cega do canônico. A autorização de 1–2 s foi implementada
+somente para comandos de staging; aplicar esse teto à leitura administrativa
+depende de esclarecimento do responsável. Até lá, os 500 ms permanecem válidos.
+CI, pacote e ponte serão preservados e revalidados antes da continuação.
+Fatias 1–4 e aprovação funcional das 20 linhas estão preservadas; ainda faltam
+Chrome/UAT/rollback e recaptura técnica, sem carga/publicação comercial ou cutover.
+[Tempos, digests e diagnóstico](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado da correção da verificação de expiração
 
 O canônico [37410264055/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37410264055)
 reutilizou `cfced5e`, o pacote original e a ponte já verificados. Os gates de migrations,
