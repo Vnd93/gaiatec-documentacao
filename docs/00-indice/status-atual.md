@@ -24,7 +24,27 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Continuidade vigente — catálogo aprovado; staging recuperado após 503 público
+## Continuidade vigente — correção de segurança transitiva validada; nova CI pendente
+
+A CI [37398025403/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37398025403), do
+diagnóstico `5d7cfd1`, terminou em `failure` após 356 s: o check completo passou, mas a auditoria
+detectou a vulnerabilidade alta GHSA-68fv-2mgg-jv7q em `source-map-js` 1.2.1. O empacotamento
+recusou a entrada reprovada; nenhum pacote de staging, ponte ou deploy desse SHA foi produzido.
+
+A correção mínima atualiza somente essa dependência transitiva para a versão 1.2.2 no lockfile
+e acrescenta quatro regressões de segurança ao contrato existente. Nenhuma dependência direta,
+workflow, timeout, limite de auditoria ou versão do Node foi alterada. Auditoria local: zero
+vulnerabilidades; contrato focado: nove testes aprovados. O check completo passou com 222
+arquivos/1.428 testes Vitest, demais contratos/evals, lint, tipos e build de 799.039 bytes.
+Correção versionada em `bcc9a22b8cef068429152cd4a488b7727bf52dd0`; a próxima etapa é a CI
+desse SHA e seu próprio pacote selado, antes de qualquer ponte ou canônico de staging.
+
+O catálogo e suas 20 linhas permanecem funcionalmente aprovados, sem reiniciar as Fatias 1–4.
+Staging segue no baseline recuperado `0a3027b`, catálogo default-off e sem carga/publicação
+comercial, cutover ou produção. O 503 intermitente ainda depende da evidência do diagnóstico.
+[Correção, fontes e rastreabilidade](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado — catálogo aprovado; staging recuperado após 503 público
 
 O canônico [37393929352](https://github.com/Vnd93/gaiatec-cms/actions/runs/37393929352)
 reutilizou exatamente o candidato `0a3027b`, o pacote `11366810234` e a ponte `37360387443`,

@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: recuperacao-comprovada-diagnostico-503-publico
+status: correcao-dependencia-validada-ci-pendente
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -21,7 +21,39 @@ relacionados:
 
 # Resiliência editorial e homologação controlada de staging
 
-## Resultado vigente — 06/10 UTC: canônico recuperado, falha pública intermitente em diagnóstico
+## Resultado vigente — 06/10 UTC: auditoria bloqueou o pacote; correção transitiva mínima
+
+A CI [37398025403/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37398025403), SHA
+`5d7cfd18fdc3b7aa5aca1aa1f4267147273a5dba`, executou entre 01:12:57 e 01:18:53 UTC:
+**356 s / 5 min 56 s**. Plano, browser, banco e runtime Edge passaram. O job quality concluiu
+o check e o build, mas reprovou `npm audit --audit-level=high`. Pacote e métricas recusaram a
+lane reprovada, conforme o contrato fail-closed. Não houve pacote `staging-frontend`, nova ponte,
+mutação de ambiente ou deploy desse SHA. Não repetir a CI sem corrigir a causa.
+
+O [aviso GHSA-68fv-2mgg-jv7q / CVE-2026-93749](https://github.com/advisories/GHSA-68fv-2mgg-jv7q)
+classifica como alta a negação de serviço por offsets de mapas de origem indexados nas versões
+1.0.0–1.2.1 de `source-map-js`. O [release 1.2.2 do mantenedor](https://github.com/7rulnik/source-map-js/releases/tag/v1.2.2)
+e a [correção upstream](https://github.com/7rulnik/source-map-js/pull/79) foram consultados.
+A árvore local confirmou uma única cópia 1.2.1, compartilhada por Tailwind, css-tree/jsdom e
+PostCSS/Vite; as faixas já existentes aceitam 1.2.2.
+
+Correção `bcc9a22b8cef068429152cd4a488b7727bf52dd0`: três campos do lockfile (versão, tarball e integridade), sem override
+adicional ou atualização de outras bibliotecas. O contrato existente ganhou quatro regressões:
+versão/identidade travadas, mapa válido preservado, offsets hostis recusados antes de alocar ou
+serializar e limite somado em seções aninhadas. Nove testes focados passaram; auditoria local
+passou com zero vulnerabilidades. `npm run check` integral passou: 222 arquivos/1.428 testes
+Vitest, demais suítes/evals, lint e tipos; build em 18,37 s, quatro chunks iniciais/799.039 bytes.
+Skips específicos da plataforma Windows permanecem skips, não aprovações. Diff revisado:
+dois arquivos, 64 inserções/3 substituições, sem erro de whitespace. Node 22/22.23.2, controles
+de release e aplicação permanecem inalterados. O novo SHA requer CI e pacote próprios.
+
+Antes da escrita: holder existente, GitHub Vnd93, fetch e `main` limpa/igual a `origin/main`;
+zero nas cinco classes de workflow ativo dos dois repositórios e zero recovery fences.
+Staging: 115 migrations/0115, catálogo desligado, zero overrides/leases QA ativos, produtos,
+snapshots, outras conexões não ociosas e lock waits. A aprovação funcional das 20 linhas não
+foi reaberta. Nenhuma carga, publicação comercial, ativação global, cutover ou produção.
+
+## Resultado preservado — 06/10 UTC: canônico recuperado, falha pública intermitente em diagnóstico
 
 O run [37393929352/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37393929352) foi
 disparado uma única vez após a recuperação material de Actions, zero concorrência/fences,
