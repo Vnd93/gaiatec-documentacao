@@ -8,7 +8,7 @@ fase: execucao
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-10-05
+ultima_revisao: 2026-10-06
 fonte_canonica: gaiatec-documentacao
 substitui:
   - gaiatec-status-atual-2026-09-06
@@ -24,7 +24,30 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Continuidade vigente — retomada do rascunho corrigida; candidato `cfced5e`
+## Estado vigente do candidato cfced5e após recuperação de staging
+
+O candidato `cfced5edc5814ec68dc62720d5a1ffe0b0673c63` passou na CI `37406768067`
+(446 s) e na ponte `37407555266` (572 s), usando o pacote original `11387189827` sem
+rebuild. O canônico `37408480359` reprovou na latência de revogação RDO: acesso negado
+corretamente com HTTP 403, mas suspensão e verificação somaram 16.570 ms, acima dos
+10.000 ms exigidos. Chrome real não foi alcançado; não há atestado de homologação.
+
+Finalizador e watchdog `37409540156` verdes; staging recuperado no mesmo SHA, catálogo
+desligado, zero resíduo ativo e nenhuma operação concorrente. A sonda terminal mediu 82
+respostas válidas, zero 5xx e p95 público de 697,460 ms. Uma sonda independente posterior
+passou com 82 respostas, zero 5xx e p95 de 557,798 ms, preservando todos os budgets.
+
+Os logs localizaram um pico simultâneo em Auth e REST; as estatísticas SQL não explicam
+sozinhas o atraso. A origem externa ao tempo SQL é uma inferência, não causa confirmada
+pelo provedor. Não houve alteração de aplicação, RLS, autenticação, limite ou timeout.
+Próximo passo: revalidar os checkpoints imutáveis e o estado vivo antes de uma execução
+controlada do canônico. CI e ponte já válidas não serão refeitas; gates dependentes do
+ambiente serão medidos novamente. Fatias 1–4 e aprovação funcional das 20 linhas estão
+preservadas. Continuam pendentes Chrome/UAT/rollback e recaptura documental, sem
+publicação/carga comercial, cutover ou produção.
+[Diagnóstico, recuperação e tempos](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado — retomada do rascunho corrigida; candidato `cfced5e`
 
 A correção de segurança `bcc9a22` passou na CI `37399525765` (432 s) e na ponte
 `37400226203` (790 s). O canônico `37401502431` passou nos gates automáticos e pós-deploy,

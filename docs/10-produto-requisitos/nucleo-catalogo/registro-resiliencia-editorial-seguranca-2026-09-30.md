@@ -1,14 +1,14 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: correcao-homologacao-promocao-validada-ci-pendente
+status: staging-recuperado-gate-revogacao-latencia-pendente
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
 ambiente: staging
 responsavel: Vnd93
 data_criacao: 2026-09-30
-ultima_revisao: 2026-10-05
+ultima_revisao: 2026-10-06
 fonte_canonica: gaiatec-documentacao
 substitui: []
 relacionados:
@@ -21,7 +21,80 @@ relacionados:
 
 # Resiliência editorial e homologação controlada de staging
 
-## Resultado vigente — 06/10 UTC: retomada e promoção do rascunho no teste corrigidas
+## Validação e recuperação do candidato cfced5e em 6 de outubro
+
+A [CI 37406768067/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37406768067)
+passou em 446 s, entre 02:58:48 e 03:06:14 UTC: 1.452 testes Vitest, 2.175 checks pgTAP,
+65 testes browser e zero vulnerabilidades. A [ponte 37407555266/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37407555266)
+passou em 572 s, entre 03:08:18 e 03:17:50 UTC. Deployment
+`751a007b-42b5-451b-b136-9103ec6d4edd`, SHA
+`cfced5edc5814ec68dc62720d5a1ffe0b0673c63`, pacote original `11387189827`, SHA-256
+`8bd78cb804c414e8aae11ba120e67e5cd50c5136eb7babf2bfc93a84bbfcdbaf`.
+Prova da ponte `11387839746`, digest
+`cf5864ed3b09f3acf9055d763bd5f13722cbeaa520b6eba72f99720d14dc5c94`.
+Seleção CI, identidade dos attempts, prova e digests foram verificados localmente.
+Não houve rebuild equivalente nem alteração do runtime pinado.
+
+O [canônico 37408480359/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37408480359)
+reutilizou exatamente o pacote e a ponte, com candidato e rollback no mesmo SHA.
+Terminou em `failure` após 803 s, entre 03:20:04 e 03:33:27 UTC. O relatório de duração
+capturado antes do término de métricas contém 799 s observados; não é um SLO de caminho
+feliz. Preflight 31 s, validação de fonte 49 s e baseline vivo 96 s passaram. Deploy
+405 s, com falha no canário de migrations após 90 s; pós-deploy e Chrome foram omitidos
+pela dependência reprovada. Nenhum challenge ou atestado foi emitido.
+
+### Revogação negou o acesso mas excedeu o limite de latência
+
+O canário registrou 127 checks e uma falha: `rdo_revocation_immediate`. A suspensão foi
+aplicada e a chamada seguinte recebeu HTTP 403; o tempo das duas chamadas foi 16.570 ms,
+contra limite inalterado de 10.000 ms. A revogação de sessão CMS anterior mediu 1.236 ms.
+Cleanup passou, com zero resíduo ativo, PIM vazio, dois leases QA encerrados, auditoria
+imutável retida e nenhuma mutação de produção. Não confundir acesso corretamente negado
+com aprovação do gate de latência.
+
+Logs ClickHouse somente leitura, restritos à janela da falha e sem dados pessoais,
+mostram `rdo-team` em 14.262 ms para suspensão e 2.256 ms para a resposta negada.
+Entre 03:28:32 e 03:28:48 UTC, também ficaram lentas a leitura de acesso (5.212 ms),
+Auth (4.010 ms), rate limit (4.239 ms) e a RPC de equipe (4.440 ms), sem retry HTTP.
+Nas estatísticas SQL acumuladas, a RPC de equipe tinha média de 59,36 ms e máximo de
+816,53 ms em 172 chamadas. Esses máximos históricos não identificam uma chamada isolada,
+mas não sustentam atribuir os 4,4 s exclusivamente à execução da RPC no banco.
+
+A evidência indica pico transitório entre serviços, não uma nova regressão do editor.
+A [situação oficial do Supabase](https://status.supabase.com/incidents/w91bvbjhqf0f)
+mantinha o incidente de latência no leste dos EUA em monitoramento, com correção anunciada
+às 18:45:47 UTC de 05/10. A função executou em `us-east-2`; essa coincidência não confirma
+que o incidente causou esta falha. Nenhuma consulta, política, timeout ou gate foi afrouxado.
+
+### Recuperação e condição para continuação
+
+Finalizador `112093538454` verde em 245 s; [watchdog 37409540156](https://github.com/Vnd93/gaiatec-cms/actions/runs/37409540156)
+verde. Banco: 75 checks, 115 migrations/0115; Auth, configuração e funções recuperados.
+Sonda terminal: 82 respostas, 100% de disponibilidade, zero 5xx, p95 público 697,460 ms,
+SHA exato e zero violações. Conferência independente: zero workflows ativos nas cinco
+classes dos dois repositórios, recovery fences, overrides/leases QA, produtos/snapshots,
+outras conexões não ociosas e lock waits; flag global desligada.
+
+Após a recuperação, 294 requisições REST às 03:32 UTC tiveram p95 de 228 ms e máximo
+de 705 ms, sem 5xx. Sonda independente posterior, somente leitura: 82 respostas, 100%
+de disponibilidade, zero 5xx, p95 público 557,798 ms, todos os budgets, SHA, CSP, noindex,
+health e manifesto válidos. A continuação exige nova captura do estado vivo e mantém o
+mesmo SHA/pacote/ponte; não reexecuta CI ou rebuild. Nenhuma aprovação do run falho é
+reutilizada, e todos os gates dependentes do ambiente precisam passar novamente.
+
+Artefatos baixados em diretório exclusivo e conferidos por SHA-256:
+
+| Evidência  | Artefato      | SHA-256 do ZIP                                                     |
+| ---------- | ------------- | ------------------------------------------------------------------ |
+| Terminal   | `11388906314` | `93524103e1af2ebb01eeb7bd630f1eab018f74be0f70cb830301fd7d8e3dc43d` |
+| Preliminar | `11388651184` | `e4dc2ea69bbc8608cd623a742195875e0ac214a72618618c5e1af4a1ca734ea3` |
+| Métricas   | `11388033728` | `75c21dcbdfa7a0370d2b347bb4ff23490c26a594cb7c1c704d5444505e9d832d` |
+
+CI/ponte verdes e recuperação comprovada não concluem Chrome/UAT/rollback. Aprovação
+funcional das 20 linhas e Fatias 1–4 preservadas, sem carga/publicação comercial,
+cutover, ativação global ou produção.
+
+## Resultado preservado — 06/10 UTC: retomada e promoção do rascunho no teste corrigidas
 
 O SHA `bcc9a22b8cef068429152cd4a488b7727bf52dd0` passou na
 [CI 37399525765/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37399525765):

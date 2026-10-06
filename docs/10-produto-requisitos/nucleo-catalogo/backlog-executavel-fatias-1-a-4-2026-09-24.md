@@ -8,7 +8,7 @@ fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-10-05
+ultima_revisao: 2026-10-06
 fonte_canonica: gaiatec-documentacao
 ---
 
@@ -49,7 +49,21 @@ CAT-012 continua exigindo Chrome/UAT/rollback. A aprovação não transforma ess
 `done` nem revoga as restrições de carga/publicação/cutover. Itens 17/18 mantêm a ressalva
 documental provisória. [Registro da aprovação](lista-nominal-prioritaria-cat-d009-2026-09-24.md).
 
-## Checkpoint vigente — 06/10 UTC, correção do fluxo de homologação do produto
+## Checkpoint vigente após a recuperação do gate de revogação
+
+CMS `cfced5e`: CI `37406768067` e ponte `37407555266` verdes, pacote único original
+`11387189827`. Canônico `37408480359` falhou antes de Chrome na latência RDO de 16.570 ms,
+com suspensão efetiva e acesso negado; o limite de 10.000 ms permanece intacto.
+Finalizador e watchdog `37409540156` verdes, SHA preservado, flag desligada e zero resíduo
+ativo. A investigação localizou um pico entre serviços; a sonda independente posterior
+passou com 82 respostas, zero 5xx e p95 de 557,798 ms. A continuação revalida o estado
+vivo e os checkpoints existentes, sem refazer CI/ponte, rebuild ou Fatias 1–4.
+CAT-001–010 permanecem `ready-for-gate`; CAT-011 tem aprovação funcional satisfeita e
+recaptura/evidência pendentes; CAT-012 exige Chrome/UAT/rollback. Nenhum item foi marcado
+`done` por recuperação verde.
+[Tempos, diagnóstico e artefatos](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado — 06/10 UTC, correção do fluxo de homologação do produto
 
 O candidato `bcc9a22` teve CI/ponte verdes e gates automáticos/pós-deploy aprovados.
 Canônico `37401502431` falhou antes do challenge Chrome porque o teste não resolvia a
