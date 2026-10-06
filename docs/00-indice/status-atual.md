@@ -24,7 +24,30 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Estado vigente do candidato cfced5e após recuperação de staging
+## Estado vigente e correção da verificação de expiração
+
+O canônico [37410264055/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37410264055)
+reutilizou `cfced5e`, o pacote original e a ponte já verificados. Os gates de migrations,
+revogação RDO, G11/G12, navegador público e canário autenticado passaram. A execução
+reprovou em 25 min 27 s na verificação de expiração editorial, antes do challenge Chrome.
+O worker agendado expirou três campanhas; a chamada explícita expirou a quarta. O teste
+exigia incorretamente que uma única chamada processasse todas, apesar dos quatro recibos.
+
+Finalizador e watchdog `37412259086` verdes; staging recuperado em `cfced5e`, catálogo
+desligado e sem resíduo ativo. A sonda terminal teve 82 respostas válidas, zero 5xx e
+p95 público de 531,841 ms. A correção local troca a contagem global pela prova individual
+de item/revisão, arquivamento, retirada, outbox e rota, mantendo os quatro testes HTTP.
+Correção `80cd1cfeef749d546da4b9413c1461e1f761d87d`: 49 testes focados e `npm run check`
+integral aprovados, com 1.452 testes Vitest, demais contratos/evals, lint, tipos e build
+dentro do orçamento. Falta a nova cadeia remota. O SHA corrigido terá CI e artefato próprios,
+sem reutilizar aprovação de outro SHA.
+
+As Fatias 1–4 e a aprovação funcional das 20 linhas permanecem preservadas. Chrome/UAT,
+rollback e recaptura documental continuam pendentes; não há carga/publicação comercial,
+cutover, ativação global nem produção.
+[Diagnóstico, recuperação e tempos](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado do candidato cfced5e após recuperação de staging
 
 O candidato `cfced5edc5814ec68dc62720d5a1ffe0b0673c63` passou na CI `37406768067`
 (446 s) e na ponte `37407555266` (572 s), usando o pacote original `11387189827` sem

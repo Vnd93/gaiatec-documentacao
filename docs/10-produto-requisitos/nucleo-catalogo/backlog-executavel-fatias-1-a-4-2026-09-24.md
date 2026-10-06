@@ -49,7 +49,24 @@ CAT-012 continua exigindo Chrome/UAT/rollback. A aprovação não transforma ess
 `done` nem revoga as restrições de carga/publicação/cutover. Itens 17/18 mantêm a ressalva
 documental provisória. [Registro da aprovação](lista-nominal-prioritaria-cat-d009-2026-09-24.md).
 
-## Checkpoint vigente após a recuperação do gate de revogação
+## Checkpoint vigente da verificação de expiração editorial
+
+O canônico `37410264055/1` passou no gate de revogação RDO (1.262 ms) e nos gates
+automáticos anteriores à expiração editorial. Reprovou porque o teste contava apenas
+a chamada explícita e não a execução concorrente legítima do worker agendado. As quatro
+campanhas têm recibos individuais de retirada. Finalizador e watchdog `37412259086`
+verdes, flag desligada e zero resíduo ativo; Chrome ainda não foi alcançado.
+
+A correção local preserva a chamada única, verifica os quatro itens/revisões e o estado
+terminal esperado antes dos testes HTTP 301/404/410/302. Polling somente leitura, limitado,
+sem retry de mutação ou alteração de cron, timeout de produto ou controles de segurança.
+Correção `80cd1cfeef749d546da4b9413c1461e1f761d87d`: 49 testes focados e validação
+integral verdes. A nova CI, pacote único, ponte e canônico são os próximos gates.
+CAT-001–010 continuam `ready-for-gate`; CAT-011 mantém aprovação funcional satisfeita e
+recaptura/evidência pendentes; CAT-012 exige Chrome/UAT/rollback. Não repetir as fatias.
+[Provas e tempos](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado após a recuperação do gate de revogação
 
 CMS `cfced5e`: CI `37406768067` e ponte `37407555266` verdes, pacote único original
 `11387189827`. Canônico `37408480359` falhou antes de Chrome na latência RDO de 16.570 ms,

@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: staging-recuperado-gate-revogacao-latencia-pendente
+status: staging-recuperado-correcao-gate-expiracao-em-validacao
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -20,6 +20,73 @@ relacionados:
 ---
 
 # Resiliência editorial e homologação controlada de staging
+
+## Expiração editorial e concorrência legítima do worker
+
+O [canônico 37410264055/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37410264055)
+usou o mesmo `cfced5edc5814ec68dc62720d5a1ffe0b0673c63`, pacote original `11387189827`
+e ponte `37407555266`, sem rebuild. Terminou em `failure` após 1.527 s, de 03:42:44 a
+04:08:11 UTC de 06/10. Preflight 41 s, fonte 51 s e baseline vivo 108 s passaram.
+O deploy durou 1.204 s; o passo de ciclo editorial falhou em 107 s, às 04:05:18 UTC.
+Chrome e seus dependentes não foram executados; nenhum challenge ou atestado foi emitido.
+
+Migrations passaram com 134 checks. Revogação RDO: 1.262 ms; sessão CMS: 1.346 ms.
+G11/G12, regressões públicas e canário autenticado anteriores também passaram. O erro
+editorial foi `Worker não expirou todas as campanhas sintéticas: 1`, causado pela
+asserção de que uma chamada a `cms_expire_campaigns` deveria retornar pelo menos quatro.
+
+### Causa comprovada e correção restrita ao teste
+
+Consultas somente leitura, limitadas às quatro campanhas sintéticas do mesmo run,
+comprovaram três recibos `unpublish` às 04:05:02,919725 UTC e o quarto às
+04:05:08,238333 UTC, todos vinculados a itens arquivados e sem projeção pública.
+O log unificado registrou `cms-outbox-worker` com HTTP 200 às 04:05:06,023 UTC, após
+4.694 ms. A função SQL usa `FOR UPDATE SKIP LOCKED`: o worker agendado processou três
+campanhas antes da chamada explícita processar a quarta. A contagem de uma chamada não
+prova o estado agregado das quatro. Não há motivo para desabilitar o worker ou o cron.
+
+Correção local em três arquivos de `scripts/phase7`: uma única chamada de expiração é
+mantida e seu recibo numérico deve ser válido. A confirmação passa a exigir os quatro
+itens e revisões exatos, estados arquivados, ausência de publicação/projeção, recibos
+`unpublish` e rotas com origem, destino e status esperados. Leitura paralela restrita aos
+IDs sintéticos, com polling de no máximo 10 s, backoff e saída antecipada; erros de leitura
+falham imediatamente. Não há repetição de mutação. Os quatro testes HTTP 301/404/410/302
+e destinos permanecem. O deadline compartilhado usa o mecanismo documentado de
+[AbortSignal do Supabase](https://supabase.com/docs/reference/javascript/using-modifiers-abortsignal).
+
+Correção `80cd1cfeef749d546da4b9413c1461e1f761d87d`, três arquivos, 538 inserções e
+três remoções. Regressões: 32 testes novos, 49 testes focados de fase 7 aprovados. Cobrem concorrência,
+estado incompleto/estranho/duplicado, revisão e rota incorretas, erros sanitizados e
+deadline, incluindo resposta válida tardia recusada. `npm run check` integral aprovado:
+224 arquivos/1.452 testes Vitest, demais contratos/evals, lint, tipos e build com
+799.039 bytes iniciais. Nenhuma mudança de aplicação, SQL, CLI, Auth, RLS, função Edge, cron, workflow,
+runtime Node ou limite de produto. O SHA novo exige sua própria CI e pacote; a aprovação
+de release de `cfced5e` não será reutilizada.
+
+### Recuperação e tempos terminais
+
+Finalizador `112102397314` verde em 146 s; [watchdog 37412259086](https://github.com/Vnd93/gaiatec-cms/actions/runs/37412259086)
+verde. Sonda terminal: 82 respostas, disponibilidade de 100%, zero 5xx, p95 público de
+531,841 ms, SHA exato e zero violações. Banco com 115 migrations/0115; Auth e backend
+recuperados. Cleanup encerrou três leases QA e preservou 14 eventos de auditoria de lease.
+Conferência independente: cinco classes de workflows ativos zeradas nos dois repositórios,
+fences vazios, catálogo global desligado e zero overrides/leases QA ativos, produtos,
+snapshots, outras conexões não ociosas e lock waits. Rotas pós-cleanup não são prova da
+homologação HTTP anterior; a execução reprovada permanece reprovada.
+
+Artefatos baixados e conferidos por SHA-256:
+
+| Evidência  | Artefato      | SHA-256 do ZIP                                                     |
+| ---------- | ------------- | ------------------------------------------------------------------ |
+| Terminal   | `11389098925` | `d3454c135be447dae5df8f62cb821d9d145eea9ad0cf70a33414bd4164f4117d` |
+| Preliminar | `11389612409` | `251ed050f2c4883656d348ea5bd43d0ce632b001085891094177c3dcb1c2b2f4` |
+| Métricas   | `11390155135` | `a59b50591bfacb6362f964f47ff8d83afb3c002eb8e085165a1dd3f4c40399b6` |
+
+O relatório de métricas capturou 1.522 s antes de seu término; o run final totalizou
+1.527 s. Não é SLO de caminho feliz. O maior passo foi a validação de três janelas G12
+e garantias herdadas, 269 s. Nenhum gate será reduzido para encurtar esse tempo.
+Fatias e aprovação funcional preservadas, sem produção, carga/publicação comercial ou
+cutover. Chrome/UAT e rollback continuam obrigatórios.
 
 ## Validação e recuperação do candidato cfced5e em 6 de outubro
 
