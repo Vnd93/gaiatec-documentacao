@@ -24,7 +24,29 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Continuidade vigente — correção de segurança transitiva validada; nova CI pendente
+## Continuidade vigente — retomada do rascunho corrigida; candidato `cfced5e`
+
+A correção de segurança `bcc9a22` passou na CI `37399525765` (432 s) e na ponte
+`37400226203` (790 s). O canônico `37401502431` passou nos gates automáticos e pós-deploy,
+mas reprovou no teste de criação de produto, antes do challenge Chrome. Finalizador e
+watchdog `37404324597` verdes; staging recuperado em `bcc9a22`, com 82 respostas válidas,
+zero 5xx, p95 público de 538,331 ms e zero resíduo ativo. Não repetir esse run sem correção.
+
+O diagnóstico local reproduziu a retomada pendente do rascunho privado: o teste não escolhia
+a versão salva no servidor e esperava `cms-content/create`, embora o editor promova por
+`cms-drafts-v2/promote`. O CMS `cfced5edc5814ec68dc62720d5a1ffe0b0673c63` corrige apenas
+a homologação automatizada: restaura o rascunho do ator QA isolado, aguarda o autosave e
+exige recibo de promoção vinculado a ambiente, comando, correlação, rascunho e versão CAS.
+Não houve alteração de aplicação, banco, flag, workflow, timeout ou controle de segurança.
+
+Validação integral local verde: 224 arquivos/1.452 testes Vitest, demais suítes/evals,
+lint, tipos e build de 799.039 bytes. A reprodução Chromium local é regressão sintética,
+não homologação Chrome autenticada. Próximo gate: CI e pacote próprios desse SHA, ponte,
+canônico e Chrome real. O catálogo/20 linhas permanecem aprovados e default-off; sem
+publicação/carga comercial, cutover ou produção. Fatias 1–4 não serão reiniciadas.
+[Recibos, diagnóstico e tempos](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado — correção de segurança transitiva validada; nova CI pendente
 
 A CI [37398025403/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37398025403), do
 diagnóstico `5d7cfd1`, terminou em `failure` após 356 s: o check completo passou, mas a auditoria

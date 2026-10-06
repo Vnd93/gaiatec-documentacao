@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: correcao-dependencia-validada-ci-pendente
+status: correcao-homologacao-promocao-validada-ci-pendente
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -21,7 +21,74 @@ relacionados:
 
 # Resiliência editorial e homologação controlada de staging
 
-## Resultado vigente — 06/10 UTC: auditoria bloqueou o pacote; correção transitiva mínima
+## Resultado vigente — 06/10 UTC: retomada e promoção do rascunho no teste corrigidas
+
+O SHA `bcc9a22b8cef068429152cd4a488b7727bf52dd0` passou na
+[CI 37399525765/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37399525765):
+01:30:36–01:37:48 UTC, 432 s. Pacote único original `11384254136`, SHA-256
+`a2c9a6337badaea5e210529c943fb8165561b4b96c9b069fc60a20b6310ce440`.
+A [ponte 37400226203/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37400226203)
+promoveu esses mesmos bytes: 01:39:00–01:52:10 UTC, 790 s; deployment
+`50f384e6-15ae-4ff4-84a5-1b810c68add4`. Prova `11384983302`, SHA-256
+`7fc51bb2cfae2dd07d5aad49e2be49bc3a009b162b7205f7d90244ca15d2acb4`, validada localmente
+com identidade de run/attempt, SHA, digests e recibo. Backend candidato restaurado e sondado.
+
+O [canônico 37401502431/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37401502431)
+reutilizou pacote/ponte; candidato e rollback eram `bcc9a22`. Duração total de 2.072 s
+(34 min 32 s), 01:54:14–02:28:46 UTC. Preflight 80 s, fonte 56 s, baseline vivo 116 s,
+deploy/gates 1.249 s, pós-backend 46 s e pós-frontend 115 s passaram. O job browser
+`112076219834` falhou após 317 s, na criação de produto pela interface: espera de 30 s
+sem a resposta editorial esperada. O ciclo Auth anterior passou. Nenhum challenge ou
+atestado Chrome foi emitido. Métricas registraram caminho não feliz, não SLO aprovado.
+
+### Recuperação comprovada antes da correção
+
+Finalizador verde em 160 s; [watchdog 37404324597](https://github.com/Vnd93/gaiatec-cms/actions/runs/37404324597)
+verde em 18 s. Banco: 75 checks, 115 migrations/0115; Auth, funções e configuração
+restaurados. Sonda terminal: 82 respostas, disponibilidade 100%, zero 5xx, p95 público
+538,331 ms, SHA exato e nenhuma violação. Conferência independente: zero workflows ativos
+nas cinco classes dos dois repositórios, fences, overrides/leases QA, produtos/snapshots
+do novo catálogo, outras conexões não ociosas e lock waits; `ev2.catalog_v1=false`.
+
+Arquivos baixados em diretório exclusivo, SHA-256 conferido antes da leitura:
+
+| Evidência  | Artefato      | SHA-256 do ZIP                                                     |
+| ---------- | ------------- | ------------------------------------------------------------------ |
+| Terminal   | `11385614837` | `195ff4bb927c122073ce16347b3b30e47213de774e79a65753919333d0c83fe1` |
+| Preliminar | `11386062504` | `d7d5d3156b3fcfb5685d0c652c1a9d4e226322728dabea1ff783785035dd4cc6` |
+| Métricas   | `11386567542` | `ff41b3e475e2f57f901ccef8b5f99317811a1a38c15b01732134f01f7ca3ed65` |
+
+### Causa reproduzida e correção mínima do teste
+
+O fluxo negativo anterior salva intencionalmente um produto incompleto em rascunho privado.
+Ao regressar à tela, o hook real exige escolher qual versão continuar; sem essa escolha,
+`flush()` recusa a promoção. O preenchimento automatizado não resolvia essa retomada e
+aguardava `cms-content/create`. Mesmo após resolver a retomada, a operação correta é
+`cms-drafts-v2/promote`, que cria o item canônico atomicamente. Auditoria/logs agregados
+de staging mostraram somente a primeira criação editorial e nenhuma promoção nesse ponto;
+não se copiaram payloads ou identificadores pessoais para a evidência.
+
+Correção `cfced5edc5814ec68dc62720d5a1ffe0b0673c63`: quatro arquivos exclusivamente de
+testes, 467 inserções/18 remoções. Restaura a versão do servidor do ator QA do mesmo run,
+aguarda o autosave atual, observa exclusivamente a rota/origem/ação de promoção e valida
+o contrato completo do recibo: status, item, ambiente, comando, correlação, draft e CAS+1,
+sem aceitar replay. Produto inicial e produto de comparação usam o mesmo helper.
+
+Regressão com editor/hook reais prova que a retomada pendente continua bloqueando escrita,
+que a versão restaurada promove corretamente e que o modo legado continua funcionando.
+Recibos incompletos, ambientes divergentes, versões erradas e HTTP de erro são recusados.
+50 testes focados passaram; `npm run check` integral verde: 224 arquivos/1.452 testes
+Vitest, demais suítes/evals, lint, tipos e build em 18,66 s/799.039 bytes. Um probe
+Chromium local executou o preenchimento do helper com o editor e autosave reais, backend
+sintético isolado, e confirmou promoção/versão 4. Isso não substitui Chrome real/staging.
+Problemas locais de tipagem e formatação do novo teste foram corrigidos antes do check final.
+
+Nenhuma mudança de aplicação, migration, workflow, dependência, Node 22/22.23.2, timeout,
+autenticação, RLS, auditoria ou limite de latência. Próxima etapa: cadeia exata do novo SHA;
+não repetir cegamente o canônico reprovado nem reaproveitar seu atestado inexistente.
+Aprovação funcional das 20 linhas preservada; sem carga/publicação comercial, cutover ou produção.
+
+## Resultado preservado — 06/10 UTC: auditoria bloqueou o pacote; correção transitiva mínima
 
 A CI [37398025403/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37398025403), SHA
 `5d7cfd18fdc3b7aa5aca1aa1f4267147273a5dba`, executou entre 01:12:57 e 01:18:53 UTC:

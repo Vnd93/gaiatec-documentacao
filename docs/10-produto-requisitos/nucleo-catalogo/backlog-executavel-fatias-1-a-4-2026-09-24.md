@@ -49,7 +49,19 @@ CAT-012 continua exigindo Chrome/UAT/rollback. A aprovação não transforma ess
 `done` nem revoga as restrições de carga/publicação/cutover. Itens 17/18 mantêm a ressalva
 documental provisória. [Registro da aprovação](lista-nominal-prioritaria-cat-d009-2026-09-24.md).
 
-## Checkpoint vigente — 06/10 UTC, recuperação concluída e diagnóstico HTTP
+## Checkpoint vigente — 06/10 UTC, correção do fluxo de homologação do produto
+
+O candidato `bcc9a22` teve CI/ponte verdes e gates automáticos/pós-deploy aprovados.
+Canônico `37401502431` falhou antes do challenge Chrome porque o teste não resolvia a
+retomada do rascunho privado nem acompanhava sua promoção atômica. Recuperação/finalizador
+e watchdog `37404324597` verdes, sem resíduo ativo. Correção de testes no CMS
+`cfced5edc5814ec68dc62720d5a1ffe0b0673c63`, check integral verde/1.452 testes Vitest.
+Falta a cadeia remota desse SHA e Chrome real, sem diminuir controles ou repetir fatias.
+CAT-001–010 continuam `ready-for-gate`; a aprovação funcional de CAT-011 permanece
+satisfeita, e CAT-012 ainda exige UAT/rollback verificáveis.
+[Diagnóstico, recibos e tempos](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado — 06/10 UTC, recuperação concluída e diagnóstico HTTP
 
 O canônico `37393929352` reutilizou os bytes originais de `0a3027b` e falhou em HTTP 503 na
 navegação de acessibilidade, antes de Chrome real. Latência de comandos/leitura ficou em
