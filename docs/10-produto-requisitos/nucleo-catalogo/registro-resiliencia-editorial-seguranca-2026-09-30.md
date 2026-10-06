@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: leitura-staging-autorizada-candidato-em-validacao
+status: staging-recuperado-assinatura-publica-em-correcao
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -20,6 +20,91 @@ relacionados:
 ---
 
 # Resiliência editorial e homologação controlada de staging
+
+## Consulta pública recuperada e correção mínima de assinatura
+
+O SHA `5bf1ffc5de7c774da7d7f99582df629c1c5e89d8` superou o bloqueio anterior de
+orçamento administrativo, mas ainda não concluiu a cadeia canônica de homologação.
+Os resultados são específicos desse SHA e não reclassificam falhas históricas.
+
+| Componente                                                                            | Resultado                                                        | Tempo real |
+| ------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------- |
+| [CI 37459306938](https://github.com/Vnd93/gaiatec-cms/actions/runs/37459306938)       | Verde, 69 arquivos SQL e 2.207 testes pgTAP                      | 458 s      |
+| [Ponte 37460371263](https://github.com/Vnd93/gaiatec-cms/actions/runs/37460371263)    | Verde, mesmos bytes selados                                      | 646 s      |
+| [Canônico 37461954151](https://github.com/Vnd93/gaiatec-cms/actions/runs/37461954151) | Reprovado no probe público após G11/G12 e ciclo editorial verdes | 1.546 s    |
+| [Watchdog 37465049191](https://github.com/Vnd93/gaiatec-cms/actions/runs/37465049191) | Verde, recuperação encerrada                                     | 21 s       |
+
+CI 11:52:25–12:00:03 UTC; ponte 12:01:47–12:12:33 UTC; canônico
+12:15:21–12:41:07 UTC, todos em 6 de outubro. O relatório de duração capturou
+1.541 s antes do término; gargalo do deploy foi G11/G12, 271 s. A cadeia não é
+terminal-verde e não comprova o SLO do caminho feliz de 40–60 minutos.
+
+Pacote CI `11412420737`, SHA-256
+`85b12f24a411e5e6936dfbf3e50dde9bf7fbcc125dc368fdebc612c917dadd7c`.
+Deployment da ponte `6683b5e1-b270-45c7-b83f-719b7fff5e2e`, prova `11412468148`,
+SHA-256 `52d45c510f8198f1d4286071dbfe7c0912e43cff8b36e23188db12a70f8bdd15`.
+Não houve rebuild equivalente entre CI, ponte e canônico.
+
+### Gates aprovados e falha isolada
+
+A migration 0116 foi aplicada em 14 s. G11 mediu leitura administrativa p95
+**564 ms / 2.000 ms**, comando **336 ms / 2.000 ms**, wall p95 de 798 ms e
+649 ms respectivamente. Três janelas G12 passaram com p95 público de 636,245 ms,
+554,699 ms e 547,465 ms. Amostragem e controles permaneceram inalterados.
+Passaram também as 134 verificações de migrations, RLS/revogação, inventário
+Edge, compatibilidade de rollback, CSP, 50 regressões públicas desktop/mobile,
+G17 e ciclo editorial. Cleanup editorial limpou três leases e preservou 15
+eventos de auditoria. Esses resultados não dispensam Chrome real nem UAT.
+
+O probe seguinte, `public_collection_available`, exigiu HTTP 200 e recebeu 503.
+Nos logs unificados do Supabase, `cms-public` versão 592 iniciou em 104 ms e
+respondeu 503 após 3.018 ms, às 12:37:30.972 UTC. As quatro leituras PostgREST
+do caminho de mídia responderam 200. A operação `storage.object.sign_many`
+do bucket privado de mídia foi registrada como abortada, com 882,455 ms no
+Storage, imediatamente antes do erro externo. O transporte da aplicação tem
+deadline de 900 ms e repetição somente para GET/HEAD; a assinatura usa POST.
+Os tempos e o código convergem para timeout de transporte nessa leitura, não
+falha de compilação, erro SQL ou ausência de permissão comprovada.
+
+### Recuperação terminal e correção em validação
+
+Finalizador aprovado às 12:40:49 UTC, com backend do candidato convergido e
+estado redundante limpo. A sonda terminal verificou 20 respostas, disponibilidade
+100%, zero 5xx, p95 de 535,776 ms, SHA exato e contratos de health/CSP/noindex.
+Após watchdog: 116 migrations/0116; flag desligada; zero produtos, snapshots,
+overrides ativos, leases QA ativas, clientes concorrentes ou espera de lock.
+Nenhum workflow pendente/em execução. Não houve challenge ou atestado Chrome.
+
+Artefatos baixados por identidade imutável e verificados localmente:
+
+| Evidência  | Artifact ID   | SHA-256                                                            |
+| ---------- | ------------- | ------------------------------------------------------------------ |
+| Preliminar | `11414427708` | `850dea3e0fee76396ac0942d478af627f19b8c19975bed8dd4e8d4f2681cd6c8` |
+| Terminal   | `11413498664` | `f8f61b09fda511aa899bf39027369d6cf2c7b80662131a38f7f2a0b8f63935f3` |
+| Duração    | `11414218334` | `64196bb01b48283d60f94e783c7197c48c551cc0f55096d1ea983efc3bb654ab` |
+
+A correção acrescenta opt-in de uma única repetição a `createSignedUrls` no
+leitor público governado, somente diante do timeout codificado do transporte.
+Preserva paths, TTL e autenticação; não repete POST genérico, uploads, comandos,
+cancelamentos ou erros estruturados. Mantém 900 ms por tentativa e falha fechada
+após duas, sem URLs parciais de uma chamada recusada. Os demais consumidores
+mantêm uma tentativa. Log adicional contém apenas evento e motivo de lista fixa,
+nunca erro bruto, URL assinada, payload ou credencial.
+
+Implementação `eb52399252855bfc32b2190ed3bc82803d1420f9`, cinco arquivos,
+201 inserções/5 remoções. Revisão do diff e `git diff --check` passaram.
+61 testes focados passaram, incluindo a integração com o SDK real e transporte
+sintético controlado. `npm run check` integral verde: 225 arquivos/1.469 testes
+Vitest, demais contratos/evals, lint, tipos e build em 19,41 s, com 799.039 bytes
+iniciais e Excel/PDF lazy. A nova cadeia remota é necessária antes de declarar
+a correção homologada. Nenhum gate do workflow foi removido.
+[Contrato atual de assinatura](https://supabase.com/docs/reference/javascript/storage-from-createsignedurls),
+[diagnóstico oficial de 503](https://supabase.com/docs/guides/troubleshooting/edge-function-503-response)
+e changelog do Supabase consultados; Node 22 e CLI 2.116.0 preservados.
+
+Fatias 1–4 e aprovação funcional das 20 linhas permanecem preservadas. Recaptura
+técnica, Chrome/UAT/rollback continuam pendentes. Sem produção, carga/publicação
+comercial, cutover ou ativação global do catálogo.
 
 ## Autorização de leitura de staging e candidato 5bf1ffc — 6 de outubro
 

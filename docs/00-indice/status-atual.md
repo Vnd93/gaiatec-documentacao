@@ -24,7 +24,34 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Estado vigente — leitura de staging autorizada até 2 segundos
+## Estado vigente após recuperação da consulta pública
+
+O candidato `5bf1ffc5de7c774da7d7f99582df629c1c5e89d8` passou na CI
+`37459306938` (69 arquivos SQL, 2.207 testes pgTAP) e na ponte `37460371263`,
+com o pacote original, sem rebuild. A migration 0116 foi aplicada em staging.
+No canônico `37461954151`, G11/G12 passaram: leitura administrativa p95 de
+564 ms / 2.000 ms, comandos 336 ms / 2.000 ms e três janelas públicas verdes.
+O ciclo editorial também passou. Não refazer essas implementações.
+
+O release parou no probe seguinte: a consulta pública retornou HTTP 503 após a
+assinatura temporária das imagens atingir o prazo de 900 ms. A operação usa POST,
+embora só leia objetos, e não tinha a repetição limitada existente nas leituras GET.
+A correção mínima `eb52399252855bfc32b2190ed3bc82803d1420f9` adiciona uma única repetição desse caso, mantendo
+paths, TTL, autorização, prazo por tentativa e todos os gates. Não repete escritas,
+recusas de acesso, erros estruturados ou cancelamentos.
+Revisão e validação local integral aprovadas: 225 arquivos/1.469 testes Vitest,
+demais contratos/evals, lint, tipos e build de 799.039 bytes iniciais. Falta a
+cadeia remota própria do novo SHA; o live permanece em `5bf1ffc`.
+
+Finalizador e watchdog `37465049191` passaram. Evidência terminal selada: 20 respostas,
+100% de disponibilidade, zero 5xx e p95 público de 535,776 ms. Conferência independente:
+116 migrations/0116, flag global desligada, zero produtos, snapshots, overrides e
+leases QA ativos; sem operação concorrente. Chrome não foi alcançado neste run.
+Fatias 1–4 e aprovação funcional das 20 linhas permanecem preservadas; UAT/rollback e
+recaptura técnica ainda pendentes. Sem publicação/carga comercial, cutover ou produção.
+[Diagnóstico e evidências imutáveis](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado da autorização de leitura até 2 segundos
 
 Em 6 de outubro, o responsável confirmou que o teto de 2.000 ms também se aplica
 ao p95 das leituras administrativas, exclusivamente em staging. A implementação

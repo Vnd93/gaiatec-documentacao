@@ -49,7 +49,25 @@ CAT-012 continua exigindo Chrome/UAT/rollback. A aprovação não transforma ess
 `done` nem revoga as restrições de carga/publicação/cutover. Itens 17/18 mantêm a ressalva
 documental provisória. [Registro da aprovação](lista-nominal-prioritaria-cat-d009-2026-09-24.md).
 
-## Checkpoint vigente — autorização de leitura e candidato 5bf1ffc
+## Checkpoint vigente após G11 G12 e ciclo editorial aprovados
+
+CMS `5bf1ffc`: CI `37459306938` verde, com 2.207 testes pgTAP; ponte `37460371263`
+verde e pacote original preservado. Migration 0116 aplicada. Canônico `37461954151`
+passou em G11/G12 (leitura p95 564 ms, comandos 336 ms) e no ciclo editorial; parou
+na consulta pública com HTTP 503 por timeout na assinatura de imagens. Não reabrir
+as Fatias 1–4 nem as correções editoriais já exercitadas.
+
+Recuperação e watchdog `37465049191` aprovados, sem resíduos ativos; catálogo
+default-off e vazio. Correção mínima `eb52399252855bfc32b2190ed3bc82803d1420f9`,
+com validação local integral verde e 1.469 testes Vitest: uma repetição
+somente da leitura interrompida, sem ampliar limites ou repetir mutações. O novo
+SHA exige revalidação dos bytes alterados; o canônico reprovado não vira aprovação.
+CAT-001–010 continuam `ready-for-gate`, CAT-011 mantém aprovação funcional e
+recaptura/evidência pendentes, CAT-012 exige Chrome/UAT/rollback e CAT-D010 continua
+`deferred`. Sem publicação/carga comercial, fonte mista, cutover ou produção.
+[Registro técnico](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado da autorização de leitura e candidato 5bf1ffc
 
 A autorização explícita de 6 de outubro inclui leitura administrativa p95 de até
 2.000 ms apenas em staging. Implementação CMS
