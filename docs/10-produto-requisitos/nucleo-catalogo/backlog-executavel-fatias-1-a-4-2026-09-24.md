@@ -40,7 +40,16 @@ exigem F1/F2 verdes. `CAT-010`–`CAT-012` exigem F1–F3 verdes. Estados permit
 `planned → in-progress → blocked → ready-for-gate → done`; `done` exige SHA, digest, evidência e
 rollback registrados. `CAT-D010` permanece `deferred` até dois ciclos manuais completos e estáveis.
 
-## Situação vigente — 5 de outubro de 2026, orçamento aprovado e homologação bloqueada por runners
+## Decisão vigente — aprovação funcional do catálogo recebida
+
+O responsável aprovou o catálogo e a composição nominal das 20 linhas da lista de `f48014e`,
+vinculados ao candidato `0a3027b`. A decisão funcional de CAT-011 está satisfeita; não há
+nova aprovação funcional a pedir. O saldo de CAT-011 é recaptura e evidência verificável;
+CAT-012 continua exigindo Chrome/UAT/rollback. A aprovação não transforma esses gates em
+`done` nem revoga as restrições de carga/publicação/cutover. Itens 17/18 mantêm a ressalva
+documental provisória. [Registro da aprovação](lista-nominal-prioritaria-cat-d009-2026-09-24.md).
+
+## Checkpoint técnico preservado — 5 de outubro de 2026, orçamento aprovado e homologação bloqueada por runners
 
 Candidato `0a3027b`, migration 0115 e teto de comandos de staging em 2.000 ms, autorizado;
 produção/local em 800 ms e leitura em 500 ms, sem alteração de segurança ou amostragem.

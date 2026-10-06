@@ -55,6 +55,16 @@ leitura, Chrome e evidência). O SLO de caminho feliz é 40–60 minutos; qualqu
 identificar o gargalo e nunca relaxar segurança. O primeiro cutover permanece bloqueado enquanto a
 lista nominal não tiver 100% de cadastro, revisão e aprovação.
 
+## Aprovação funcional vinculada ao checkpoint vigente
+
+A aprovação expressa do catálogo pelo responsável cobre a composição nominal de 20 itens na
+lista do commit documental `f48014e536c16a41f0f4ebde1712cc765f16fa6c` e o candidato
+CMS `0a3027b8156ed1bc7d787994c02a27ed3a3a1d49`. A decisão funcional está satisfeita.
+Os gates técnicos desta matriz, os direitos/documentos ainda não comprovados e a condição
+provisória dos itens 17/18 não são convertidos em evidência por essa decisão.
+AAL2/RLS, auditoria, SHA/digests, Chrome real, rollback, cleanup e CAT-D009 continuam exigidos.
+[Escopo e registro nominal](lista-nominal-prioritaria-cat-d009-2026-09-24.md).
+
 ## Checkpoint vigente — 5 de outubro de 2026, `0a3027b` e pacote imutável
 
 SHA `0a3027b8156ed1bc7d787994c02a27ed3a3a1d49`, perfil `full-release`, CI

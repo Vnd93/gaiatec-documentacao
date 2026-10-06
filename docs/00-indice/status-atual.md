@@ -24,7 +24,27 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Situação vigente — 5 de outubro de 2026: comandos até 2 s em staging, G11/G12 verdes e Chrome pendente
+## Continuidade vigente — catálogo aprovado e infraestrutura de Actions recuperada
+
+Em 5 de outubro de 2026, o responsável aprovou funcionalmente o catálogo e a composição
+nominal atual de 20 itens, vinculados ao CMS `0a3027b` e à lista de `f48014e`.
+Essa aprovação está [registrada nominalmente](../10-produto-requisitos/nucleo-catalogo/lista-nominal-prioritaria-cat-d009-2026-09-24.md);
+não será solicitada novamente. Recaptura documental e evidência técnica não foram fabricadas,
+e os itens 17/18 mantêm sua condição documental provisória.
+
+A CI documental `37372372423` terminou verde (job 19 s). Na retomada às 00:18 UTC de
+06/10 (21:18 de 05/10 em São Paulo), o componente Actions constava operacional, atualizado
+às 21:54:22 UTC de 05/10. O incidente então aberto tratava de páginas de billing/licenciamento,
+não de alocação de runners. GitHub `Vnd93`, ambos os repositórios limpos/sincronizados,
+zero workflows ativos ou fences; staging no SHA exato `0a3027b`, 115 migrations/0115,
+catálogo desligado/vazio e zero resíduo ativo. Pacote original e prova da ponte não expiraram.
+
+Próxima execução: revalidar identidades e retomar o canônico de staging com o mesmo pacote
+selado e ponte, sem refazer CI nem as Fatias 1–4. Chrome real permanece um gate obrigatório,
+just-in-time. Nenhuma homologação foi declarada concluída nesta retomada e nenhuma carga,
+publicação comercial, cutover ou ação em produção foi autorizada.
+
+## Checkpoint técnico preservado — 5 de outubro de 2026: comandos até 2 s em staging, G11/G12 verdes e Chrome pendente
 
 A autorização de latência foi implementada no candidato
 `0a3027b8156ed1bc7d787994c02a27ed3a3a1d49`: **p95 de comandos em staging ≤ 2.000 ms**;

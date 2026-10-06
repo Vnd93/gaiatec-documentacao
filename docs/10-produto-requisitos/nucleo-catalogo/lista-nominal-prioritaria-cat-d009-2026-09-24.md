@@ -1,7 +1,7 @@
 ---
 id: gaiatec-nucleo-catalogo-lista-nominal-cat-d009-2026-09-24
 titulo: Lista nominal prioritária e gate de cobertura CAT-D009
-status: pendente-aprovacao
+status: aprovacao-funcional-confirmada-pendente-evidencia-tecnica
 tipo: lista-nominal-de-cutover
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -19,6 +19,25 @@ aprovação de publicação**. Os nomes vieram do lote piloto EV2 como referênc
 serão copiados automaticamente para `cms_catalog_*`, não carregam SKU e não formam fonte mista.
 Cada linha exige recaptura manual de identidade, classificação, direitos, mídia e especificações no
 novo catálogo, seguida de revisão e aprovação registradas.
+
+## Aprovação funcional confirmada — 5 de outubro de 2026
+
+O responsável declarou: **“Considere o catalogo aprovado.”** A decisão aprova funcionalmente
+o catálogo e sua composição nominal atual de 20 itens, na lista versionada em
+`f48014e536c16a41f0f4ebde1712cc765f16fa6c`, vinculada ao candidato CMS
+`0a3027b8156ed1bc7d787994c02a27ed3a3a1d49`. Cadastro e aprovação continuam sob o
+mesmo papel `Comercial GAIATEC Sistemas`; não há nova decisão funcional a solicitar.
+
+A aprovação funcional fica registrada para **todas as 20 linhas**. A coluna Estado CAT-D009
+abaixo mede recaptura/homologação e não nega essa aprovação. Os itens 17/18 continuam
+`user-confirmed-provisional` quanto à identidade documental; a aprovação não fabrica
+especificações, correspondência OEM ou direitos de mídia ausentes. Alterações materiais da
+composição ou dos bytes do candidato exigem revalidar o que delas depender.
+
+Continuam obrigatórias a recaptura de fontes verificáveis e as provas técnicas de Chrome real,
+AAL2/RLS, auditoria, compatibilidade, rollback e cleanup. Sem essas evidências, CAT-D009 não é
+declarado concluído. Esta decisão não revoga o bloqueio de carga/publicação comercial, ativação
+global da feature flag, cutover ou produção. Os registros históricos abaixo são preservados.
 
 ## Responsabilidade confirmada em 30 de setembro de 2026
 
