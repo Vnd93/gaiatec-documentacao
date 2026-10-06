@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: g11-g12-aprovados-recuperacao-comprovada-chrome-bloqueado-infra
+status: recuperacao-comprovada-diagnostico-503-publico
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -21,7 +21,89 @@ relacionados:
 
 # Resiliência editorial e homologação controlada de staging
 
-## Resultado vigente — 5 de outubro de 2026: teto de comandos aprovado, G11/G12 verdes e Chrome bloqueado por runner
+## Resultado vigente — 06/10 UTC: canônico recuperado, falha pública intermitente em diagnóstico
+
+O run [37393929352/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37393929352) foi
+disparado uma única vez após a recuperação material de Actions, zero concorrência/fences,
+GitHub Vnd93, árvores limpas/sincronizadas e revalidação do pacote original. Candidato e rollback
+`0a3027b8156ed1bc7d787994c02a27ed3a3a1d49`; CI `37359438103`, pacote `11366810234` e
+ponte `37360387443` preservados. O gate de leitura capturou novamente a identidade Cloudflare
+e o snapshot real; CAS e recovery durável precederam a mutação. Não houve rebuild.
+
+| Etapa                        | Resultado                              | Duração |
+| ---------------------------- | -------------------------------------- | ------: |
+| Preflight                    | sucesso                                |    36 s |
+| Validação de fonte           | sucesso                                |   200 s |
+| Baseline remoto, em paralelo | sucesso                                |   110 s |
+| Deploy/gates automáticos     | falha em acessibilidade herdada de G11 |   646 s |
+| Gate G12 que contém a falha  | falha HTTP antes do axe                |   110 s |
+| Finalizador                  | sucesso                                |   164 s |
+| Métricas                     | sucesso                                |     9 s |
+
+Run de 00:25:28 a 00:43:20 UTC: **1.072 s / 17 min 52 s**, caminho não feliz.
+O relatório de métricas capturou 1.068 s antes do próprio encerramento. Não é SLO aprovado.
+Gates pós-deploy, Chrome e evidência final de release foram corretamente pulados.
+
+### Falha e diagnóstico limitado ao que foi comprovado
+
+O teste `@a11y critical public journeys` preservou os status esperados: 200 em home/contato e
+404 na campanha sintética inexistente. Recebeu 503: mobile falhou em contato e depois na raiz;
+desktop falhou na campanha antes de passar no retry já existente. Resultado: um teste reprovado,
+um flaky, um skip e cinco aprovados. Nenhum retry extra foi introduzido.
+
+Amostras G11 preservadas: comando server p95 **649 ms**, wall p95 **938,06 ms**; leitura server
+p95 **177 ms**, wall **625,42 ms**. Vetor dos dez comandos: 386, 340, 284, 438, 556, 257, 418,
+281, 649 e 203 ms. Sem descarte de amostras nem mudança de budgets. Isso não constitui G11 verde:
+a rotina falhou antes de finalizar a análise e o relatório integral.
+
+Logs unificados Supabase, 00:38:27–00:40:20 UTC: 28 chamadas `page-by-path` responderam 200
+(máximo 729 ms); duas `campaign-by-path`, 200 (máximo 563 ms). Houve três `form` com 503 em
+2.033–2.170 ms, além de 18 leituras de formulário com 200. Não existe correlação individual que
+prove que as consultas 200 correspondem aos documentos 503: uma falha anterior à chegada ao
+backend permanece possível. A consulta não encontrou evidência de limite de CPU/memória ou boot
+falho; não se atribuiu a causa exclusivamente ao provedor nem se alterou Auth/RLS/configuração.
+
+Um diagnóstico isolado posterior percorreu seis rotas em cada um dos dois perfis desktop/mobile:
+12/12 status esperados, zero violações axe graves/críticas. As dez navegações posteriores à raiz
+vieram do service worker com headers de borda preservados; a raiz inicial não veio do service
+worker. É evidência pontual de intermitência, **não substitui o gate nem Chrome real autenticado**.
+
+O relatório antigo não retinha origem service worker, duração da borda, release ou identificador
+Cloudflare da resposta que falhou. A correção mínima de diagnóstico lê somente quatro headers
+allowlisted e registra metadados validados em falhas; não registra corpo, cookie, query, request
+headers, identificador pessoal ou erro bruto. Preserva os status, as seis rotas, a visibilidade,
+todos os scans e o timeout. Não é uma correção presumida do 503 nem autorização para retry cego.
+
+Diagnóstico versionado em `5d7cfd18fdc3b7aa5aca1aa1f4267147273a5dba`: quatro arquivos de teste,
+sem mudança de aplicação, workflow, migration, dependência ou runtime. Cinco regressões cobrem
+metadados permitidos, resposta sintética do service worker, entradas hostis, headers indisponíveis
+e ausência de resposta. O contrato QA agora exige o diagnóstico somente em falha e mantém a
+asserção HTTP original. `npm run check` integral verde: 222 arquivos/1.424 testes Vitest,
+133/133 QA, 793 testes de release (777 aprovados, 16 skips de plataforma já existentes), demais
+suítes/evals e build aprovados; quatro chunks iniciais/799.039 bytes. Revisão do diff e whitespace
+sem problemas. Esse SHA exige nova CI e seu próprio pacote único, ponte e run canônico; o pacote
+de `0a3027b` é apenas o baseline histórico e não pode ser reetiquetado como o novo candidato.
+
+### Recuperação e evidências verificadas
+
+Finalizador `112049467376`: 75 verificações de banco, 115 migrations/0115, convergência de
+Auth/Edge/configuração e limpeza terminal. O watchdog
+[37395470961](https://github.com/Vnd93/gaiatec-cms/actions/runs/37395470961) terminou em
+sucesso às 00:43:50 UTC; compensação não era necessária e foi pulada.
+
+| Artefato imutável        | SHA-256 do ZIP baixado e conferido                                 |
+| ------------------------ | ------------------------------------------------------------------ |
+| Terminal `11382812624`   | `2aec9c9626640cee94290afcac9c7c6cdb1da11497604f3764525df895baceef` |
+| Preliminar `11383410697` | `a0276669f073ef52476e53fbc1511a2423c3f300a7d7e618f5f87a0e4261da25` |
+| Métricas `11382467693`   | `9e0e308eba0067c728264eae4c811dbbf67195d552bcec0c5b495ca1a2316b52` |
+
+Probe terminal: 82 respostas, disponibilidade 100%, zero 5xx, p95 público 550,356 ms,
+SHA/manifesto/headers/CSP/noindex exatos, zero violações. Conferência independente após ambos
+os runs terminais: zero nas cinco classes de workflow ativo dos dois repositórios; zero fences,
+overrides, leases QA, consultas concorrentes ou lock waits. Flag do catálogo desligada, produtos
+e snapshots novos zerados. Produção, carga comercial, publicação e cutover intocados.
+
+## Resultado histórico — 5 de outubro de 2026: teto de comandos aprovado, G11/G12 verdes e Chrome bloqueado por runner
 
 O responsável autorizou prosseguir com o diagnóstico sanitizado ao suporte e aceitou latência de
 1–2 segundos. A implementação limita essa decisão ao **p95 de comandos em staging ≤ 2.000 ms**.

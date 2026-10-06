@@ -24,7 +24,31 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Continuidade vigente — catálogo aprovado e infraestrutura de Actions recuperada
+## Continuidade vigente — catálogo aprovado; staging recuperado após 503 público
+
+O canônico [37393929352](https://github.com/Vnd93/gaiatec-cms/actions/runs/37393929352)
+reutilizou exatamente o candidato `0a3027b`, o pacote `11366810234` e a ponte `37360387443`,
+sem rebuild. Terminou em `failure` às 00:43:20 UTC de 06/10 (21:43 de 05/10 em São Paulo),
+após 17 min 52 s: a navegação de acessibilidade recebeu HTTP 503 em home, contato e campanha
+inexistente. Chrome autenticado não foi alcançado; nenhum challenge ou atestado foi produzido.
+Comandos p95 de 649 ms e leitura de 177 ms ficaram abaixo dos respectivos tetos de 2.000/500 ms.
+
+Finalizador e watchdog terminaram verdes. O artefato terminal, baixado e conferido por SHA-256,
+comprovou 82 respostas, disponibilidade de 100%, zero 5xx, p95 público de 550,356 ms e SHA exato.
+Conferência independente: zero workflows concorrentes, fences, overrides ou leases QA ativos;
+115 migrations/0115, catálogo desligado, zero produtos/snapshots novos. A recuperação não aprova
+o run reprovado. [Diagnóstico e tempos](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+A aprovação funcional das 20 linhas permanece válida; não reabrir essa decisão nem as Fatias 1–4
+já implementadas. Os manuais primários Chemins dos itens 2/3 foram recuperados e conferidos no
+Chrome; revisão impressa ausente fica explicitamente registrada, sem inferência. O diagnóstico
+sanitizado está versionado no CMS `5d7cfd18fdc3b7aa5aca1aa1f4267147273a5dba`: `npm run check`
+integral verde, 1.424 testes Vitest e 133 contratos QA aprovados, build dentro do orçamento.
+A próxima etapa é CI, pacote único, ponte e canônico desse SHA; não reutilizar a aprovação de
+release de outro SHA. Sem modificar timeouts, status exigidos, acessibilidade ou os limites de
+publicação/carga/cutover/produção. O diagnóstico não declara corrigida a causa intermitente do 503.
+
+## Retomada anterior — catálogo aprovado e infraestrutura de Actions recuperada
 
 Em 5 de outubro de 2026, o responsável aprovou funcionalmente o catálogo e a composição
 nominal atual de 20 itens, vinculados ao CMS `0a3027b` e à lista de `f48014e`.

@@ -84,6 +84,28 @@ Histórico preservado: antes desse esclarecimento, o item 20 estava `bloqueado-c
 fabricante/origem ausente. Essa pendência foi resolvida; o estado atual é `pendente-recaptura`, como
 os demais candidatos não provisórios, e não `aprovado`. Nenhum SKU foi incorporado à lista.
 
+## Atualização documental — 06/10 UTC, manuais primários dos itens 2/3
+
+As fontes Chemins anteriormente indisponíveis foram recuperadas. Texto integral dos PDFs lido
+e tabelas conferidas visualmente em Chrome real; nenhum arquivo foi importado no catálogo.
+Não foi encontrada revisão impressa em nenhum manual. A data de upload não foi tratada como revisão.
+
+| Item       | Origem e manual exatos                                                                                                                                                                                            | Identidade dos bytes e conferência                                                                                                                                 |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 2, TC-300C | [Produto](https://www.chemins-tech.com/cp4/304.html), [central oficial](https://www.chemins-tech.com/ziliaoxiazai.html), [manual](https://oss.chemins-tech.com/uploads/20241202/FtmymsxCmRtsBiiPAsP9Q6GjPHGw.pdf) | 20 páginas; 884.541 bytes; SHA-256 `bfddf59af28b2940ef70ca687376da597a8aa7b00b2d11a525ecaaa2e087ec4d`; capa e páginas 5/6 conferidas; upload listado em 02/12/2024 |
+| 3, CLX-300 | [Produto e link oficial](https://www.chemins-tech.com/cp4/69.html), [manual](https://oss.chemins-tech.com/uploads/20241202/FkdOdrOJ4wkjfLi12ksAnPTxrh3r.pdf)                                                      | 24 páginas; 632.237 bytes; SHA-256 `64ced815814589487f97cb7a8a0c33b369ee84df69c7279f8b4847633c921135`; capa e tabela da página 5 conferidas                        |
+
+TC-300C: o manual diferencia faixas 0–200/500/1.000 mg/L e customização; não presumir uma
+configuração comercial. Condições de instalação interna: 5–28 °C e umidade relativa até 90%,
+sem condensação. A linha de dimensões não imprime unidade: não completar por inferência.
+CLX-300: a tabela declara faixa 0–5,000 mg/L, resolução 0,001 mg/L, precisão ±0,1 mg/L,
+método por absorbância, RS-485/Modbus RTU, 220 VAC e IP65.
+
+A lacuna de **localização de manual primário** está resolvida para essas duas linhas.
+Revisão, configuração fornecida, direitos de mídia e evidência técnica continuam explícitos;
+não se inventa aprovação técnica nem se reabre a aprovação funcional já recebida.
+O índice histórico de 30/09 abaixo descreve a situação daquela consulta, não a situação vigente.
+
 ## Atualização documental — 5 de outubro de 2026, itens 6–8 e 11
 
 As três fichas oficiais foram lidas textualmente e conferidas visualmente no Chrome, incluindo
@@ -172,8 +194,9 @@ não altera o estado das 20 linhas e não autoriza cadastro/carga/publicação e
 
 ## Gate de aprovação
 
-O papel responsável pelo cadastro e pela aprovação está confirmado acima. A composição final e a
-evidência de revisão/aprovação de cada linha ainda precisam ser registradas. QA só
+O papel responsável e a aprovação funcional da composição nominal de 20 itens estão confirmados
+acima. Falta a evidência técnica de recaptura/homologação de cada linha; não uma nova decisão
+funcional. QA só
 marca uma linha como `aprovada` após evidência de cadastro, revisão, publicação em staging, Chrome
 real e rollback. Enquanto qualquer linha estiver pendente/bloqueada, CAT-D009 permanece fechado e o
 site antigo continua sendo a única fonte pública. A quantidade de linhas não substitui a aprovação

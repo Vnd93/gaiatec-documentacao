@@ -49,7 +49,18 @@ CAT-012 continua exigindo Chrome/UAT/rollback. A aprovação não transforma ess
 `done` nem revoga as restrições de carga/publicação/cutover. Itens 17/18 mantêm a ressalva
 documental provisória. [Registro da aprovação](lista-nominal-prioritaria-cat-d009-2026-09-24.md).
 
-## Checkpoint técnico preservado — 5 de outubro de 2026, orçamento aprovado e homologação bloqueada por runners
+## Checkpoint vigente — 06/10 UTC, recuperação concluída e diagnóstico HTTP
+
+O canônico `37393929352` reutilizou os bytes originais de `0a3027b` e falhou em HTTP 503 na
+navegação de acessibilidade, antes de Chrome real. Latência de comandos/leitura ficou em
+649/177 ms; finalizador e watchdog `37395470961` verdes, zero concorrência e resíduo ativo.
+O diagnóstico sanitizado está no CMS `5d7cfd18fdc3b7aa5aca1aa1f4267147273a5dba`, com
+`npm run check` integral verde; falta a cadeia remota desse SHA, sem reduzir nenhum gate.
+Não reiniciar as Fatias 1–4 nem declarar CAT-001–012 `done` por CI ou recuperação verdes.
+[Tempos e evidências](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+Manuais Chemins dos itens 2/3 recuperados; essa lacuna documental está resolvida, sem carga.
+
+## Checkpoint histórico — 5 de outubro de 2026, orçamento aprovado e homologação bloqueada por runners
 
 Candidato `0a3027b`, migration 0115 e teto de comandos de staging em 2.000 ms, autorizado;
 produção/local em 800 ms e leitura em 500 ms, sem alteração de segurança ou amostragem.
