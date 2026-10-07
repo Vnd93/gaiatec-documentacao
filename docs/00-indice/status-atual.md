@@ -24,7 +24,37 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Estado vigente após falha intermitente na navegação pública
+## Estado vigente após diagnóstico do cancelamento de leitura redundante
+
+O candidato `ba75ba0e087896a00c035b35018ef65b7311d1e2` concluiu a CI
+`37639707508` e a ponte `37643707867` com o mesmo pacote original selado.
+O canônico `37645779746` passou no gate público antes bloqueante, no deploy e
+nos dois gates pós-deploy somente leitura. Parou no observador do ciclo Auth:
+uma leitura redundante de página foi cancelada após outra completar HTTP 200.
+Finalizador e watchdog `37650298431` verdes; staging recuperado, 116 migrations,
+flag global desligada e zero resíduos ativos. Chrome ainda não foi alcançado.
+
+Cinco navegações somente leitura reproduziram a classificação incorreta.
+A correção mínima do observador exige dois GETs públicos sobrepostos na mesma
+aba, URL e chave pública, sem Authorization, resposta vencedora HTTP 200 com
+corpo concluído dentro do prazo original e cancelamento posterior da única
+tentativa excedente. Erros HTTP, corpo interrompido, timeout, origem divergente,
+outra aba ou ausência dessa prova continuam bloqueantes. A seleção focada passou
+em 73 testes e cinco navegações posteriores passaram com contagem explícita do
+cancelamento comprovado. Esse diagnóstico não substitui Chrome/UAT autenticado.
+
+Correção CMS `aab0b27a4899ab0d9a7bc84a6f10d2512019d233`, três arquivos de QA,
+38 novos testes. Validação integral verde: 227 arquivos/1.528 testes Vitest,
+demais contratos/evals, lint, tipos e build em 25,60 s, mantendo 799.883 bytes
+iniciais. Aplicativo, backend e dependências não foram alterados. A cadeia remota
+do novo SHA ainda é necessária.
+
+CAT-001–010 continuam `ready-for-gate`; CAT-011 mantém a aprovação funcional das
+20 linhas, com recaptura técnica pendente; CAT-012 exige Chrome/UAT/rollback.
+Sem produção, carga/publicação comercial ou cutover. As Fatias 1–4 não serão
+reimplementadas. [Provas e tempos](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado após falha intermitente na navegação pública
 
 Em 7 de outubro, o candidato `c53d183b8b822e571ab2e5ca7328bead0bba76f4`
 concluiu CI `37629341311` em 524 s e ponte `37630829420` em 837 s, promovendo

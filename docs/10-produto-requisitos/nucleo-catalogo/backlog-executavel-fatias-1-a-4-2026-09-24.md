@@ -49,7 +49,29 @@ CAT-012 continua exigindo Chrome/UAT/rollback. A aprovação não transforma ess
 `done` nem revoga as restrições de carga/publicação/cutover. Itens 17/18 mantêm a ressalva
 documental provisória. [Registro da aprovação](lista-nominal-prioritaria-cat-d009-2026-09-24.md).
 
-## Checkpoint vigente após o gate de navegação pública
+## Checkpoint vigente após diagnóstico do observador
+
+O SHA `ba75ba0` tem CI `37639707508` e ponte `37643707867` verdes, com pacote
+original `11492131363`. O canônico `37645779746` passou na navegação pública,
+deploy e gates pós-deploy somente leitura, mas falhou no ciclo Auth por classificar
+o cancelamento de uma leitura redundante como erro de rede. Finalizador e watchdog
+`37650298431` verdes, ambiente recuperado e sem resíduos ativos.
+
+Cinco navegações diagnósticas reproduziram o problema e cinco passaram após a
+correção do observador; 73 testes focados aprovados. A prova exige o par exato de
+GETs e resposta HTTP 200 integral dentro do deadline original; cancelamentos
+genéricos e falhas de segurança não são dispensados. Chrome/UAT não foram
+substituídos pelos diagnósticos. Correção `aab0b27a4899ab0d9a7bc84a6f10d2512019d233`,
+três arquivos de QA; validação integral verde com 1.528 testes Vitest, demais
+contratos/evals, lint, tipos e build. O novo controle precisa de validação remota própria.
+
+CAT-001–010 continuam `ready-for-gate`, sem reimplementar Fatias 1–4. CAT-011
+preserva a aprovação funcional das 20 linhas e exige recaptura técnica; CAT-012
+exige Chrome/UAT/rollback. CAT-D010 permanece `deferred`. Flag global off;
+sem produção, carga/publicação comercial ou cutover.
+[Provas e recuperação](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado após o gate de navegação pública
 
 O candidato `c53d183` tem CI `37629341311` e ponte `37630829420` verdes,
 pacote original preservado e auditoria zerada. O canônico `37633039283` passou

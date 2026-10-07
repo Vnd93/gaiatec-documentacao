@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: correcao-transporte-publico-revalidacao-pendente
+status: correcao-observador-transporte-revalidacao-pendente
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -20,6 +20,87 @@ relacionados:
 ---
 
 # Resiliência editorial e homologação controlada de staging
+
+## Cancelamento comprovado da leitura redundante no ciclo de autenticação
+
+Em 7 de outubro, a [CI 37639707508](https://github.com/Vnd93/gaiatec-cms/actions/runs/37639707508)
+do SHA `ba75ba0e087896a00c035b35018ef65b7311d1e2` terminou verde em 633 s
+de relógio, com sete jobs. Pacote original `11492131363`, SHA-256
+`0e65357941241bf7d22e72501ef9b1c86cae72bc896ed1fcc0af7eba42418979`.
+Seleção, plano e relatório de duração foram baixados por ID e seus digests
+conferidos; o verificador local confirmou o vínculo exato e perfil full-release.
+
+A primeira ponte, [37641349760](https://github.com/Vnd93/gaiatec-cms/actions/runs/37641349760),
+passou em compatibilidade, renderização, probes e limpeza, mas falhou após
+1.005 s ao limpar duas fences de recovery: API GitHub HTTP 500 após retries
+limitados. Nenhum canônico foi iniciado nessa condição. O watchdog
+`37642430725` restaurou o frontend anterior e limpou ambas as fences com sucesso;
+a sonda mediu 82 respostas, 100% de disponibilidade, zero 5xx e p95 585,365 ms.
+Essa conclusão comprovou a recuperação antes da retomada, sem limpeza manual.
+
+A [ponte 37643707867](https://github.com/Vnd93/gaiatec-cms/actions/runs/37643707867)
+terminou verde reutilizando a CI e os mesmos bytes, sem rebuild. Relatório de
+componente: 645 s; o download do pacote consumiu 97 s. Deployment
+`02c8bd4b-0d7f-4614-8c0d-694bc6d1822f`; backend restaurado na versão 612,
+três probes públicos v2 HTTP 200 e watchdog terminal pulado conforme o contrato.
+Prova `11493607100`, digest
+`e00b6c942b56e8fab0fece00d6631930f8b6a8623b62d6b8369616ca9be5d3d4`;
+digest local e vínculo exato validados. O timestamp Cloudflare foi normalizado
+para UTC ISO ao alimentar o verificador local, sem repetir deploy.
+
+O [canônico 37645779746](https://github.com/Vnd93/gaiatec-cms/actions/runs/37645779746)
+iniciou às 15:40:12 UTC e terminou reprovado às 16:13:02 UTC, 1.970 s de relógio.
+O relatório capturou 1.965 s; deploy levou 1.210 s e as três janelas G12/assurance,
+278 s. Fonte, baseline, deploy, navegação pública antes bloqueante e ambos os
+gates pós-deploy somente leitura passaram. O ciclo Auth parou em
+`QA_CMS_BROWSER_OBSERVABILITY_FAILED`, por GET público `net::ERR_ABORTED`.
+Nenhum challenge Chrome foi emitido. Finalizador e watchdog `37650298431` verdes;
+sonda terminal com 82 respostas, disponibilidade 100%, zero 5xx, p95 700,845 ms
+e nenhuma violação. Conferência independente: 116 migrations/0116, flag desligada,
+zero produtos/snapshots, leases QA, overrides ativos, outros clientes ativos e
+esperas de lock. Cinco estados ativos de workflow zerados nos dois repositórios,
+sem fences de recovery. Nenhuma operação de produção.
+
+Provas terminais com SHA-256 conferido localmente:
+
+| Evidência | ID            | SHA-256                                                            |
+| --------- | ------------- | ------------------------------------------------------------------ |
+| Terminal  | `11496531952` | `0acb2c3aab48641e8b14825b7353b244769ec5b641e64d2e8f3b83f012a7b476` |
+| Duração   | `11495528263` | `9ec360eeef2a690aa32f99c2a375efecb7fa86c88d7f6053e3243ea2e4fcff6a` |
+
+### Correlação de transporte sem dispensa de falhas reais
+
+Cinco navegações diagnósticas somente leitura no staging reproduziram o problema:
+dois GETs `page-by-path`, segundo iniciado após cerca de 700 ms; o primeiro
+completou HTTP 200 e o excedente recebeu `net::ERR_ABORTED` no mesmo milissegundo.
+O observador registrou uma falha em cada navegação, sem erro HTTP ou de console.
+A hipótese de cancelamento intencional foi, portanto, reproduzida no frontend real.
+
+A correção fica no observador de QA, sem alterar aplicativo, backend, budgets,
+autenticação ou política de tentativas. Um cancelamento só é classificado como
+redundante quando há exatamente dois GETs de página sobrepostos, mesma aba, URL
+completa e chave pública, origem previamente configurada, sem Authorization;
+a primeira resposta é HTTP 200, seu corpo termina integralmente no deadline
+original de 10 s, e somente então a prova pode ser selada. A tentativa cancelada
+não pode ter recebido headers; o cancelamento deve ser posterior à resposta
+vencedora. Outra aba, terceira tentativa, resposta antiga, erro HTTP, corpo
+interrompido, timeout ou cancelamento sem contraparte permanecem bloqueantes.
+O relatório contabiliza os cancelamentos comprovados sem persistir URL, chave,
+payload ou identidade. Não há mock nem alteração das chamadas observadas.
+
+A seleção focada tem 73 testes aprovados. Cinco novas navegações somente leitura
+passaram com um cancelamento comprovado cada, sem falhas de HTTP, console ou rede.
+Os diagnósticos automatizados não são UAT em Chrome autenticado e não aprovam
+o canônico reprovado. Commit `aab0b27a4899ab0d9a7bc84a6f10d2512019d233`:
+três arquivos de QA, 336 inserções e oito remoções, 38 testes novos. A validação
+integral passou em 227 arquivos/1.528 testes Vitest, demais contratos/evals,
+lint, tipos e build de 25,60 s; bundle inicial inalterado em 799.883 bytes.
+Uma incompatibilidade de inferência de tipos na tabela de cenários negativos
+foi corrigida antes da validação integral final. Sem alteração do aplicativo,
+backend ou dependências. O novo SHA de controle exige sua própria validação remota.
+CAT-011 continua aprovado funcionalmente; recaptura técnica, Chrome/UAT/rollback
+e dois ciclos manuais estáveis continuam pendentes. Flag global off; sem carga,
+publicação comercial, produção ou cutover.
 
 ## Navegação pública interrompe a homologação após correção de segurança
 
