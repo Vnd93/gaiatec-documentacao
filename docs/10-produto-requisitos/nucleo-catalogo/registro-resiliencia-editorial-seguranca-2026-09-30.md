@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: correcao-seguranca-sharp-revalidacao-pendente
+status: correcao-transporte-publico-revalidacao-pendente
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -20,6 +20,80 @@ relacionados:
 ---
 
 # Resiliência editorial e homologação controlada de staging
+
+## Navegação pública interrompe a homologação após correção de segurança
+
+O SHA `c53d183b8b822e571ab2e5ca7328bead0bba76f4` passou na
+[CI 37629341311](https://github.com/Vnd93/gaiatec-cms/actions/runs/37629341311)
+em 524 s, com 69 arquivos e 2.207 testes pgTAP. A
+[ponte 37630829420](https://github.com/Vnd93/gaiatec-cms/actions/runs/37630829420)
+passou em 837 s usando o pacote original `11485863462`, digest
+`b02e7c27549d5000a84b55eb252dc30065739a1e73d9ac5f7f2baffea78d0126433d`.
+O deployment canônico é `3a0d0704-5a9b-4065-995c-0cf7984a475f`, sem rebuild.
+
+O [canônico 37633039283](https://github.com/Vnd93/gaiatec-cms/actions/runs/37633039283),
+attempt 1, iniciou às 14:00:05 UTC e terminou reprovado às 14:25:11 UTC em
+7 de outubro, após 1.506 s. O relatório mediu 1.500 s; o job de deploy foi o maior,
+1.130 s, com 280 s em G12. Não é medição do caminho feliz completo. Auditoria,
+134 verificações de migrations, G11/G12 e as três janelas de estabilidade passaram.
+O teste público terminou com 46 aprovados, três pulados e uma falha: título
+“Integridade e Proteção Catódica” ausente por cinco segundos em
+`/industrias/protecao-catodica`, embora o documento respondesse HTTP 200.
+Os gates pós-deploy, Chrome e aprovação terminal dependentes não executaram.
+
+### Recuperação e provas preservadas
+
+Finalizador e [watchdog 37636530296](https://github.com/Vnd93/gaiatec-cms/actions/runs/37636530296)
+verdes. A recuperação das fixtures encontrou seis leases já terminais, nenhum
+ativo e nenhuma falha de limpeza. A sonda independente registrou 82 respostas,
+100% de disponibilidade, zero 5xx e p95 de 662,378212 ms. Conferência posterior:
+116 migrations/0116, flag `ev2.catalog_v1` desligada, zero produtos/snapshots,
+leases QA, overrides ativos, outros clientes ativos e esperas de lock; cinco
+estados ativos de workflow zerados nos dois repositórios, sem fences de recovery
+nem deployment Cloudflare em andamento. `/healthz` e `X-Release` confirmaram
+o SHA exato, sem tocar produção.
+
+Artefatos baixados por ID e SHA-256 conferido localmente:
+
+| Evidência  | ID            | SHA-256                                                            |
+| ---------- | ------------- | ------------------------------------------------------------------ |
+| Terminal   | `11490245332` | `a3a67f2d1eb28c74d9c3ed3d12afcc26b4968ac92c9e74150e03234d0e1dda79` |
+| Duração    | `11489946200` | `af99dd445e09b197bd53066790bdfef5c26ceb2ecaf27044c1c9ea4bf307cc45` |
+| Preliminar | `11487853890` | `d00ecefc92805ef251ce05a9b3402c42c06fec31448ea34d0ba104aaf3657efc` |
+
+### Diagnóstico e limite da correção
+
+No intervalo da falha, as consultas `entity-detail` da rota responderam HTTP 200
+em 931 e 317 ms no backend. Houve um 503 na consulta de formulário, mas ele não
+prova a causa do título ausente. A reprodução somente leitura parou na segunda
+repetição, em `/politica-de-privacidade`: documento 200 e tela “Carregando página…”,
+com cinco chamadas públicas ainda sem resposta no trace. A execução foi encerrada
+após a reprodução, sem novo release. Uma sequência posterior, instrumentada com
+eventos de rede, completou 30 navegações sem erro de JavaScript. O problema é
+intermitente; a origem interna do atraso permanece não demonstrada.
+
+A correção de resiliência se limita aos GETs `page-by-path` e `entity-detail`:
+no máximo uma segunda tentativa após 700 ms sem resposta, ou após rejeição de
+transporte, com o mesmo endpoint, parâmetros, chave pública e deadline total
+original de 10 s. A primeira resposta HTTP vence mesmo em 401/403/429/5xx;
+a tentativa excedente é cancelada. Não há cache, conteúdo substituto, repetição de
+comandos/formulários, supressão de erro ou dispensa da validação pública do payload.
+O limite de visibilidade do gate permanece cinco segundos. O
+[changelog](https://supabase.com/changelog) e a
+[documentação de CORS](https://supabase.com/docs/guides/functions/cors) foram
+conferidos antes da alteração; não se introduzem endpoints de logs removidos,
+mudanças de SDK/CLI, Auth, RLS, migrations ou funções Edge.
+
+Commit CMS `ba75ba0e087896a00c035b35018ef65b7311d1e2`: três arquivos, 238
+inserções e quatro remoções. Os 19 testes novos cobrem transporte sem resposta,
+cancelamento, deadline compartilhado, respostas HTTP negativas, tipos excluídos
+e validação do payload recuperado; a seleção focada teve 41 casos aprovados.
+`npm run check` integral passou com 226 arquivos/1.490 testes Vitest, demais
+contratos/evals, formatação, lint, tipos e build de 20,01 s. O bundle inicial
+mede 799.883 bytes em quatro chunks, 844 bytes acima de `c53d183`, ainda dentro
+do orçamento. Node 22.23.2 e todas as dependências permanecem iguais.
+A nova cadeia remota deve provar esses bytes; nenhuma aprovação anterior é
+transferida. UAT/rollback e recaptura técnica continuam pendentes.
 
 ## Auditoria interrompe a retomada antes de mutação
 

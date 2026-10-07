@@ -49,7 +49,24 @@ CAT-012 continua exigindo Chrome/UAT/rollback. A aprovação não transforma ess
 `done` nem revoga as restrições de carga/publicação/cutover. Itens 17/18 mantêm a ressalva
 documental provisória. [Registro da aprovação](lista-nominal-prioritaria-cat-d009-2026-09-24.md).
 
-## Checkpoint vigente após a auditoria de imagens
+## Checkpoint vigente após o gate de navegação pública
+
+O candidato `c53d183` tem CI `37629341311` e ponte `37630829420` verdes,
+pacote original preservado e auditoria zerada. O canônico `37633039283` passou
+nas 134 verificações de migrations e três janelas G11/G12, mas falhou no título
+de uma página pública dentro do prazo original. Finalizador e watchdog
+`37636530296` passaram; ambiente recuperado e sem resíduos ativos.
+A correção mínima `ba75ba0e087896a00c035b35018ef65b7311d1e2` de transporte
+das leituras públicas passou na validação integral local com 1.490 testes Vitest;
+aguarda CI, ponte e canônico próprios. O SHA mudou:
+não refazer as Fatias 1–4 nem reclassificar a execução reprovada como aprovada.
+
+CAT-001–010 permanecem `ready-for-gate`; CAT-011 preserva a aprovação funcional
+das 20 linhas e a pendência de recaptura técnica; CAT-012 exige Chrome/UAT/rollback.
+CAT-D010 continua `deferred`. Flag global desligada, sem carga/publicação comercial,
+cutover ou produção. [Diagnóstico e provas](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado após a auditoria de imagens
 
 Em 7 de outubro, o canônico `37626820878` do candidato `eb52399` parou antes
 de qualquer deploy: auditoria alta de Sharp por `GHSA-wq5f-xc86-pv6w`.

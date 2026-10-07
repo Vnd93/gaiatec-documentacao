@@ -24,7 +24,36 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Estado vigente após bloqueio de segurança na dependência de imagens
+## Estado vigente após falha intermitente na navegação pública
+
+Em 7 de outubro, o candidato `c53d183b8b822e571ab2e5ca7328bead0bba76f4`
+concluiu CI `37629341311` em 524 s e ponte `37630829420` em 837 s, promovendo
+o pacote original `11485863462`, sem rebuild. O canônico `37633039283` durou
+1.506 s e passou pela auditoria, 134 verificações de migrations e três janelas
+G11/G12. Parou no teste público: 46 casos passaram, três foram pulados e um
+não exibiu o título de `/industrias/protecao-catodica` nos cinco segundos originais,
+apesar do documento HTTP 200. Chrome e a aprovação terminal não foram alcançados.
+
+Finalizador e watchdog `37636530296` concluíram com sucesso. A sonda terminal
+obteve 82 respostas, 100% de disponibilidade, zero 5xx e p95 de 662,378 ms.
+Staging serve o mesmo SHA no deployment `3a0d0704-5a9b-4065-995c-0cf7984a475f`;
+116 migrations/0116, catálogo global desligado, zero produtos/snapshots, leases QA,
+overrides ativos e operações concorrentes conferidos após a recuperação.
+
+O diagnóstico isolado reproduziu carregamento pendente em outra rota pública,
+com cinco chamadas sem resposta no trace. Outra sequência instrumentada completou
+30 navegações, sem erro de JavaScript; isso confirma intermitência, não aprova o
+release reprovado. A correção `ba75ba0e087896a00c035b35018ef65b7311d1e2`
+fica limitada ao transporte das leituras de página,
+sem aumentar o prazo do gate, repetir erros HTTP ou modificar Auth/RLS/backend.
+Não refazer Fatias 1–4. UAT/rollback e recaptura técnica continuam pendentes;
+sem produção, publicação/carga comercial ou cutover.
+Validação integral local verde: 226 arquivos/1.490 testes Vitest, demais
+contratos/evals, lint, tipos e build em 20,01 s, com 799.883 bytes iniciais.
+O novo SHA exige CI, pacote original selado, ponte e canônico próprios.
+[Diagnóstico e evidências](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado após bloqueio de segurança na dependência de imagens
 
 Em 7 de outubro, a retomada canônica `37626820878` foi interrompida antes do
 deploy pela auditoria de dependências: Sharp 0.35.4 passou a ser classificado como
