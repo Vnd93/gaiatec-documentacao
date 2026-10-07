@@ -1,7 +1,7 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: staging-recuperado-revalidacao-canonica-pendente
+status: correcao-seguranca-sharp-revalidacao-pendente
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
@@ -20,6 +20,61 @@ relacionados:
 ---
 
 # Resiliência editorial e homologação controlada de staging
+
+## Auditoria interrompe a retomada antes de mutação
+
+O run [37626820878](https://github.com/Vnd93/gaiatec-cms/actions/runs/37626820878),
+attempt 1 do SHA `eb52399252855bfc32b2190ed3bc82803d1420f9`, iniciou em
+7 de outubro às 13:13:30 UTC e terminou reprovado às 13:17:04 UTC, após 214 s.
+O relatório capturou 209 s; a validação somente leitura do baseline foi o maior
+job, 120 s, com 67 s no probe. O preflight passou, mas a auditoria do candidato
+encontrou três alertas altos na cadeia Sharp → Miniflare → Wrangler. Deploy,
+gates pós-deploy e Chrome não foram executados.
+
+O finalizador recusou o output vazio do job de deploy com
+`G12_STAGING_MUTATION_BOUNDARY_AMBIGUOUS`; não realizou compensação nem aprovou
+o release. O [watchdog 37627287149](https://github.com/Vnd93/gaiatec-cms/actions/runs/37627287149)
+classificou o pai com sucesso e pulou a compensação. Inventário independente
+posterior: cinco estados ativos de workflow zerados nos dois repositórios, sem
+fences de recovery, 116 migrations/0116, flag desligada e zero leases QA, overrides,
+produtos, snapshots, outros clientes ativos ou esperas de lock.
+
+### Correção delimitada e regressão
+
+O [aviso GHSA-wq5f-xc86-pv6w](https://github.com/advisories/GHSA-wq5f-xc86-pv6w),
+incorporado à base revisada do GitHub em 6 de outubro, afeta Sharp anterior a
+0.35.5 e descreve possível execução remota em condições específicas de Linux glibc.
+A [versão 0.35.5](https://github.com/lovell/sharp/releases/tag/v0.35.5) inclui
+librsvg 2.63.2 corrigido. A atualização local altera somente os pins direto e
+override de Sharp, sua árvore nativa e testes de regressão; Node 22.23.2 e
+Wrangler 4.127.0 permanecem inalterados. Não usar `npm audit fix --force`,
+downgrade de Wrangler, supressão do aviso ou desativação de SVG.
+
+Após instalação limpa, `npm audit --audit-level=high` retorna zero vulnerabilidades.
+Os 11 testes contratuais de dependências passaram; dois novos casos verificam
+pins, integridades, versões nativas e a biblioteca real em SVG/PNG/WebP/AVIF.
+Commit CMS `c53d183b8b822e571ab2e5ca7328bead0bba76f4`: três arquivos, 290 inserções
+e 241 remoções, com nenhuma mudança no lockfile fora da árvore Sharp. Revisão do
+diff e `npm run check` integral verdes: 225 arquivos/1.471 testes Vitest, contratos
+Node/evals, formatação, lint, tipos e build em 25,87 s; 799.039 bytes iniciais em
+quatro chunks, Excel/PDF lazy. A mudança de bytes exige nova cadeia exata
+CI → ponte → canônico, sem transferir aprovações do SHA anterior. As implementações
+das Fatias 1–4 e decisões funcionais já concluídas permanecem preservadas.
+
+### Evidência anterior à correção
+
+Artefatos baixados por ID e SHA-256 conferido localmente:
+
+| Evidência                | ID            | SHA-256                                                            |
+| ------------------------ | ------------- | ------------------------------------------------------------------ |
+| Baseline somente leitura | `11483854407` | `530acc48253ed6827b03d012c0b678b7b0831cd088974f8a3f897efe232b3560` |
+| Duração                  | `11485000539` | `a26c6d7019d3db4c549022cc25bb51b7bc845291e3f8c17bb58dbf0d24a88a77` |
+
+O baseline conserva deployment `5bd29847-5540-4d42-8fb4-390cf3dd0f3c` e o SHA
+`eb52399252855bfc32b2190ed3bc82803d1420f9`; alias, Pages e snapshot foram validados.
+O run não produziu aprovação terminal, nem prova de recuperação pós-mutação, pois
+a mutação não ocorreu. UAT/rollback e recaptura técnica do catálogo continuam
+pendentes. Sem produção, carga/publicação comercial ou cutover; flag default-off.
 
 ## Retomada após indisponibilidade na leitura do formulário
 

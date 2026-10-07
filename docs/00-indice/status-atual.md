@@ -24,7 +24,30 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Estado vigente após recuperação da leitura do formulário
+## Estado vigente após bloqueio de segurança na dependência de imagens
+
+Em 7 de outubro, a retomada canônica `37626820878` foi interrompida antes do
+deploy pela auditoria de dependências: Sharp 0.35.4 passou a ser classificado como
+vulnerável por `GHSA-wq5f-xc86-pv6w`. Os três alertas altos correspondem à mesma
+cadeia Sharp → Miniflare → Wrangler. Não houve migration, publicação ou mutação
+do backend nessa execução. O watchdog `37627287149` encerrou verde, sem compensação.
+
+A correção mínima `c53d183b8b822e571ab2e5ca7328bead0bba76f4` fixa Sharp 0.35.5
+e seus binários corrigidos, sem atualizar Wrangler ou Node. Auditoria zerada e
+validação integral verde: 225 arquivos/1.471 testes Vitest, contratos/evals,
+lint, tipos e build de 799.039 bytes iniciais. Os novos testes exercitam
+decodificação real SVG e conversão PNG/WebP/AVIF. O novo SHA exige CI,
+pacote selado, ponte e homologação canônica próprios.
+Não reutilizar a aprovação dos bytes anteriores nem refazer as Fatias 1–4.
+
+Staging permanece no deployment `5bd29847-5540-4d42-8fb4-390cf3dd0f3c`, SHA
+`eb52399252855bfc32b2190ed3bc82803d1420f9`, com 116 migrations/0116 e catálogo
+global desligado. Zero produtos/snapshots, leases QA, overrides ativos e concorrência
+confirmados após o encerramento. Chrome, UAT/rollback e recaptura técnica continuam
+pendentes. Sem produção, publicação/carga comercial ou cutover.
+[Diagnóstico e evidências](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado após recuperação da leitura do formulário
 
 O candidato `eb52399252855bfc32b2190ed3bc82803d1420f9` tem CI `37466998968`
 e ponte `37468364236` verdes, com o pacote original `11415657605`, sem rebuild.

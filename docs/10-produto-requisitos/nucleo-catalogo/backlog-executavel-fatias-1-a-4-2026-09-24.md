@@ -8,7 +8,7 @@ fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-10-06
+ultima_revisao: 2026-10-07
 fonte_canonica: gaiatec-documentacao
 ---
 
@@ -49,7 +49,23 @@ CAT-012 continua exigindo Chrome/UAT/rollback. A aprovação não transforma ess
 `done` nem revoga as restrições de carga/publicação/cutover. Itens 17/18 mantêm a ressalva
 documental provisória. [Registro da aprovação](lista-nominal-prioritaria-cat-d009-2026-09-24.md).
 
-## Checkpoint vigente após G11 G12 e ciclo editorial aprovados
+## Checkpoint vigente após a auditoria de imagens
+
+Em 7 de outubro, o canônico `37626820878` do candidato `eb52399` parou antes
+de qualquer deploy: auditoria alta de Sharp por `GHSA-wq5f-xc86-pv6w`.
+Watchdog `37627287149` verde, sem compensação, ambiente preservado e sem resíduos
+ativos. A correção mínima `c53d183b8b822e571ab2e5ca7328bead0bba76f4` fixa
+Sharp 0.35.5; auditoria zerada e regressão real de SVG/PNG/WebP/AVIF aprovadas.
+Validação integral verde, com 1.471 testes Vitest e demais contratos/evals.
+A cadeia remota própria do novo SHA continua obrigatória. Não repetir
+implementações das Fatias 1–4.
+
+CAT-001–010 permanecem `ready-for-gate`; CAT-011 mantém aprovação funcional e
+pendência de recaptura técnica; CAT-012 exige Chrome/UAT/rollback. CAT-D010 continua
+`deferred`. Catálogo global desligado; sem carga/publicação comercial, cutover,
+produção ou fonte mista. [Evidências](registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado após G11 G12 e ciclo editorial aprovados
 
 CMS `5bf1ffc`: CI `37459306938` verde, com 2.207 testes pgTAP; ponte `37460371263`
 verde e pacote original preservado. Migration 0116 aplicada. Canônico `37461954151`
