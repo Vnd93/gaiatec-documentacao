@@ -1,14 +1,14 @@
 ---
 id: gaiatec-catalogo-resiliencia-editorial-seguranca-2026-09-30
 titulo: Resiliência editorial, dependências e G17 canônico em staging
-status: staging-recuperado-assinatura-publica-em-correcao
+status: staging-recuperado-revalidacao-canonica-pendente
 tipo: registro-de-execucao
 area: produto-requisitos
 fase: nucleo-catalogo
 ambiente: staging
 responsavel: Vnd93
 data_criacao: 2026-09-30
-ultima_revisao: 2026-10-06
+ultima_revisao: 2026-10-07
 fonte_canonica: gaiatec-documentacao
 substitui: []
 relacionados:
@@ -20,6 +20,74 @@ relacionados:
 ---
 
 # Resiliência editorial e homologação controlada de staging
+
+## Retomada após indisponibilidade na leitura do formulário
+
+O SHA `eb52399252855bfc32b2190ed3bc82803d1420f9` concluiu a CI
+[37466998968](https://github.com/Vnd93/gaiatec-cms/actions/runs/37466998968)
+em 488 s e a ponte
+[37468364236](https://github.com/Vnd93/gaiatec-cms/actions/runs/37468364236)
+em 732 s, ambos em 6 de outubro. O canônico
+[37470394233](https://github.com/Vnd93/gaiatec-cms/actions/runs/37470394233)
+terminou reprovado às 13:51:10 UTC, após início às 13:23:20 UTC: 1.670 s.
+O relatório de métricas capturou 1.664 s; deploy foi o maior job (1.302 s),
+com G11/G12 como maior step (278 s). Não é uma cadeia verde nem prova do SLO.
+
+O ciclo editorial passou em shell, RBAC, recusa AAL1, versões de formulário,
+blog, campanhas e seus quatro modos de expiração, pré-requisitos PIM sintéticos,
+atomicidade/idempotência e retirada pública. Falhou na leitura após o segundo
+arquivamento do formulário, antes do Chrome. Os logs unificados de staging mostram:
+
+- `cms-leads` HTTP 200 às 13:47:33,783 UTC, duração 2.620 ms;
+  a RPC do ciclo de formulário respondeu 200, com 2.034 ms no upstream.
+- `cms-public` versão 599, HTTP 503 às 13:47:35,989 UTC, duração 2.196 ms,
+  código `EDGE_FUNCTION_ERROR`. Boot em 87 ms; encerramento posterior `EarlyDrop`,
+  CPU 203 ms, memória 24.112.473 bytes, sem evidência de estouro de recurso.
+- Nenhuma chamada à RPC de leitura pública apareceu na janela dessa invocação.
+  O ramo devolve 503 sem registrar a classificação do erro. A evidência isola
+  indisponibilidade de leitura; não prova timeout nem permanência de publicação.
+
+Finalizador e [watchdog 37474097904](https://github.com/Vnd93/gaiatec-cms/actions/runs/37474097904)
+passaram. O relatório editorial conserva três leases limpas e 15 eventos de auditoria.
+A sonda terminal teve 20 amostras por rota, 82 respostas, disponibilidade 100%,
+zero 5xx, p95 público 706,842944 ms, SHA/health/manifest corretos e CSP/noindex presentes.
+
+### Evidências imutáveis e recuperação confirmada
+
+Pacote original `11415657605`, SHA-256
+`b3a3e4791330327d8d2af0b6ab09e8f93f44ac529edcdf3fd9e9aa0b15ccabcf`.
+Prova da ponte `11416480822`, SHA-256
+`65298f5a128a880e4852d0658d46a7ff264e29c2955fe8ff255672c521440416`.
+Artefatos baixados por ID e digest verificado localmente:
+
+| Evidência                             | ID            | SHA-256                                                            |
+| ------------------------------------- | ------------- | ------------------------------------------------------------------ |
+| Ciclo editorial e probes preliminares | `11417533479` | `5d0391164818152c3aaa5d1f3d48c2c88b2a65679ee76823134a34b4f56e9b73` |
+| Sonda terminal                        | `11418022096` | `c58c421d3ab5ea79d7f26ad7d2aed7220f6bf69cc0e25398bd643d210b60ebb1` |
+| Duração                               | `11418127084` | `4db7f4e4e73152c706ac8149e6d95c29617fb3867c4a6a122f0bff63cdd7bd7a` |
+
+Em 7 de outubro, uma sonda somente leitura fez 12 consultas sequenciais ao mesmo
+formulário sintético: todas HTTP 204. Primeira chamada local 3.583 ms; demais
+679–961 ms. Essa amostra confirma recuperação, não substitui as janelas de latência
+do pipeline. Não houve aquecimento seletivo, repetição de comandos ou alteração de prazo.
+Consulta independente confirmou flag global desligada, zero leases QA/overrides ativos,
+zero outros clientes ativos ou esperas de lock; ambos os repositórios sem workflows abertos.
+Permanecem 116 migrations/0116 e zero produtos/snapshots do novo catálogo.
+
+Frontend/health e Cloudflare mantêm SHA exato, deployment
+`5bd29847-5540-4d42-8fb4-390cf3dd0f3c`, marcador `g12-staging-bridge-run-37468364236-1`.
+Pacote não expirado e validador local da ponte aprovados em 7 de outubro.
+Não houve troca de bytes ou novo deployment a exigir outra ponte. A retomada
+prevista é uma única execução canônica com essa CI/ponte, todos os gates dependentes
+revalidados e watcher pronto. Se falhar, preservar o erro e diagnosticar novamente;
+não repetir até verde nem reduzir controles. O run anterior permanece reprovado.
+
+Lacuna de observabilidade registrada para correção mínima posterior: a asserção
+final precisa conservar status/classificação segura, sem corpo bruto ou dados pessoais;
+o ramo de leitura pública precisa de classificação enumerada do erro. Não foi alterado
+o candidato congelado sem evidência suficiente para uma correção funcional.
+Fatias 1–4 e aprovação funcional das 20 linhas preservadas. Chrome, UAT/rollback e
+recaptura técnica continuam pendentes; produção, publicação/carga comercial e cutover proibidos.
 
 ## Consulta pública recuperada e correção mínima de assinatura
 

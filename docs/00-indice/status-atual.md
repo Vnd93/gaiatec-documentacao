@@ -8,7 +8,7 @@ fase: execucao
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-10-06
+ultima_revisao: 2026-10-07
 fonte_canonica: gaiatec-documentacao
 substitui:
   - gaiatec-status-atual-2026-09-06
@@ -24,7 +24,30 @@ relacionados:
 
 # Status atual do site e CMS GAIATEC
 
-## Estado vigente após recuperação da consulta pública
+## Estado vigente após recuperação da leitura do formulário
+
+O candidato `eb52399252855bfc32b2190ed3bc82803d1420f9` tem CI `37466998968`
+e ponte `37468364236` verdes, com o pacote original `11415657605`, sem rebuild.
+O canônico `37470394233` falhou na última leitura do formulário sintético:
+o comando de arquivamento respondeu HTTP 200, mas a consulta pública seguinte
+respondeu 503. O teste não chegou ao Chrome; não há aprovação terminal do release.
+
+Finalizador e watchdog `37474097904` passaram. A sonda terminal mediu 100% de
+disponibilidade, zero 5xx e p95 público de 706,843 ms. Em 7 de outubro, 12 leituras
+consecutivas do formulário retirado retornaram HTTP 204, sem mutação. Conferência
+independente: flag desligada, zero leases QA e overrides ativos, sem concorrência.
+O frontend mantém o deployment `5bd29847-5540-4d42-8fb4-390cf3dd0f3c` e o mesmo SHA.
+
+O pacote não expirou e a prova da ponte foi revalidada contra seus vínculos exatos.
+Próximo passo: uma execução canônica controlada dos gates dependentes do ambiente,
+com watcher prévio para Chrome real. Não refazer CI, ponte ou Fatias 1–4; não
+reclassificar o run reprovado. O 503 está isolado na leitura pública, mas sua causa
+interna não foi registrada pelo ramo de erro; timeout permanece hipótese, não fato.
+Catálogo aprovado funcionalmente, default-off; UAT/rollback e recaptura técnica
+continuam pendentes. Sem carga/publicação comercial, cutover ou produção.
+[Evidências e limites do diagnóstico](../10-produto-requisitos/nucleo-catalogo/registro-resiliencia-editorial-seguranca-2026-09-30.md).
+
+## Checkpoint preservado após recuperação da consulta pública
 
 O candidato `5bf1ffc5de7c774da7d7f99582df629c1c5e89d8` passou na CI
 `37459306938` (69 arquivos SQL, 2.207 testes pgTAP) e na ponte `37460371263`,
