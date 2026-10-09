@@ -8,7 +8,7 @@ fase: execucao
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-10-07
+ultima_revisao: 2026-10-09
 fonte_canonica: gaiatec-documentacao
 substitui:
   - gaiatec-status-atual-2026-09-06
@@ -23,6 +23,36 @@ relacionados:
 ---
 
 # Status atual do site e CMS GAIATEC
+
+## Estado vigente — entrega vazia para operação manual
+
+Retomada em 9 de outubro: candidato de diagnóstico
+`add1312b1edbc4f9ac8de4d653754c11993fcc9a`, validação local integral verde
+(227 arquivos/1.543 testes Vitest, contratos, segurança, lint, tipos e build).
+O Worker distingue HTTP/timeout/transporte somente em falhas públicas de staging,
+com vocabulário limitado e isolamento por requisição. Não altera status, tentativas
+ou deadlines. Isso fecha a lacuna de observabilidade, **não comprova a causa do 503**.
+O deploy e a homologação deste novo SHA ainda dependem da CI e dos artefatos selados.
+Estado vivo anterior reconfirmado: alias `41fb747e`, SHA `aab0b27`, saúde HTTP 200,
+116 migrations, zero produtos/leases QA/overrides ativos e flag global desligada.
+
+Escopo confirmado: funcionalidades administrativas, catálogo manual e editorial;
+sem carga de produtos/SKUs/dados comerciais, flag global off, apenas staging.
+Recaptura da lista nominal não bloqueia esta entrega vazia. Implementado não significa
+homologado: CAT-001–010 continuam `ready-for-gate`; CAT-012 exige Chrome/UAT/rollback.
+[Inventário de implementado, validado e pendente](../10-produto-requisitos/nucleo-catalogo/backlog-executavel-fatias-1-a-4-2026-09-24.md).
+
+GitHub reconfirmado: bridge `37653825738/2` verde com produtor `/1` e artefatos
+originais; canônico `37868132027/1` reprovado por documento mobile HTTP 503 em
+`/industrias/instrumentacao`. Finalizador e watchdog `37870009505` verdes.
+Recuperação comprovada, alias original preservado, saúde ready e zero resíduos ativos.
+O teste focado posterior passou; a causa histórica continua sem comprovação.
+Diagnóstico seguro de Worker/documento é a próxima correção mínima, sem alterar
+timeouts, aceitar 503 ou repetir releases às cegas. Chrome terminal ainda pendente.
+
+Checkouts limpos/sincronizados e GitHub `Vnd93` confirmados antes da implementação.
+Produção, publicação comercial e cutover não autorizados. Os checkpoints abaixo
+permanecem como histórico, não como estado vigente ou nova exigência de carga.
 
 ## Estado vigente após diagnóstico do cancelamento de leitura redundante
 

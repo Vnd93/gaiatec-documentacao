@@ -8,11 +8,63 @@ fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-10-07
+ultima_revisao: 2026-10-09
 fonte_canonica: gaiatec-documentacao
 ---
 
 # Backlog executável das Fatias 1–4
+
+## Escopo vigente — sistema vazio para operação manual, 8 de outubro
+
+A instrução atual do responsável é entregar o sistema para que ele faça a operação e
+os cadastros. Não carregar produtos, SKUs, importações ou dados comerciais. Manter
+a flag global desligada; migrations/deploys somente em staging. Produção e cutover
+continuam proibidos. Esta decisão prevalece para a entrega atual sobre a recaptura
+da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
+CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
+carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
+
+| Área                      | Implementado                                               | Validado reutilizável                                                                 | Pendente para entrega homologada                                                         |
+| ------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Fundação e permissões     | CAT-001–004, RPCs de workspace/comando, capacidades e CAS  | CI do SHA `aab0b27`, testes locais/contratuais e banco; migrations 0116 em staging    | Chrome autenticado: operador/admin, negações e conflitos                                 |
+| Cadastro manual e revisão | Produtos/modelos/variantes, histórico, estados e snapshots | Testes de contrato, componentes e pgTAP do candidato                                  | Ciclos reais criar/editar/revisar com fixture sintética isolada e recuperação durável    |
+| Relações e classificação  | CAT-008–009, kits, herança, ciclos e exclusões             | Contratos e pgTAP; não equivalem a UAT                                                | Chrome: relações, origem herdada, quantidades/unidades e mensagens de erro               |
+| Editorial                 | CAT-010, termos, rascunhos, noindex e indexação separada   | Componentes/contratos/pgTAP; flag global off                                          | Chrome e backend real: validação, revisão e páginas opt-in isoladas                      |
+| Estados vazios            | Tela de preparação com flag off                            | Observação autenticada em Chrome no SHA `aab0b27`                                     | Workspace opt-in vazio, formulários inválidos e falhas sem perda de edição               |
+| Release/rollback          | DAG, artefato único, fences, finalizador e watchdog        | Bridge `37653825738/2`, produtor original `/1`; recuperação do canônico `37868132027` | Resolver diagnóstico 503; novo SHA exige cadeia própria; Chrome/UAT e terminal verde     |
+| Limpeza de catálogo QA    | Infraestrutura geral de lease/recovery existente           | Zero produtos, overrides e leases ativos após recuperação                             | Provar cobertura específica de `cms_catalog_*` antes de criar qualquer fixture hospedada |
+
+Nenhuma linha acima está homologada somente por existir código ou teste automatizado.
+CAT-001–010 permanecem `ready-for-gate`; CAT-012 exige UAT/rollback/resíduo zero.
+Não reimplementar as Fatias 1–4 nem criar exigência de dados comerciais para testar os formulários.
+
+### Checkpoint confirmado e lacuna de diagnóstico
+
+Em 9 de outubro, a retomada preservou o estado e produziu o candidato diagnóstico
+`add1312b1edbc4f9ac8de4d653754c11993fcc9a`. Validação integral local aprovada:
+227 arquivos/1.543 testes Vitest, contratos/evals, segurança, lint, tipos e build
+(25,78 s; 799.883 bytes iniciais). O diagnóstico distingue HTTP/timeout/transporte
+apenas no documento público reprovado em staging, sem alterar gates, limites ou
+tentativas, nem expor payloads/credenciais. A causa histórica permanece não comprovada;
+CI, promoção dos bytes selados e homologação do novo SHA continuam pendentes.
+
+Em 8 de outubro (horário de Brasília), o GitHub confirmou a bridge
+`37653825738/2` verde, preservando o produtor `/1` e o pacote original. O canônico
+`37868132027/1` falhou no documento mobile de `/industrias/instrumentacao`, HTTP 503
+em vez de 200. Finalizador e watchdog `37870009505` passaram; não houve desafio Chrome.
+Terminal `11589469665`, SHA-256
+`c4c4023499ea4a763c8c5286215dfbabcca3932ba20a2098a1f1e2ecbf91cd30`:
+82 respostas, 100% disponíveis, zero 5xx, p95 662,48 ms e SHA exato.
+
+As 12 sondagens posteriores da rota e a reprodução mobile focada passaram, mas não
+provam a causa da falha. A janela consultada no backend não apresentou 5xx. Faltam
+headers diagnósticos do documento reprovado e a distinção Worker entre timeout,
+rejeição de transporte e resposta HTTP. O diagnóstico direcionado deve preservar
+status, limites e tentativas; não autoriza retry cego do release nem marca a falha resolvida.
+
+Estado remoto reconferido: candidato `aab0b27a4899ab0d9a7bc84a6f10d2512019d233`,
+alias `41fb747e-0003-4d33-83d8-e02b723584e9`, saúde ready, 116 migrations,
+zero produtos/overrides/leases QA ativos, flag global off e ausência de operações concorrentes.
 
 O backlog é ordenado por dependência e fail-closed. Nenhum item cria SKU, preço, estoque,
 disponibilidade, importação em massa ou leitura composta do legado. Cada item só pode ser marcado
