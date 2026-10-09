@@ -8,7 +8,7 @@ fase: nucleo-catalogo
 ambiente: staging
 responsavel: Vnd93
 data_criacao: 2026-09-29
-ultima_revisao: 2026-09-29
+ultima_revisao: 2026-10-09
 fonte_canonica: gaiatec-documentacao
 substitui: []
 relacionados:
@@ -20,6 +20,51 @@ relacionados:
 ---
 
 # Modelo gratuito: inferência real validada, release ainda bloqueado
+
+## Atualização de 9 de outubro — disponibilidade expirada
+
+A inferência de setembro abaixo é histórica, não prova disponibilidade atual.
+O canônico [37939241290/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/37939241290)
+falhou em 27 s no G17: `CMS_AI_PROVIDER_UNAVAILABLE` /
+`OPENROUTER_NO_ALLOWED_PROVIDER` para Sante, preservando o cadastro manual.
+Rotas públicas/mobile passaram; isso não comprova a causa do 503 histórico em
+`/industrias/instrumentacao`. Não houve challenge Chrome nem aprovação terminal.
+Finalizador e [watchdog 37942386716](https://github.com/Vnd93/gaiatec-cms/actions/runs/37942386716)
+concluíram verdes. Catálogo global off, zero produtos e resíduos operacionais ativos.
+
+Evidência terminal `11622660242`, SHA-256
+`64a9e70611e5e5b8d0a5bbab2a1ef614bd2ec1bad4738bf6b414c8765ed9fcb9`;
+métricas `11622685302`, SHA-256
+`06eb5c15d239054801f582a9da5d3b09dfe6f21bf38b2cb0fdeed281c419e9f4`.
+Ambos baixados e conferidos. Duração observada 1.526 s, não caminho feliz;
+deploy 1.052 s; maior etapa individual: três janelas G12, 293 s.
+Sonda terminal 82 respostas, disponibilidade 100%, zero 5xx, p95 632,880 ms.
+
+Dentro da autorização de substituição gratuita, foi identificado
+`apodex/apodex-1.1-mini:free`: modalidade texto, endpoint Novita, status 0,
+prompt/completion zero, sem caching implícito e presente na
+[lista oficial ZDR](https://openrouter.ai/api/v1/endpoints/zdr).
+A [API específica do modelo](https://openrouter.ai/api/v1/models/apodex/apodex-1.1-mini%3Afree/endpoints)
+confirma suporte aos parâmetros utilizados. Não foi chamada inferência com
+credencial local, nem comprados créditos ou habilitado fallback pago.
+**A alternativa ainda não está homologada por inferência real.**
+
+Correção CMS `d45dba3305c9697e201356197d0aba5817222595`, 22 arquivos próprios.
+Validação integral local verde: 228 arquivos/1.550 testes Vitest, contratos,
+avaliações, lint, tipos, build de 19,65 s e 799.883 bytes iniciais.
+Compatibilidade código/bundle aprovada em 117 assets JavaScript. SQL depende
+da CI: Docker não está disponível neste host. Nenhum teste remoto é presumido.
+Migration 0117, SHA-256
+`9f391f302a4eabc63c754a7de7f5ec83b835f88df11a096d2478ca5d20b1cbc5`.
+
+Preparação local: migration aditiva 0117 e policy v5 limitada a local/staging,
+CAS sobre Sante/v4, histórico imutável preservado e bridge de leitura com
+cinco modelos antes da mudança do backend. Produção, catálogo global e budgets
+inalterados. As skills Supabase orientaram consulta atual ao changelog/docs,
+criação da migration pelo CLI pinado e preservação dos privilégios existentes.
+O nome gerado pelo CLI foi normalizado para a sequência contígua obrigatória
+do repositório, sem alterar migrations anteriores. Gates remotos do novo SHA,
+Chrome/UAT e recuperação do catálogo permanecem pendentes.
 
 ## Autorização e resultado correto
 

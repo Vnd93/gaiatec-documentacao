@@ -32,9 +32,23 @@ Retomada em 9 de outubro: candidato de diagnóstico
 O Worker distingue HTTP/timeout/transporte somente em falhas públicas de staging,
 com vocabulário limitado e isolamento por requisição. Não altera status, tentativas
 ou deadlines. Isso fecha a lacuna de observabilidade, **não comprova a causa do 503**.
-O deploy e a homologação deste novo SHA ainda dependem da CI e dos artefatos selados.
-Estado vivo anterior reconfirmado: alias `41fb747e`, SHA `aab0b27`, saúde HTTP 200,
-116 migrations, zero produtos/leases QA/overrides ativos e flag global desligada.
+A CI `37934288884/1` e a ponte `37935408250/1` concluíram verdes, com o
+pacote original `11617434200` e os mesmos bytes selados, sem rebuild.
+O canônico `37939241290/1` passou nas rotas públicas/mobile, mas falhou no G17:
+`cms-ai` retornou 503/`OPENROUTER_NO_ALLOWED_PROVIDER`. A causa desta falha
+é a indisponibilidade do modelo gratuito Sante sob a política exigida; é distinta
+do 503 histórico de documento, cuja causa continua não comprovada.
+Finalizador e watchdog `37942386716` verdes, artefatos terminais verificados.
+Estado vivo: deployment `844802d1-1505-40e2-ba9b-1998bba854da`, mesmo SHA
+`add1312`, saúde ready/HTTP 200, 116 migrations, zero produtos/leases QA/overrides
+ativos e flag global desligada. Sonda terminal: 82 respostas, 100% disponibilidade,
+zero 5xx, p95 632,880 ms. Chrome terminal ainda não foi alcançado.
+
+Em preparação local: sucessor gratuito `apodex/apodex-1.1-mini:free`, endpoint
+Novita listado com preço zero e ZDR em 9 de outubro. Elegibilidade pública não
+é inferência homologada. A transição aditiva 0117 mantém as quatro policies
+históricas, MFA/AAL2, RLS, auditoria, preço zero, coleta proibida e ZDR.
+O novo candidato depende de validações, CI, ponte e canônico próprios.
 
 Escopo confirmado: funcionalidades administrativas, catálogo manual e editorial;
 sem carga de produtos/SKUs/dados comerciais, flag global off, apenas staging.
@@ -47,8 +61,9 @@ originais; canônico `37868132027/1` reprovado por documento mobile HTTP 503 em
 `/industrias/instrumentacao`. Finalizador e watchdog `37870009505` verdes.
 Recuperação comprovada, alias original preservado, saúde ready e zero resíduos ativos.
 O teste focado posterior passou; a causa histórica continua sem comprovação.
-Diagnóstico seguro de Worker/documento é a próxima correção mínima, sem alterar
-timeouts, aceitar 503 ou repetir releases às cegas. Chrome terminal ainda pendente.
+Diagnóstico seguro de Worker/documento já implementado e validado; a próxima
+correção bloqueante é o modelo gratuito de IA, sem alterar timeouts, aceitar
+503 ou repetir releases às cegas. Chrome/UAT do catálogo ainda pendentes.
 
 Checkouts limpos/sincronizados e GitHub `Vnd93` confirmados antes da implementação.
 Produção, publicação comercial e cutover não autorizados. Os checkpoints abaixo
