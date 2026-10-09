@@ -24,6 +24,37 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
+### Estado real de 9 de outubro — após recuperação do candidato `d45dba3`
+
+O inventário abaixo preserva as funcionalidades já implementadas. Sua evidência automatizada
+mais recente é a CI `37945245618/1`, sete jobs verdes no SHA
+`d45dba3305c9697e201356197d0aba5817222595`, incluindo reset isolado e pgTAP reais.
+Isso atualiza a referência histórica `aab0b27` da matriz; não homologa os ciclos de operação.
+
+A bridge `37946920054/1` passou promovendo o pacote original `11623766117`, produtor `/1`,
+sem rebuild. Alias staging `9c192362-5abf-465f-89f6-c162d711b142`, SHA exato.
+O canônico `37948954408/1` falhou em quatro documentos `/`, no G12/G11 de acessibilidade,
+antes do G17 e do desafio Chrome. O Worker registrou `page-by-path;timeout;2;503;2900`;
+as 90 invocações `cms-public` da janela consultada responderam 200. Não há correlação
+requisição a requisição suficiente para atribuir a causa a backend, transporte ou roteamento.
+O teste focado posterior, sem retry, passou (7 testes, 1 skip, 31 s): não é correção comprovada.
+
+Finalizador e watchdog `37951272508` passaram. Prova terminal `11625184206`, SHA-256
+`6a93c8a176be070f02283cd82eafff72a0adb55107fd42385b36ef7f7a6a228e`:
+82 respostas, 100% disponíveis, zero 5xx, p95 783,10 ms. Saúde ready no SHA exato,
+117 migrations, zero leases/overrides QA ativos e zero produtos, flag global desligada.
+O novo modelo gratuito Apodex mantém ZDR/coleta proibida, mas sua inferência real ainda
+não foi alcançada pelo canônico e permanece pendente; não substituir esse gate por elegibilidade.
+
+Próximo trabalho bloqueante: diagnóstico mínimo e restrito a staging com marcador aleatório
+por requisição/tentativa, horários de início/fim no backend e horário de observação da falha.
+Sem payloads, credenciais, identificadores pessoais ou alteração de status, timeouts/retries/gates.
+Novo código/SHA exige novas evidências dos bytes alterados; não repetir release buscando verde.
+Após resolver a falha, permanecem: recuperação/limpeza específicas de `cms_catalog_*` antes
+de qualquer fixture hospedada, Chrome real autenticado com backend real, permissões/AAL2/RLS,
+operações manuais/editoriais/relações, rollback e resíduo zero. CAT-001–010 não devem ser refeitos.
+Produção permanece intocada; nenhuma carga comercial foi realizada.
+
 | Área                      | Implementado                                               | Validado reutilizável                                                                 | Pendente para entrega homologada                                                         |
 | ------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | Fundação e permissões     | CAT-001–004, RPCs de workspace/comando, capacidades e CAS  | CI do SHA `aab0b27`, testes locais/contratuais e banco; migrations 0116 em staging    | Chrome autenticado: operador/admin, negações e conflitos                                 |
