@@ -24,7 +24,47 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Estado real de 9 de outubro — após recuperação do candidato `d45dba3`
+### Checkpoint de 9 de outubro — diagnóstico ativo e corrida editorial comprovada
+
+O candidato `ca8bbb5c98a7b98092c433f5f9992715b180fe2c` acrescentou correlação
+restrita a staging, sem mudar timeouts, retries, respostas ou controles. A CI
+`37954244582/1` passou nos sete jobs. A bridge `37955364021/1` promoveu os mesmos
+bytes do pacote original `11627343555`, sem rebuild, ao deployment
+`98c11bf5-1f64-4410-9d7a-45470fa2b1f4` do alias staging. O marcador permite
+correlacionar documento e tentativas com início/fim no backend; 129 inícios e 129
+términos foram observados no SHA exato, sem conteúdo sensível. Isso não comprova
+a causa do HTTP 503 histórico.
+
+O canônico `37957485073/1` passou no G12, incluindo 29 checks herdados, segurança e
+restore; nas 47 regressões públicas/mobile/acessibilidade; e no G17 com inferência
+real `apodex/apodex-1.1-mini:free`, 12 checks, sem dados reais ou mutação de produção.
+Falhou depois no ciclo editorial, antes do Chrome real. Causa comprovada por
+receipt/auditoria do mesmo fixture: agendado para `16:35:01Z`, publicado pelo
+scheduler às `16:35:03.405926Z`; o teste tentou publicar novamente às
+`16:35:04.148Z` e recebeu `CMS_SCHEDULE_NOT_DUE`. Não é falha do scheduler.
+A correção mínima em validação local substitui a espera fixa/mutação duplicada por
+polling somente leitura de publicação, projeção e auditoria da revisão exata,
+backoff/saída antecipada e o mesmo orçamento de 7,5 segundos. Não aceita erro como
+sucesso nem desliga o worker. Um novo SHA exigirá revalidar seus gates dependentes.
+
+Finalizador e watchdog `37960580623` passaram. Artefatos locais com ZIP SHA-256
+verificado: terminal `11629828684`,
+`914cae1f18537c9709ab139a971efaedc9a0cf9e537170b9962a679a532aea35`;
+métricas `11630708307`,
+`fbd0acad32b3b4875749e28ce8351dc6a801a41d402ffaed53abd433b7bb25f0`;
+preliminar `11629793508`,
+`d82cb7f04500de23eb3380c416cd83d838250b8351da855bad70a052c70901e2`.
+Probe terminal: 100% disponível, zero 5xx, p95 552,22 ms. Estado real após
+recuperação: 117 migrations, zero leases/overrides QA ativos, zero produtos,
+flag global desligada, zero operação concorrente ou fence. Produção intocada.
+
+Permanecem pendentes a recuperação/limpeza específicas do catálogo antes de
+fixtures hospedadas e a homologação operacional completa em Chrome real,
+com permissões, AAL2/RLS, relações/editorial, rollback e resíduo zero.
+Não declarar o sistema pronto nem repetir CAT-001–010. O checkpoint abaixo é
+histórico; sua pendência de inferência foi superada pelo G17 no SHA `ca8bbb5`.
+
+### Estado histórico de 9 de outubro — após recuperação do candidato `d45dba3`
 
 O inventário abaixo preserva as funcionalidades já implementadas. Sua evidência automatizada
 mais recente é a CI `37945245618/1`, sete jobs verdes no SHA
