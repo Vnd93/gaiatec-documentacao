@@ -24,7 +24,58 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint de 9 de outubro — diagnóstico ativo e corrida editorial comprovada
+### Checkpoint vigente de 9 de outubro — correção do driver de homologação agendada
+
+A CI `37961897229/1` e a bridge `37963052476/1` passaram no SHA
+`fab55ea96c7addd1d7e6eb6cd55004e9a2ec1d9d`, preservando o pacote original
+`11632136766` e seus bytes. O canônico `37964938551/1` passou no G12,
+nas regressões públicas/mobile/acessibilidade e no canário autenticado G17;
+falhou no ciclo editorial com `G7_SCHEDULED_PUBLICATION_READ_FAILED:projections`,
+antes de emitir o challenge Chrome. Não há homologação final neste SHA.
+
+Finalizador e watchdog `37967994398` passaram. ZIPs locais conferidos por SHA-256:
+terminal `11634227921`,
+`13e47eb1b82e071aa283f0298902a79563ef5fff48357744e2cca3026e5bc130`;
+métricas `11634003251`,
+`b047f7a0f8e0e3a84b003d164f7f63ecff679246b33807c73c2b16ae66c60617`;
+preliminar `11633573490`,
+`05b7d0d6051cf242a0afb5eea9a968c57ac277f5b6a93fa1b09bc0889e01e6d2`.
+Probe terminal: disponibilidade 100%, zero 5xx, p95 619,52 ms. Recuperação:
+117 migrations, zero leases/overrides QA ativos, zero produtos, flag global OFF,
+nenhum workflow/fence/deploy concorrente; alias no deployment
+`75256b41-16af-4fef-8554-244e7a635e16`, SHA exato. Produção intocada.
+
+A conferência somente leitura confirmou o cron real `*/5 * * * *`, a existência
+da projeção e sua permissão de leitura; uma consulta REST restrita retornou 200.
+A correção anterior passou a depender de um cron de cinco minutos dentro de
+7,5 segundos e compartilhou esse prazo com todas as leituras: desenho inadequado
+do teste. O erro preservado não identifica a causa individual da leitura,
+portanto não será apresentado como prova de falha de permissão ou do backend.
+
+A correção mínima em validação mantém o orçamento de espera de 7,5 segundos,
+observa o vencimento pelo relógio do servidor e conduz no máximo uma chamada da
+RPC existente, protegida por locks, apenas para o fixture exato ainda agendado.
+Se o scheduler publicar antes, nenhuma mutação é necessária. Se vencer a corrida
+após a leitura, somente `23514/CMS_SCHEDULE_NOT_DUE` permite conferir evidência
+independente: item publicado, publicação/projeção da revisão exata e uma auditoria
+de publicação agendada. O erro nunca é a prova de sucesso; qualquer outra falha
+ou evidência incompleta bloqueia. Não há retry de mutação, mudança de SQL/worker,
+relaxamento de gates ou aumento de timeout; os requests antes sem limite passam
+a ser limitados a cinco segundos. Diagnóstico de leitura registra apenas códigos
+fechados e deadline, sem payloads. Correção CMS
+`981b0288791ed592dabf0300551695b890d6a8d0`, três arquivos próprios, 195 inserções e
+41 remoções. Os 24 testes focados e `npm run check` passaram: 229 arquivos/1565
+testes Vitest, contratos, segurança, evals, lint/types e build de 19,35 segundos;
+799883 bytes nos quatro chunks iniciais. Validação documental: 303 documentos,
+477 links, zero padrões sensíveis. CI, pacote novo e gates dependentes ainda
+estão pendentes; o build local não será usado como substituto do pacote selado.
+
+Continuam pendentes a recuperação específica dos fixtures de catálogo e CAT-012
+em Chrome real autenticado/backend real. Não repetir CAT-001–010 nem considerar
+CI, bridge ou canário como entrega homologada. A causa do 503 histórico continua
+sem comprovação; sua correlação direcionada está implementada, não é uma cura comprovada.
+
+### Checkpoint histórico de 9 de outubro — diagnóstico ativo e corrida editorial comprovada
 
 O candidato `ca8bbb5c98a7b98092c433f5f9992715b180fe2c` acrescentou correlação
 restrita a staging, sem mudar timeouts, retries, respostas ou controles. A CI
