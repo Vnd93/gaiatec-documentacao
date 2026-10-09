@@ -24,7 +24,50 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 9 de outubro — correção do driver de homologação agendada
+### Checkpoint vigente de 9 de outubro — ciclo agendado aprovado e seletor de serviço
+
+A CI `37969392398/1` passou nos sete jobs para
+`981b0288791ed592dabf0300551695b890d6a8d0`. A bridge `37970477369/1` promoveu
+os bytes originais selados do pacote `11634688217`, sem rebuild, ao deployment
+`5042f373-9015-4db2-ae5c-624d85c83cbd`. O canônico `37972107754/1` passou no
+G12, nas regressões públicas/mobile/acessibilidade, CSP, G17, ciclo editorial
+agendado corrigido, fronteiras e gates pós-deploy somente leitura. O relatório
+editorial registra 14 evidências e limpeza de três leases, com auditoria preservada.
+
+O gate posterior de criação editorial autenticada falhou antes do challenge Chrome:
+o helper tentou preencher **Categoria do serviço** como `datalist`, mas o editor
+real usa `select` de vocabulário controlado. A mensagem exata foi
+`Categoria do serviço: campo controlado sem datalist.`. Os códigos de prontidão do
+consumidor presentes no shell não são a causa desta falha. Não houve atestação Chrome.
+
+Finalizador e watchdog `37976261490` passaram. Três ZIPs locais conferidos:
+terminal `11639191168`,
+`974afb20a425b1ddb2e9da68863e964fdb8f226cab00c755c5c824768573f169`;
+métricas `11638582205`,
+`8e613fa2a10c3aa6c9a7f2617fb8bfcde920ec6d321715743102b4cb23d81a88`;
+preliminar `11638765454`,
+`a99e59c0cdd8ef089040ad3d711656c5b8be4a5a907fdc583376dfa6fac9365d`.
+Probe terminal aprovado: disponibilidade 100%, zero 5xx, p95 695,93 ms.
+Estado recuperado: 117 migrations, zero leases/overrides ativos, zero produtos,
+flag global OFF, alias original preservado, zero workflows/fences/deploys ativos.
+Inventário Cloudflare completo: 647 deployments. Produção intocada.
+Duração canônica: 2143 segundos; estágio mais longo `deploy`, 1423 segundos;
+passo mais longo G12, 293 segundos. Isso não é tempo de uma entrega homologada.
+
+A correção mínima CMS `48481d7c1f7c9f2d9a59e1bebefeeec12495c409` altera somente
+o teste E2E e acrescenta um contrato de regressão: seleciona opção não vazia e
+habilitada no `combobox` real, exige disponibilidade e confirma o valor selecionado.
+Não altera UI, segurança, SQL, runtime ou timeouts. Sete testes direcionados e
+`npm run check` passaram: 230 arquivos/1566 testes Vitest, contratos, segurança,
+evals, formatação, lint/types; build 19,49 segundos, quatro chunks iniciais/799883 bytes.
+CI, pacote selado e homologação dependentes do novo SHA ainda estão pendentes.
+
+CAT-012 e a recuperação específica dos fixtures de catálogo permanecem pendentes.
+CAT-001–010 não serão repetidos. Nenhum dado comercial será carregado; flag global
+OFF e produção sem alterações. O 503 histórico continua sem causa comprovada:
+os gates que passaram neste run não autorizam declarar essa causa corrigida.
+
+### Checkpoint histórico de 9 de outubro — correção do driver de homologação agendada
 
 A CI `37961897229/1` e a bridge `37963052476/1` passaram no SHA
 `fab55ea96c7addd1d7e6eb6cd55004e9a2ec1d9d`, preservando o pacote original
@@ -60,8 +103,8 @@ após a leitura, somente `23514/CMS_SCHEDULE_NOT_DUE` permite conferir evidênci
 independente: item publicado, publicação/projeção da revisão exata e uma auditoria
 de publicação agendada. O erro nunca é a prova de sucesso; qualquer outra falha
 ou evidência incompleta bloqueia. Não há retry de mutação, mudança de SQL/worker,
-relaxamento de gates ou aumento de timeout; os requests antes sem limite passam
-a ser limitados a cinco segundos. Diagnóstico de leitura registra apenas códigos
+relaxamento de gates ou aumento de timeout; as leituras de prova e a RPC antes sem
+limite passam a ser limitadas a cinco segundos. Diagnóstico de leitura registra apenas códigos
 fechados e deadline, sem payloads. Correção CMS
 `981b0288791ed592dabf0300551695b890d6a8d0`, três arquivos próprios, 195 inserções e
 41 remoções. Os 24 testes focados e `npm run check` passaram: 229 arquivos/1565
