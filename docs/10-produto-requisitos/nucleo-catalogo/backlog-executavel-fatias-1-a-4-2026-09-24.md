@@ -24,7 +24,36 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro — timeout na publicação de produto sintético
+### Checkpoint vigente de 10 de outubro — preview interrompido antes da publicação
+
+A CI `38022148808/1` passou nos sete jobs para
+`3279fcaa2a6408765af9d87f6ade221239e87869`, incluindo o diagnóstico de atividade
+editorial. O bridge `38022718781/1` falhou no probe do preview sobre o backend
+atual: 82 respostas, disponibilidade 98,7805%, um 5xx, `/contato` com 95% de
+disponibilidade e máximo 2933,92 ms. Não ocorreu troca do backend legado nem
+publicação sintética; o novo observador editorial ainda não foi exercitado nesse
+fluxo. O agregado não preservou o status exato nem o trace da resposta incidente;
+**não comprova a causa do 503 histórico nem do timeout editorial**.
+
+Watchdog `38023219229` aprovado. A compensação terminou em `restored`, sem tocar
+produção, preservando o deployment `f389dfab-7dff-4c08-bab1-9ead8911522d` e o SHA
+`050ea9a5f4fcd878b6c6f092c8a4a91b781116a2`. ZIPs verificados antes da extração:
+relatórios `11659635043`,
+`a1350279312b0fa4c61b9bd03824977dc8d51cb060b3201f0e21668fb5bb889b`;
+métricas `11659580170`,
+`c0a6bbc3ea18e1aee9153fd27fe47a3cd3a378148109b37418168385d2fca852`;
+compensação `11658984556`,
+`fde018ac8096824560e2f60082bb4bb5d9a70c9744938a75f4f926b4b7cd70aa`.
+
+Conferência atual: zero operações concorrentes nos cinco estados ativos em ambos
+os repositórios, zero fences, 663 deployments Cloudflare únicos/nenhum ativo,
+health pronto no baseline exato, zero leases/overrides ativos e produtos; flag
+global OFF. Próxima alteração mínima: configurar e preservar o diagnóstico
+detalhado do preview e validar estritamente os headers de correlação que o Worker
+já emite em staging. Não aumentar retries/timeouts nem aceitar o erro. CAT-001–010
+continuam implementados, não homologados; CAT-011 fora do escopo e CAT-012 pendente.
+
+### Checkpoint histórico de 10 de outubro — timeout na publicação de produto sintético
 
 CI `38018214388/1` aprovada nos sete jobs para
 `050ea9a5f4fcd878b6c6f092c8a4a91b781116a2`; bridge `38018747875/1`
