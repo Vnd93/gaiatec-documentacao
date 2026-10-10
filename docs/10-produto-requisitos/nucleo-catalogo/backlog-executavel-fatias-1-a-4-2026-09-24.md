@@ -54,6 +54,16 @@ no SHA exato, zero leases/overrides ativos e produtos, flag global OFF.
 
 Próxima mudança mínima: preservar correlação sanitizada dos GETs documentais
 existentes, sem novas requisições, retries, timeouts ou alteração de gates.
+Driver implementado em `bcb220c385e9ac31cf26e4100705e61071394e10`, check completo
+aprovado e CI `38027570086/1` aprovada nos sete jobs. Ainda não promovido.
+A investigação de código confirmou outra lacuna: `/blog/:slug` usa `post-detail`,
+ausente da lista de trace Worker/backend; `campaign-by-path` tinha a mesma lacuna.
+O complemento `9e94d1e9e0095f455ab2891ed169399420022985` amplia somente a correlação staging dessas duas leituras,
+sem alterar a classificação pública `other` nem a política de requisições.
+Não é correção comprovada da causa do 503. A documentação atual de logging e o
+changelog Supabase foram consultados; nenhum endpoint removido de logs foi introduzido.
+Check local completo aprovado: 232 arquivos/1589 testes Vitest e todos os contratos,
+segurança, lint, tipos e build. Ainda depende de CI, artefatos exatos e validação staging.
 Chrome real não foi alcançado. CAT-001–010 continuam implementados, não
 homologados; CAT-011 fora do escopo e CAT-012 pendente. Produção intocada.
 
