@@ -24,7 +24,63 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro sobre a falha e a recuperação editorial
+### Checkpoint vigente de 10 de outubro sobre a correlação da leitura editorial
+
+CI `38032919187/1` aprovada nos sete jobs para
+`7b4a17d0d6394b50dccdc5ec77218dca617cd33e`. Bridge `38033671093/1` aprovado,
+preservando o produtor e o pacote original `11662348117`, digest
+`19d660fc33c66c93a859297ae6853146c29595ba1a0dc31fc6011c69d2b7ec54`.
+Deployment canônico `50179635-48f2-47b9-bbe1-3d03a1c73875`, no SHA exato;
+validador oficial aprovado e backend legado restaurado, sem rebuild.
+Promoção: 521 s, contra 760 s no checkpoint anterior; a comparação não
+comprova por si só melhora causada pela mudança. Produção permanece intocada.
+
+Validação canônica `38034385832/1` falhou no artigo arquivado. A correção do
+relatório foi comprovada: lifecycle com 8433 bytes, status failed, oito
+diagnósticos documentais e sete de publicação preservados, sem aceitar o 503.
+Limpeza: três leases de atores encerrados e 15 eventos imutáveis de auditoria
+retidos. Finalizador aprovado e watchdog `38035859209` concluído com sucesso.
+
+O documento começou às 07:47:36,942Z e respondeu 503 às 07:47:41,991Z,
+com TTFB 5049,451 ms. O Worker registrou uma tentativa, timeout e duração
+5009 ms. O trace técnico `c50f1dbf-b4f2-4bdf-9787-f8991773e84a.1`
+correlaciona a chamada exata com `post-detail`: início da função às
+07:47:37,282Z e término 404 às 07:47:44,129Z, duração 6848 ms. Assim,
+o backend respondeu depois do limite do Worker. Ainda não há correlação
+unívoca com a consulta PostgREST nem distinção entre headers e corpo da
+resposta; não atribuir o incidente a SQL, região ou à causa do 503 mobile
+histórico. Não aumentar prazos, aceitar erros nem repetir releases às cegas.
+
+ZIPs verificados antes da extração: terminal `11664476482`,
+`2fbade89269e709443bed192b62a5b37551449c21d0055dfb51deaa6c3889735`;
+preliminar `11663955772`,
+`1215a6fceef213b6134e01ef484ef11c41a81448bc61ce94dcd9da7dbe4ded96`;
+métricas `11663497104`,
+`2b30ef6f375e9697f4bad8f8a1ceff92fd89c4b84f8c30da3ce74ca048e1169d`.
+Probe terminal: 82 respostas, 100% de disponibilidade, zero 5xx, p95
+524,974 ms. Deploy: 1189 s; três janelas G12: 285 s. Esses resultados
+comprovam recuperação, não homologação do sistema.
+
+Retomada confirmou Vnd93, main limpa e sincronizada nos dois repositórios,
+handoff explícito do mesmo holder, zero operações concorrentes e fences,
+678 deployments únicos sem operação ativa, zero leases QA e overrides
+ativos, zero produtos e flag global OFF. Diagnóstico mínimo local em
+validação: somente a leitura GET da projeção de artigo em staging, com
+SHA e trace exatos, medindo headers, corpo e consulta e correlacionando
+o gateway sem registrar seletores, dados, credenciais ou erros brutos.
+Diagnóstico `eb8092e9c122ffeafe7d46b28c044af5de764523`, cinco arquivos próprios:
+61 testes focados e validação completa aprovados, com 233 arquivos/1605 testes
+Vitest, demais contratos, avaliações de segurança, lint, tipos e build.
+Build: 18,30 s, quatro chunks iniciais/799883 bytes. CI e entrega controlada
+desse diagnóstico ainda pendentes; não equivale a correção da causa do 503.
+
+Chrome real autenticado ainda não foi alcançado pelo release canônico.
+CAT-001–010 permanecem implementados, não homologados; CAT-011 fora do
+escopo da entrega vazia; CAT-012 pendente. O diagnóstico não muda os
+limites, retries, controles ou o requisito de homologação real. Nenhuma
+carga comercial, publicação ou operação em produção foi autorizada.
+
+### Checkpoint histórico de 10 de outubro sobre a falha e a recuperação editorial
 
 CI `38028596441/1` aprovada nos sete jobs para
 `9e94d1e9e0095f455ab2891ed169399420022985`. Bridge `38029087139/1` aprovado,
