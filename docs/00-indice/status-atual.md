@@ -26,6 +26,24 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+Atualização após o bridge: `ce1b4255916a9023cec7bb4f989b60dacaf54aba`
+está publicado em `main`. CI `38056427709/1` verde nos sete jobs, em 417 s;
+bridge `38057038529/1` verde, com promoção de 518 s e watchdog `38057613390`
+corretamente ignorado. Seleção, plano, métricas, evidência do bridge e restauração
+foram verificados por digest. O pacote original `11671411810`, digest
+`ff3c88dc914053bddce69e026e02562f8cbfcb9765047a25a7d9cd228f29f542`,
+foi promovido sem rebuild. A restauração devolveu o backend candidato, versão
+733; health canônico HTTP 200, `ready`, release exato. Zero operações
+concorrentes, leases QA, overrides habilitados e produtos; flag global OFF.
+
+Os logs reais de gateway capturaram o marcador gerado em staging com respostas
+200, comprovando o novo vínculo diagnóstico. O próximo gate é a validação
+canônica e, somente após seus gates automáticos, Chrome real autenticado.
+O 503 histórico ainda não tem causa subjacente localizada. Compatibilidade verde
+não equivale a homologação nem a uma correção comprovada desse atraso.
+
+### Histórico de 10 de outubro sobre o timeout e a instrumentação
+
 O bridge `38055014940/1` de `48cda0b` reprovou HTTP 503 em `/contato`
 no teste isolado do backend vigente, antes da troca para o backend legado.
 Compensação e watchdog `38055412150` concluíram com sucesso: 82 respostas

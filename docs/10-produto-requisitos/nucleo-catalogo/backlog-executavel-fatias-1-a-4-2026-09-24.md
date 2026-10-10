@@ -24,7 +24,35 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro sobre o timeout do documento
+### Checkpoint vigente de 10 de outubro após o bridge instrumentado
+
+SHA `ce1b4255916a9023cec7bb4f989b60dacaf54aba` publicado em `main`.
+CI `38056427709/1`: sete jobs verdes, 417 s; qualidade 254 s.
+Pacote original `11671411810`, digest
+`ff3c88dc914053bddce69e026e02562f8cbfcb9765047a25a7d9cd228f29f542`;
+dist `3f26cb497e0ba5097c17d8ea87d4fb66d27d35419d09c9713fae1b54338a7560`,
+árvore `25665713e8cd3b0777f6eb5be9e1ee799ce8778cc284220ff001ee33ffa8ec34`.
+Seleção, plano e métricas verificados por digest e pelo validador oficial;
+produtor e gate attempt 1, perfil full-release sem redução de gates.
+
+Bridge `38057038529/1` verde; promoção 518 s. Artefato `11671062800`, digest
+`9c2d6fdc103cd3e72cd6824b8bff1b07da915970513bb892dae3ae308137fa2e`,
+verificado. Deployment canônico `6ef7aa00-ccec-4f29-8992-94eecb919b30`
+vinculado ao mesmo SHA e aos mesmos bytes. Restauração `11671492693`, digest
+`2aa3e6e7c14462232fe323015c328f932442e830a4f2155847834fdd60ccfa22`,
+verificada: backend candidato versão 733, contrato public-v2; produção intocada,
+sem segredo persistido. Watchdog `38057613390` corretamente ignorado.
+Health canônico HTTP 200, `ready`, release exato. Zero operações concorrentes,
+leases QA, overrides habilitados e produtos; flag global OFF.
+
+O teste isolado contra o backend vigente passou em 59 s. Os logs reais de
+gateway capturaram o marcador gerado por tentativa em staging; três amostras
+HTTP 200, em 253 ms, 351 ms e 285 ms. Isso valida a instrumentação, não
+comprova a causa do timeout anterior. Próximo gate: canônico, seguido de
+Chrome real autenticado somente depois dos gates automáticos e consumer pronto.
+CAT-001–010 não homologados; CAT-011 fora do escopo; CAT-012 pendente.
+
+### Histórico de 10 de outubro sobre o timeout do documento
 
 O bridge `38055014940/1`, SHA `48cda0b`, falhou em `/contato` com HTTP 503
 antes da troca para o backend legado. O Worker recebeu o documento completo,
