@@ -51,10 +51,31 @@ nem explica a reprovação anterior de 3546 ms. Evidência local sanitizada
 
 Dez checks passaram; dois leases encerrados, nove eventos imutáveis de
 auditoria e zero resíduo ativo. Estado real: zero leases QA, overrides
-ativos e produtos, flag global OFF. Próxima investigação: comparação
-isolada com fixture pertencente ao lease, sem entrega externa, produtos ou
-nova tentativa de release. CAT-001–010 não homologados; CAT-011 fora do
-escopo; CAT-012 pendente. HTTP 503 históricos continuam sem causa comprovada.
+ativos e produtos, flag global OFF.
+
+A comparação com formulário e lead sintéticos do próprio lease concluiu
+com fonte `20fee6f893113e5d49085a4736457fc50fdb3f0b`, staging servido
+`64a87ed`, de 17:33:56,976 a 17:34:29,624 UTC. Doze checks passaram,
+p95 1846 ms, pico 2125 ms, sem entrega externa. Banco: delta de 40 chamadas,
+7340,90488 ms de execução, 63647 hits e zero leituras físicas. Houve um
+pico transitório entre as amostras 27 e 36; as leituras voltaram a cair sem
+alterar a fixture. O sweeper executou em 9,169 ms às 17:34:00 UTC,
+fora desse pico. Não está comprovado que a fixture causou a diferença.
+
+A primeira comparação parou antes das medições: o diagnóstico esperava
+`processed`, mas o contrato SQL usa `completed`. A correção mínima e sua
+regressão passaram em 29 testes focados; o perfil comparativo já havia
+passado na validação integral e build de 20,10 s. As duas execuções tiveram
+limpeza aprovada. Evidência corrigida sanitizada
+`outputs/g11-snapshot-diagnostic-with-fixture-64a87ed-20fee6f.json`, SHA-256
+`db79d56454eeeb4135db45089d30c45283645de45ae089b4ddda5928e91d5a0a`:
+dois leases encerrados, nove eventos imutáveis e zero resíduo ativo.
+O resultado não aprova release nem Chrome UAT.
+
+Próxima investigação: correlacionar a cauda transitória com transporte,
+pool de conexões e recursos do banco, sem repetir um release. CAT-001–010
+não homologados; CAT-011 fora do escopo; CAT-012 pendente.
+HTTP 503 históricos continuam sem causa comprovada.
 
 ### Histórico de 10 de outubro sobre desempenho administrativo
 
