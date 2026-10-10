@@ -26,6 +26,30 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+`dc132ba1ada3e998687cf8338cd76cadf2a40fac` está em `main`, com CI
+`38063987001/1` verde nos sete jobs (431 s). A seleção e o plano foram
+verificados por digest e pelo validador oficial; pacote original `11674366032`,
+digest `c69b17b5ffb9c9465af94f6af627203c9b3e07c87e4ede0c2ffeafb9b678c0eb`.
+O bridge `38064557890/1` reprovou antes da troca de backend: `/contato`
+retornou 503 por timeout de transporte no Worker. O backend ainda era `f3211fc`;
+as duas execuções Edge correlacionadas terminaram 200 (402 e 234 ms).
+O diagnóstico Edge de `dc132ba` não chegou a ser implantado.
+
+Compensação e watchdog `38065009489` concluíram com sucesso. Evidência
+`11675236158`, digest
+`94e06812d7a48312489a1623ee406608f02072731b61c68134a2a47a7a65ab1b`,
+verificada: baseline restaurado, 82 respostas válidas, zero 5xx, p95 950,134 ms.
+Zero operações concorrentes, fences, leases QA, overrides ativos e produtos;
+flag global OFF. Não houve homologação Chrome nem alteração em produção.
+A causa do atraso de transporte permanece aberta; a próxima medição local
+registra início, duração e resultado de cada tentativa do Worker, somente em
+falhas públicas de staging, sem alterar limites, hedge, status ou precedência.
+25 testes Vitest e cinco testes Node focados passaram; validação integral pendente.
+CAT-001–010 permanecem implementados, não homologados; CAT-011 fora do escopo;
+CAT-012 pendente. Não repetir o bridge anterior para buscar verde.
+
+### Histórico da falha de leitura no canônico
+
 SHA `f3211fcf2f6194a91806d5b26d20e0629af38311`: CI `38060207911/1`
 verde nos sete jobs (362 s) e bridge `38060981114/1` verde. O pacote original
 `11673131369`, digest

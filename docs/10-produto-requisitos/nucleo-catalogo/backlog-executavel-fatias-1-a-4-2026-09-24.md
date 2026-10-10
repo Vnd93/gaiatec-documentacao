@@ -24,7 +24,35 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro sobre o erro de leitura de página
+### Checkpoint vigente de 10 de outubro sobre o transporte do Worker
+
+`dc132ba1ada3e998687cf8338cd76cadf2a40fac`: CI `38063987001/1`
+verde, sete jobs e 431 s; qualidade 320 s. Seleção e plano verificados por
+digest e validador oficial, pacote original `11674366032`, digest
+`c69b17b5ffb9c9465af94f6af627203c9b3e07c87e4ede0c2ffeafb9b678c0eb`.
+Bridge `38064557890/1` reprovou no candidato isolado contra o backend vigente,
+antes da troca legado: `/contato`, ordinal 2, HTTP 503 e
+`page-by-path;timeout;2;503;2900` no Worker. Trace
+`5350906d-a4e3-47c8-99c7-456b768bb7e6`: backend `f3211fc`, duas execuções
+200, 402 e 234 ms. Não houve implantação do diagnóstico Edge do novo SHA.
+Comparação de relógios entre provedores não prova a origem do atraso.
+
+Compensação `11675236158`, digest
+`94e06812d7a48312489a1623ee406608f02072731b61c68134a2a47a7a65ab1b`,
+verificada: estado `restored`, baseline `f3211fc`, 82 respostas válidas,
+zero 5xx, p95 950,134 ms. Watchdog `38065009489` verde.
+Zero operações concorrentes, fences, leases QA, overrides ativos e produtos;
+Cloudflare 706/706 deployments únicos, nenhum ativo; flag global OFF.
+Evidência sanitizada local:
+`outputs/catalog-staging-dc132ba-bridge-38064557890-evidence/document-transport-correlation.json`.
+Medição local adicional: início, duração e resultado por tentativa do Worker,
+restrita a falhas públicas de staging. Mantém 2200 ms por tentativa, hedge
+700 ms, máximo de duas tentativas e primeira resposta HTTP vencedora.
+25 testes Vitest e cinco Node focados passaram; validação integral pendente.
+CAT-001–010 não homologados; CAT-011 fora do escopo; CAT-012 pendente.
+Nenhuma carga comercial ou alteração em produção; não repetir o bridge reprovado.
+
+### Histórico de 10 de outubro sobre o erro de leitura de página
 
 SHA `f3211fcf2f6194a91806d5b26d20e0629af38311`: CI `38060207911/1`
 verde (sete jobs, 362 s), bridge `38060981114/1` verde e watchdog do bridge
