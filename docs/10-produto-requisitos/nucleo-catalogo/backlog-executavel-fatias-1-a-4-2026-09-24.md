@@ -24,7 +24,40 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro sobre o transporte do Worker
+### Checkpoint vigente de 10 de outubro sobre desempenho administrativo
+
+SHA `64a87ed07a5f246fa86f14add0b669a60b08e8ff`: validação local integral
+aprovada, CI `38065762352/1` verde (sete jobs, 422 s), bridge
+`38066354913/1` verde (674 s), evidência validada oficialmente. Pacote
+original `11674632761`, digest
+`5b58686be2e41d294528ce44d2f5e01d8f2e589668af441a4056004c511a5f13`,
+promovido sem rebuild. Diagnósticos de página e tentativas do Worker
+implantados em staging, sem alterar budgets ou precedência HTTP.
+
+Canônico `38067281450/1` reprovou em 1024 s. Três janelas G12 públicas
+passaram; a falha foi G11: p95 administrativo 3546 ms no servidor e 3834 ms
+total, contra limite de 2000 ms. Comando: p95 637 ms no servidor e 914 ms
+total. Disponibilidade 100%, auditoria 100%, RPO zero, restauração em um
+minuto, MFA, isolamento, acessibilidade e limpeza aprovados. Não há evidência
+Chrome desse candidato nem homologação das Fatias 1–4.
+
+Finalizador e watchdog `38068448877` verdes. Terminal `11676047051`, digest
+`87be9af0a5541b6b2c4be6c111630fa97a29dee883944e233b72cd89ec0d23ef`,
+verificado: 82 respostas válidas, zero 5xx, p95 651,739 ms. Métricas
+`11675832237`, digest
+`3ee6e7850b08ddcd4c4ac0a973f4619f74406d0aa2afe185fb7182a2ad067d97`.
+Estado reconfirmado: zero operações concorrentes, fences, leases QA,
+overrides ativos e produtos; 710/710 deployments únicos, nenhum ativo;
+flag global OFF e produção intocada.
+
+Próxima ação: diagnóstico direcionado da cauda de leitura administrativa,
+com correlação temporal de snapshot, RPC e banco. Estatísticas cumulativas
+não provam a causa na janela; o sweeper levou 59, 13 e 182 ms nela.
+Os HTTP 503 históricos permanecem separados e sem causa comprovada.
+CAT-001–010 implementados, não homologados; CAT-011 fora do escopo;
+CAT-012 pendente. Não repetir o canônico para buscar verde.
+
+### Histórico de 10 de outubro sobre o transporte do Worker
 
 `dc132ba1ada3e998687cf8338cd76cadf2a40fac`: CI `38063987001/1`
 verde, sete jobs e 431 s; qualidade 320 s. Seleção e plano verificados por

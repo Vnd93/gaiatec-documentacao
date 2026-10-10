@@ -26,6 +26,36 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+SHA `64a87ed07a5f246fa86f14add0b669a60b08e8ff`: validação local integral
+aprovada, CI `38065762352/1` verde nos sete jobs (422 s) e bridge
+`38066354913/1` verde (674 s). O pacote original `11674632761`, digest
+`5b58686be2e41d294528ce44d2f5e01d8f2e589668af441a4056004c511a5f13`,
+foi promovido sem rebuild; evidência do bridge validada oficialmente.
+
+O canônico `38067281450/1` reprovou em 1024 s: as três janelas públicas G12
+passaram, mas a leitura administrativa G11 teve p95 de 3546 ms no servidor,
+acima do limite autorizado de 2000 ms; p95 total de 3834 ms. Comando: 637 ms
+no servidor. Disponibilidade, MFA, isolamento, auditoria, acessibilidade,
+rollback e limpeza sintética passaram. Chrome não executou; os fluxos do
+catálogo ainda não estão homologados neste SHA.
+
+Finalizador e watchdog `38068448877` concluíram com sucesso. Terminal
+`11676047051`, digest
+`87be9af0a5541b6b2c4be6c111630fa97a29dee883944e233b72cd89ec0d23ef`,
+verificado: 82 respostas válidas, zero 5xx e p95 651,739 ms. Estado remoto
+reconfirmado: zero operações concorrentes, fences, leases QA, overrides
+ativos e produtos; 710 deployments Cloudflare únicos, nenhum ativo; flag
+global OFF. Produção intocada.
+
+A investigação atual separa processamento do snapshot, RPC e transporte.
+Estatísticas acumuladas do banco não provam o custo na janela reprovada;
+o sweeper nessa janela levou 59, 13 e 182 ms. Não há causa comprovada para
+essa cauda de latência nem para os HTTP 503 históricos. Não aumentar limites
+nem repetir releases para obter verde. CAT-001–010: implementados, não
+homologados; CAT-011: fora do escopo; CAT-012: pendente.
+
+### Histórico da falha de transporte no bridge
+
 `dc132ba1ada3e998687cf8338cd76cadf2a40fac` está em `main`, com CI
 `38063987001/1` verde nos sete jobs (431 s). A seleção e o plano foram
 verificados por digest e pelo validador oficial; pacote original `11674366032`,
