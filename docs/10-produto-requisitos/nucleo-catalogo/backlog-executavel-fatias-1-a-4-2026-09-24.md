@@ -26,6 +26,22 @@ carga/cutover futuro não são dispensados nem bloqueiam a homologação do sist
 
 ### Checkpoint vigente de 10 de outubro sobre o diagnóstico de snapshot
 
+Uma comparação direta de relógios detectou desvio: computador entre
+17:59:34,458 e 17:59:35,924 UTC; banco 18:00:54,415776 UTC no mesmo
+intervalo. O desvio observado estava entre 78,492 e 79,958 segundos.
+A fonte local de horário era `Local CMOS Clock`. Nenhum relógio ou
+controle de autenticação foi alterado. Esse desvio atual não deve ser
+extrapolado para execuções antigas. As exclusões de cron baseadas somente
+em cruzar horários locais e remotos, inclusive o sweeper descrito abaixo,
+ficam **sem comprovação temporal** até alinhar as bases.
+As métricas de duração baseadas em relógio monotônico não são dispensadas.
+
+O snapshot já oferece `capturedAt`, gerado pelo banco. O diagnóstico passa
+a preservar esse campo separado de início/fim locais. A coleta de CPU e
+pool segue a cadência documentada de um minuto; as contagens diretas de
+esperas permanecem separadas e limitadas. Não há alteração de backend,
+migration, timeout, orçamento, retries ou segurança.
+
 O CI `38072650903/1`, fonte `20fee6f`, terminou verde nos sete jobs.
 Pacote original `11677114581`, digest
 `65b6c19d81f7f93a2a217ce08ea4547f905ba29637561faf840c969407484d1e`,
