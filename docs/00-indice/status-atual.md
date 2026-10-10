@@ -26,6 +26,31 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+O canônico `38057930080/1`, SHA `ce1b425`, reprovou na limpeza sintética
+G11: revogação de sessões recebeu `G11_STAGING_MANAGEMENT_QUERY_FAILED:502:unknown`
+da API de gestão do Supabase. Não foi um 503 de documento: os três probes
+anteriores passaram com 82 respostas cada, zero 5xx. Os testes operacionais G11
+passaram antes da limpeza, inclusive MFA, segregação, auditoria e desempenho;
+isso não torna o canônico aprovado.
+
+Finalizador e watchdog `38059085851` concluíram com sucesso. Evidência terminal
+`11672361601`, digest
+`2bc9222068cdd6745fc6de4367a4f0bd4392a1cb82e300e7762f52a8dbceeb37`,
+verificada antes da extração: 82 respostas, zero 5xx, p95 público 599,984 ms;
+seis leases terminais, nenhum ativo. Nova consulta confirmou zero operações
+concorrentes, fences, overrides ativos e produtos; catálogo global OFF.
+Chrome não executou. Produção permanece intocada.
+
+A correção em validação local troca a revogação dos atores autenticados pela
+API oficial Auth com logout global, vinculada ao ator, SHA, ambiente e lease
+ativo. Mantém a revogação SQL para fixtures parciais sem token, os limites
+existentes, a contagem independente em `auth.sessions`, a conclusão do lease e
+a prova de resíduo zero. Não faz retry nem aceita erro de logout. O motivo do
+502 da plataforma e a causa subjacente do 503 histórico não estão comprovados.
+CAT-001–010 ainda não homologados; CAT-011 fora do escopo; CAT-012 pendente.
+
+### Histórico do bridge instrumentado
+
 Atualização após o bridge: `ce1b4255916a9023cec7bb4f989b60dacaf54aba`
 está publicado em `main`. CI `38056427709/1` verde nos sete jobs, em 417 s;
 bridge `38057038529/1` verde, com promoção de 518 s e watchdog `38057613390`

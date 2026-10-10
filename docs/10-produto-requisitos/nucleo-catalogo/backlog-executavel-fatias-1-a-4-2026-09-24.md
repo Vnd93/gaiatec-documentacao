@@ -24,7 +24,36 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro após o bridge instrumentado
+### Checkpoint vigente de 10 de outubro sobre a limpeza de sessões
+
+Canônico `38057930080/1`, SHA `ce1b425`, reprovou no encerramento G11:
+`G11_STAGING_MANAGEMENT_QUERY_FAILED:502:unknown` ao revogar sessões pela
+API de gestão do Supabase. Nenhuma falha operacional G11 precedeu a limpeza;
+os três probes públicos anteriores passaram, 82 respostas cada e zero 5xx.
+p95 G11: leitura administrativa 108 ms no servidor e 525 ms total;
+comando 428 ms no servidor e 825 ms total. Não atribuir esta falha ao 503
+histórico do documento nem tratar os testes aprovados como homologação.
+
+Finalizador e watchdog `38059085851` verdes. Artefato terminal `11672361601`,
+digest `2bc9222068cdd6745fc6de4367a4f0bd4392a1cb82e300e7762f52a8dbceeb37`,
+verificado antes da extração. Probe terminal: 82 respostas, 100% disponíveis,
+zero 5xx, p95 público 599,984 ms. Recovery: seis leases terminais, zero ativos.
+Evidência sanitizada local:
+`outputs/catalog-staging-ce1b425-canonical-38057930080-evidence/cleanup-failure-sanitized.json`.
+Estado remoto atual: zero operações concorrentes e fences; Cloudflare 701/701
+deployments únicos, nenhum ativo; zero leases QA, overrides ativos e produtos;
+flag global OFF. Chrome não executou; produção intocada.
+
+Correção em validação local: revogar atores autenticados pelo logout global
+oficial Auth, depois de conferir identidade e lease exatos. Fixtures parciais
+sem JWT mantêm revogação SQL. Nenhum retry adicional, aumento de timeout,
+aceitação de erro ou gate removido. Contagem independente de sessões,
+conclusão do lease, auditoria e resíduo zero continuam obrigatórios.
+Documentação consultada: [logout administrativo](https://supabase.com/docs/reference/javascript/auth-admin-signout)
+e [sessões Auth](https://supabase.com/docs/guides/auth/sessions).
+CAT-001–010 não homologados; CAT-011 excluído desta entrega vazia; CAT-012 pendente.
+
+### Histórico de 10 de outubro após o bridge instrumentado
 
 SHA `ce1b4255916a9023cec7bb4f989b60dacaf54aba` publicado em `main`.
 CI `38056427709/1`: sete jobs verdes, 417 s; qualidade 254 s.
