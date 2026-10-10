@@ -24,7 +24,45 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro sobre a política de retries
+### Checkpoint vigente de 10 de outubro sobre renderização e recuperação
+
+A correção `d381676384cb3251f20ef3589016a4f9277bc7d5` passou nos sete jobs
+da CI `38038282653/1`. Bridge `38039040077/1` aprovado, com validador
+oficial sem violações, preservando o produtor e o pacote selado original
+`11664682180`, digest
+`2f0f3769eab9b5c46d8f51b130bb130304cb282facb87de8bbe6f1e91f00dae9`.
+Deployment canônico `cf4bb841-5146-4d61-bbb2-58197ae85f1a`, no SHA exato,
+sem rebuild. Bridge: 672 s; CI: 505 s. Esses resultados não são homologação.
+
+A validação canônica `38040158857/1` falhou na projeção mobile da página
+de privacidade: o documento respondeu HTTP 200, mas o título esperado não
+apareceu no prazo original de cinco segundos. Foram 49 testes aprovados
+e uma falha. Não confundir esse incidente com o 503 histórico nem atribuir
+a causa ao backend sem correlação. A evidência preliminar não preservou
+o diagnóstico de renderização; a lacuna está sendo corrigida nos testes,
+sem modificar prazos, retries, status esperados ou controles do produto.
+
+Finalizador aprovado e watchdog `38041344022` concluído com sucesso.
+ZIP terminal `11666106252`, digest
+`751f70c708e32036c56bb48950f3474373a2cd351e9f3a22ed2def4dab307a4b`;
+preliminar `11665996024`, digest
+`07d2e17811fa01ceaf06242a089d1ac04f77f4738aab6fc7af9c0571f9ab5e46`;
+métricas `11665836784`, digest
+`af68fb01aaa02ea5e967c3d1a16d99417bff5e6f220df0b557ce9a9928408f58`.
+Digests verificados antes da extração. Probe terminal: 82 respostas,
+100% de disponibilidade, zero 5xx, p95 558,991 ms. Pipeline: 1203 s;
+deploy: 822 s; três janelas G12: 256 s. Evidência de recuperação, não UAT.
+
+A reprodução local somente leitura contra staging terminou com 47 testes
+aprovados e três ignorados, dois workers e zero retries. A passagem posterior
+não comprova a causa da falha intermitente. Chrome real autenticado e os
+gates dependentes ainda precisam ser concluídos pelo release canônico.
+CAT-001–010 permanecem implementados, não homologados; CAT-011 fora do
+escopo vazio; CAT-012 pendente. A retomada confirmou zero operações
+concorrentes, 683 deployments únicos sem atividade, zero leases QA e
+overrides ativos, zero produtos e flag global OFF. Produção intocada.
+
+### Checkpoint histórico de 10 de outubro sobre a política de retries
 
 O diagnóstico `eb8092e9c122ffeafe7d46b28c044af5de764523` passou nos sete jobs
 da CI `38036857823/1`. Ainda não foi promovido em staging: antes de uma nova
