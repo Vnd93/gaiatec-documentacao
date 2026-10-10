@@ -67,6 +67,10 @@ tentativas existentes, sem mudança de SQL, regiões, Auth, RLS ou segurança.
 Inclui regressões de isolamento de ambiente, ausência de dados sensíveis, preservação
 de resposta/headers e não colisão das correlações. Esta é observabilidade, **não uma
 correção de causa já comprovada**; novo SHA/pacote exigem os gates dependentes.
+CMS `050ea9a5f4fcd878b6c6f092c8a4a91b781116a2`: seis arquivos próprios,
+173 inserções/3 remoções; `npm run check` aprovado com 232 arquivos/1583 testes,
+contratos, segurança, evals, formatação, lint/types e build 18,19 segundos;
+quatro chunks iniciais/799883 bytes. CI e homologação deste SHA ainda pendentes.
 
 Inventário de entrega: CAT-001–010 implementados, ainda dependentes de homologação
 integrada; CAT-011 fora do escopo comercial vigente, não bloqueante e não `done`;
