@@ -24,7 +24,41 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 9 de outubro — ciclo agendado aprovado e seletor de serviço
+### Checkpoint vigente de 9 de outubro — 503 na leitura do formulário restaurado
+
+A CI `37977482902/1` passou nos sete jobs para o SHA
+`48481d7c1f7c9f2d9a59e1bebefeeec12495c409`. A bridge `37978563462/1`
+promoveu os bytes originais do pacote `11639388796`, sem rebuild; o alias permaneceu
+no deployment `e04a8a17-3378-40ba-8dd0-21e574a0c4dd`. O canônico
+`37980260714/1` passou nos gates anteriores, incluindo publicação agendada com
+revisão/auditoria exatas, mas falhou na leitura pública após restaurar um formulário:
+HTTP 503, `Formulário temporariamente indisponível.`. Esta não é a falha anterior do
+seletor nem uma nova comprovação de falha no scheduler. O gate do seletor corrigido
+e a homologação Chrome não foram alcançados; não declarar entrega homologada.
+
+Finalizador e watchdog `37983633018` passaram. ZIPs preservados e verificados:
+terminal `11641547572`,
+`5902fd92aa8b9289256a140870fdbcb50d809824acefc54aa3266b9d6a845065`;
+preliminar `11641397193`,
+`8514256a0a297301004dfb07ff73c3ca7fd8f1551e9c5bd63143dfae40102ddb`;
+métricas `11641812736`,
+`359384699280f8503e580040ec95cd3640bb8a08d6035efb6e887950d3658011`.
+Probe terminal aprovado: disponibilidade 100%, zero 5xx, p95 602,81 ms.
+Limpeza editorial: três leases, 15 eventos de auditoria preservados. Conferência
+remota: 117 migrations, zero leases/overrides ativos, zero produtos, flag global OFF,
+zero workflows/fences e 652 deployments Cloudflare únicos, nenhum ativo. Produção
+intocada. Nenhum challenge Chrome emitido.
+
+Os logs existentes não discriminam o erro de leitura da RPC do contrato inválido;
+não há causa comprovada deste 503 nem do 503 histórico de navegação. A mudança mínima
+em validação acrescenta correlação efêmera no driver e diagnóstico fechado somente
+em staging, com SHA, trace, operação, motivo e código estruturado permitido; sem URL,
+chaves de formulário, definições, identidades, credenciais ou mensagens brutas.
+Não aumenta timeouts/retries, não aceita o 503 e não altera SQL, permissões ou RLS.
+Novo SHA, CI, pacote selado e validação controlada ainda serão necessários. CAT-012
+e recuperação específica dos fixtures de catálogo permanecem pendentes.
+
+### Checkpoint histórico de 9 de outubro — ciclo agendado aprovado e seletor de serviço
 
 A CI `37969392398/1` passou nos sete jobs para
 `981b0288791ed592dabf0300551695b890d6a8d0`. A bridge `37970477369/1` promoveu
