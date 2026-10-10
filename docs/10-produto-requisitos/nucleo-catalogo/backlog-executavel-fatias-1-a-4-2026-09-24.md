@@ -24,7 +24,43 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro sobre diagnóstico da janela medida
+### Checkpoint vigente de 10 de outubro sobre o timeout do documento
+
+O bridge `38055014940/1`, SHA `48cda0b`, falhou em `/contato` com HTTP 503
+antes da troca para o backend legado. O Worker recebeu o documento completo,
+em 2923,330 ms, e registrou `page-by-path;timeout;2;503;2900`.
+Trace `9cf076da-d928-4d63-8312-c22b69017233`: as tentativas `.1` e `.2`
+responderam HTTP 200 na Edge, em 81 ms e 210 ms, com backend `7eb9c7f`.
+Isso comprova o timeout observado pelo Worker, não a origem do atraso no transporte.
+Não atribuir o atraso a banco, fila ou relógio sem evidência adicional.
+
+Artefato de diagnóstico `11670064929`, digest
+`594e8b8d868f2bbc8748e7b9c242a197851666f7109a11abc8261c5ec78536ea`,
+verificado antes da extração. Correlação sanitizada local:
+`outputs/catalog-staging-48cda0b-bridge-38055014940-evidence/document-transport-correlation.json`.
+O join por request ID não encontrou gateway correspondente. Os dois registros
+`cms-public` encontrados na janela ampliada não compartilham o execution ID.
+Ausência de registro não significa ausência de requisição; não comparar relógios
+de provedores distintos como prova causal.
+
+Compensação: 82 respostas válidas, zero 5xx; watchdog `38055412150` verde.
+Zero workflows concorrentes, fences, operações Cloudflare, leases QA,
+overrides habilitados ativos e produtos; flag global OFF. Nenhum canônico de
+`48cda0b` foi disparado e nenhum bridge foi repetido cegamente.
+
+O candidato local `ce1b4255916a9023cec7bb4f989b60dacaf54aba` contém somente
+a correlação por tentativa em User-Agent gerado pelo Worker em staging e testes
+de regressão. Valores do visitante são ignorados e produção não recebe o marcador.
+Timeouts, hedge, retries, orçamentos e falha fechada permanecem inalterados.
+Check completo local aprovado: 235 arquivos/1640 testes, contratos, avaliações,
+lint, tipos e build de 19,35 s; 32 testes focados aprovados. Publicação Git,
+CI, artefatos selados e validação em staging ainda pendentes para esse SHA.
+
+CAT-001–010 implementados, não homologados; CAT-011 fora do escopo vazio;
+CAT-012 pendente de recovery durável do catálogo sintético, Chrome real com
+backend de staging e rollback funcional. Produção, carga e cutover proibidos.
+
+### Histórico de 10 de outubro sobre diagnóstico da janela medida
 
 O bridge `38051410344/1` do SHA `7eb9c7f` passou com os artefatos originais.
 O canônico `38052712195/1` reprovou uma resposta 5xx em `/`, com 81 de 82

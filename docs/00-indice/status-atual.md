@@ -26,6 +26,32 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+O bridge `38055014940/1` de `48cda0b` reprovou HTTP 503 em `/contato`
+no teste isolado do backend vigente, antes da troca para o backend legado.
+Compensação e watchdog `38055412150` concluíram com sucesso: 82 respostas
+válidas, zero 5xx. A validação canônica desse SHA não foi disparada.
+
+A correlação pelo mesmo trace comprova duas tentativas encerradas por timeout
+no Worker; ambas responderam HTTP 200 na Edge, em 81 ms e 210 ms. O atraso
+no caminho de transporte ainda não está localizado. Os registros de gateway
+disponíveis não coincidem por request ID nem execution ID; timestamps de
+provedores distintos não comprovam causalidade.
+
+O candidato local `ce1b4255916a9023cec7bb4f989b60dacaf54aba` acrescenta
+um marcador gerado por tentativa ao User-Agent capturado pelos logs de gateway,
+somente em staging, sem dados do visitante. Não altera timeout, retry, orçamento
+ou tratamento de 5xx. Check completo local aprovado: 235 arquivos/1640 testes,
+contratos, avaliações, lint, tipos e build; 32 testes focados aprovados.
+Publicação Git, CI, artefatos selados e validação em staging desse candidato
+ainda pendentes. A recuperação confirmou zero operações concorrentes, leases QA,
+overrides habilitados ativos e produtos, com flag global OFF. Produção intocada.
+
+CAT-001–CAT-010 permanecem implementados, não homologados; CAT-011 fora do
+escopo vazio; CAT-012 ainda depende de recovery durável, Chrome autenticado,
+backend real e rollback. Não há entrega homologada nem liberação em produção.
+
+### Histórico de 10 de outubro sobre o diagnóstico da janela medida
+
 O candidato vigente é `48cda0bfcab508ede74399b22831af4d81605369`. A CI
 `38054246328/1` concluiu sete jobs com sucesso. O pacote original `11670509121`,
 digest `bb082829cd9668050d7d9f4c4680a7d486fa7aa1698ab8477eaca18174d21e96`,
