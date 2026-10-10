@@ -24,7 +24,47 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro — timeout upstream correlacionado
+### Checkpoint vigente de 10 de outubro — timeout na publicação de produto sintético
+
+CI `38018214388/1` aprovada nos sete jobs para
+`050ea9a5f4fcd878b6c6f092c8a4a91b781116a2`; bridge `38018747875/1`
+aprovada com o pacote original `11657341442`, sem rebuild. O deployment canônico
+permanece `f389dfab-7dff-4c08-bab1-9ead8911522d`, no SHA exato.
+O canônico `38019634009/1` falhou em `cms-content/publish`, HTTP 500,
+SQLSTATE `57014`. O contexto Postgres de `03:30:38.938Z` identifica cancelamento
+por statement timeout durante `cms_sync_product_projection`, dentro da publicação
+editorial. Isso identifica o ponto de interrupção, **não prova que a projeção é o
+gargalo nem se houve espera por lock**. Não aumentar timeouts nem repetir release
+sem diagnóstico. Cron jobs da janela terminaram antes da falha; não atribuir a
+eles a causa sem prova. A leitura de formulário instrumentada da mesma execução
+retornou HTTP 200: RPC 329 ms, documento 341 ms; nenhum novo 503 foi identificado
+nessa leitura. A causa precisa do 503 anterior permanece pendente.
+
+Finalizador aprovado; watchdog `38021095473` aprovado. ZIPs baixados e verificados
+antes da extração: terminal `11657852544`,
+`f6c83f689823e66f92ae31ba8890ec3192c131c69a81eace8168558c0d0edcc9`;
+preliminar `11657817299`,
+`dfbce0da76140c38c6c2d27da51d2a644dc6e8c8b15c5ff8558c5813f648add8`;
+métricas `11658876015`,
+`73ebf5b4cd87609d11b9029c70dd8849bddf8eab881bbb71c131518bc0f39db0`.
+Probe terminal: 82 respostas, disponibilidade 100%, zero 5xx, p95 521,50 ms.
+Limpeza: três leases sintéticos e 15 eventos imutáveis preservados.
+Conferência posterior: zero operações remotas nos cinco estados ativos em ambos
+os repositórios, zero fences, 662 deployments Cloudflare únicos/nenhum ativo,
+zero leases e overrides ativos, zero produtos de catálogo, flag global OFF;
+health pronto em staging no SHA exato. Produção intocada. Nenhuma atestação Chrome
+emitida; o sistema **não está homologado**.
+
+Execução interrompida: 1479 segundos, estágio `deploy` 1114 segundos, passo G12
+253 segundos; não confundir com caminho feliz ou conclusão de entrega. Próximo
+diagnóstico mínimo: amostragem curta e somente leitura da atividade editorial
+PostgREST durante publicação sintética, com contagens de lock/IO/bloqueio e tempo,
+sem SQL bruto, payload, PID, identidade ou credencial. Mantém o comando único,
+os limites existentes e o resultado exigido pelo gate; ausência de amostra não é
+evidência de sucesso. CAT-001–010 continuam implementados, não homologados;
+CAT-011 fora do escopo e CAT-012 pendente.
+
+### Checkpoint histórico de 10 de outubro — timeout upstream correlacionado
 
 A CI `38012897507/1` passou para
 `49c99d8419b6c7af253c7318b4a2d4a75516a842`. A bridge `38013569733/1`
@@ -70,7 +110,8 @@ correção de causa já comprovada**; novo SHA/pacote exigem os gates dependente
 CMS `050ea9a5f4fcd878b6c6f092c8a4a91b781116a2`: seis arquivos próprios,
 173 inserções/3 remoções; `npm run check` aprovado com 232 arquivos/1583 testes,
 contratos, segurança, evals, formatação, lint/types e build 18,19 segundos;
-quatro chunks iniciais/799883 bytes. CI e homologação deste SHA ainda pendentes.
+quatro chunks iniciais/799883 bytes. CI aprovada conforme checkpoint vigente;
+homologação deste SHA não concluída.
 
 Inventário de entrega: CAT-001–010 implementados, ainda dependentes de homologação
 integrada; CAT-011 fora do escopo comercial vigente, não bloqueante e não `done`;
