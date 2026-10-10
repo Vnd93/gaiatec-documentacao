@@ -24,7 +24,40 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro — preview interrompido antes da publicação
+### Checkpoint vigente de 10 de outubro — 503 no documento do artigo arquivado
+
+O diagnóstico de preview foi implementado no controle
+`684593052b87ce47e6e6fd46323cd0d97db261e2`, validado integralmente e aprovado
+na CI `38024130162/1`. Bridge `38024686401/1` aprovada, preservando o candidato
+`3279fcaa2a6408765af9d87f6ade221239e87869`, produtor `38022148808/1` e pacote
+original `11658763620`: mesmos bytes, sem rebuild. Deployment canônico
+`d25e68aa-eeb7-42eb-8cf5-58f236917514`; backend legado restaurado e verificado.
+
+Validação canônica `38025361022/1` falhou: o GET do artigo arquivado retornou
+503 quando o gate exige 404. Isso **não comprova que o artigo permaneceu público**.
+As sete publicações observadas terminaram em 1530, 1071, 1308, 2446, 1342, 1785 e
+2201 ms, sem waits de lock/IO ou bloqueios capturados. Não comprova correção da
+causa histórica do SQLSTATE 57014. A leitura incidente ainda não preservava
+headers/trace do Worker; a causa do 503 permanece não comprovada.
+
+Finalizador aprovado e watchdog `38026796078` concluído com sucesso. ZIPs
+verificados antes da extração: terminal `11660611305`,
+`fc9962b1df5456cf64effc2ffc6db2989fbd2a5c955206d779a260d5f0bdc1d0`;
+preliminar `11660575817`,
+`9294880b7f3dae042cd33543aa13b0dc91dea8f6f40d1e4dec238e7e358f5697`;
+métricas `11660586350`,
+`70f7fc2f94f4afcb7a64069fd606563e5d6cc52d801ac575b899384f1fd6846d`.
+Probe terminal: 82 respostas, 100%, zero 5xx, p95 713,092 ms. Run: 1497 s;
+deploy: 1075 s; maior etapa: três janelas G12, 272 s. Estado atual confirmado:
+668 deployments únicos/nenhum ativo, nenhum workflow/fence ativo, health pronto
+no SHA exato, zero leases/overrides ativos e produtos, flag global OFF.
+
+Próxima mudança mínima: preservar correlação sanitizada dos GETs documentais
+existentes, sem novas requisições, retries, timeouts ou alteração de gates.
+Chrome real não foi alcançado. CAT-001–010 continuam implementados, não
+homologados; CAT-011 fora do escopo e CAT-012 pendente. Produção intocada.
+
+### Checkpoint histórico de 10 de outubro — preview interrompido antes da publicação
 
 A CI `38022148808/1` passou nos sete jobs para
 `3279fcaa2a6408765af9d87f6ade221239e87869`, incluindo o diagnóstico de atividade
