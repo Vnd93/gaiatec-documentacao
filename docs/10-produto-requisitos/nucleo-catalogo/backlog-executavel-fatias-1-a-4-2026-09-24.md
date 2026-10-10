@@ -8,7 +8,7 @@ fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-10-09
+ultima_revisao: 2026-10-10
 fonte_canonica: gaiatec-documentacao
 ---
 
@@ -24,7 +24,57 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 9 de outubro — 503 na leitura do formulário restaurado
+### Checkpoint vigente de 10 de outubro — timeout upstream correlacionado
+
+A CI `38012897507/1` passou para
+`49c99d8419b6c7af253c7318b4a2d4a75516a842`. A bridge `38013569733/1`
+promoveu o pacote original `11655676612`, sem rebuild, ao deployment
+`c26edf05-b307-4221-b5d9-768c788a7702`; seleção e evidência da bridge passaram nos
+validadores oficiais. O canônico `38014678796/1` falhou no arquivamento final do
+formulário sintético, **depois de a leitura do formulário restaurado passar**.
+Não é repetição da falha do seletor nem comprovação de defeito na restauração.
+
+A auditoria registra arquivamento às `02:10:38.487393Z`; a leitura iniciou às
+`02:10:39.073Z` e retornou HTTP 503 em 1816 ms, com motivo fechado
+`upstream_timeout`, no mesmo SHA/trace efêmero. Região Edge `us-west-1`; banco
+`us-east-2`. A RPC anterior retornou HTTP 200, com 673 ms no serviço upstream.
+O plano SQL posterior executou em 94,254 ms, mas **não mede a execução incidente**.
+Seis leituras sem mutação, em duas regiões, não reproduziram o 503; amostra pequena,
+com formulário já ausente e conexão inicial fria, não prova causa regional nem UAT.
+O vencimento do prazo upstream está comprovado; a causa precisa do transporte/backend
+e a causa do 503 histórico mobile continuam sem comprovação. Nenhuma região foi fixada.
+
+Finalizador e watchdog `38016224594` passaram. ZIPs verificados e preservados:
+terminal `11656780961`,
+`7f6690c9ba3a5f4fd9fddb709671c044323396e5917d93a0cb68907f000335bb`;
+preliminar `11656665732`,
+`aa6139442399b99620aa0925ed93bee9dde0ac9338f7510dfe18ddb6dc810779`;
+métricas `11656082024`,
+`7903f85763ba3948c042072bdc76de6b57bd9e530033b68f14d6416f8e56f707`.
+Probe terminal: 82 respostas, disponibilidade 100%, zero 5xx, p95 560,34 ms.
+Limpeza: três leases e 15 eventos imutáveis de auditoria preservados. Conferência
+posterior: zero leases/overrides ativos, zero produtos, flag global OFF, zero
+workflows/fences e 657 deployments Cloudflare únicos, nenhum ativo; health pronto
+em staging no SHA exato. Produção intocada. Nenhum challenge/atestação Chrome emitido.
+Duração observada: 1466 segundos; estágio mais longo `deploy`, 1147 segundos;
+passo mais longo G12, 268 segundos. É execução interrompida, não caminho feliz homologado.
+
+A instrumentação complementar mínima registra início/fim de cada tentativa da RPC
+GET exata em staging, correlacionável pelo `x-client-info` já disponível nos logs.
+Mantém distintos o attempt do documento e o attempt upstream, sem registrar URL,
+seletor, credenciais, payload ou erro bruto. Preserva o prazo de 900 ms e as duas
+tentativas existentes, sem mudança de SQL, regiões, Auth, RLS ou segurança.
+Inclui regressões de isolamento de ambiente, ausência de dados sensíveis, preservação
+de resposta/headers e não colisão das correlações. Esta é observabilidade, **não uma
+correção de causa já comprovada**; novo SHA/pacote exigem os gates dependentes.
+
+Inventário de entrega: CAT-001–010 implementados, ainda dependentes de homologação
+integrada; CAT-011 fora do escopo comercial vigente, não bloqueante e não `done`;
+CAT-012 pendente, incluindo Chrome real autenticado e recuperação durável específica
+dos fixtures de catálogo antes de qualquer cadastro sintético hospedado. Não repetir
+fatias implementadas nem converter testes focados em entrega homologada.
+
+### Checkpoint histórico de 9 de outubro — 503 na leitura do formulário restaurado
 
 A CI `37977482902/1` passou nos sete jobs para o SHA
 `48481d7c1f7c9f2d9a59e1bebefeeec12495c409`. A bridge `37978563462/1`
