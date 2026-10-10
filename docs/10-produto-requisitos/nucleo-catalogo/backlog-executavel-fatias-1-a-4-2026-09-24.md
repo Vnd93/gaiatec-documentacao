@@ -24,7 +24,44 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro sobre o diagnóstico de snapshot
+### Estado da entrega vazia em 10 de outubro
+
+O contrato `CatalogManualSystemUatSchema`, fonte CMS
+`247c605125fe68aff384c7a6d39430f191689f1a`, separa homologação do sistema
+manual da lista comercial CAT-011. Exige provas dos sete fluxos funcionais,
+nove gates, Chrome real autenticado, recovery anterior à mutação e limpeza
+terminal. SHA, digest do artefato, deployment e snapshot do backend devem
+coincidir em todas as provas dependentes. Campos comerciais, produção,
+ativação global, carga, publicação e cutover são recusados. O contrato valida
+a estrutura das provas; não produz nem autentica evidência de homologação.
+Os contratos antigos permanecem preservados para o escopo comercial futuro.
+Validação local integral: 236 arquivos, 1651 testes da aplicação, contratos,
+avaliações e build de 20,00 s; 21 testes focados aprovados.
+
+| Entrega                                     | Implementado                             | Validado                                      | Pendente                                                                |
+| ------------------------------------------- | ---------------------------------------- | --------------------------------------------- | ----------------------------------------------------------------------- |
+| Administração e catálogo manual CAT-001–009 | Integração existente preservada          | Contratos e CI; não equivalem a UAT           | Fluxos positivos em Chrome/staging com isolamento e recuperação durável |
+| Editorial CAT-010                           | Workspace, revisões e leitor existentes  | Contratos; global OFF                         | Preview autenticado de fixtures isoladas e UAT editorial                |
+| Lista comercial CAT-011                     | Não carregar nesta entrega               | Fora do escopo                                | Nenhuma carga ou aprovação comercial necessária agora                   |
+| Homologação e rollback CAT-012              | Contrato de evidência para sistema vazio | Regressões e validação local                  | Journal/recovery de catálogo, gates canônicos e Chrome real             |
+| HTTP 503 e cauda administrativa             | Diagnósticos implantados e coleta local  | Evidências sanitizadas e recuperação terminal | Causa histórica comprovada e correção mínima, quando necessária         |
+
+A janela local com fonte `ae20c847e6fdb5e7c969522f128671bbe60f9a31`
+preservou o horário do banco: 18:20:20,681–18:20:45,088 UTC. P95 570 ms;
+40 chamadas, 2109,996396 ms agregados, 62489 hits e zero leituras físicas.
+Logs de transporte dessa janela: 40 requests, zero 5xx, p95 de origem
+564 ms e upstream 160 ms. Não houve cron sobreposto. Cinco amostras diretas
+não observaram locks, I/O, bloqueadores ou transações ociosas. Doze checks
+aprovados, dois leases encerrados, nove eventos imutáveis e zero resíduo
+ativo. Evidência local
+`outputs/g11-snapshot-clock-aligned-with-fixture-64a87ed-ae20c84.json`,
+SHA-256 `4587772ea7acbc864b505303566c68467484beb1d48582cb33cb95434249b6ad`.
+CI `38074729598/1` verde nos sete jobs. Staging servido permanece `64a87ed`.
+Esta janela não explica os picos anteriores, não aprova release e não é UAT.
+JIT está desligado; tracking de funções não dispõe de privilégio SET.
+Nenhum privilégio, relógio, timeout ou configuração global foi alterado.
+
+### Checkpoint de 10 de outubro sobre o diagnóstico de snapshot
 
 Uma comparação direta de relógios detectou desvio: computador entre
 17:59:34,458 e 17:59:35,924 UTC; banco 18:00:54,415776 UTC no mesmo
