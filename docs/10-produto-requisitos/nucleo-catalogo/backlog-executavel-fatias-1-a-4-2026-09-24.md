@@ -24,7 +24,41 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro sobre a limpeza de sessões
+### Checkpoint vigente de 10 de outubro sobre o erro de leitura de página
+
+SHA `f3211fcf2f6194a91806d5b26d20e0629af38311`: CI `38060207911/1`
+verde (sete jobs, 362 s), bridge `38060981114/1` verde e watchdog do bridge
+`38061569026` corretamente ignorado. Pacote original `11673131369`, digest
+`d93dba1808ff9db93e031907178bf670bf3fa7f50a314a91092bc10a273c1028`,
+promovido sem rebuild. Canônico `38061729738/1` reprovou na primeira janela
+G12 com HTTP 503 em `/contato`: 81/82 respostas válidas, p95 551,890 ms.
+Não executou G11 nem Chrome; a troca da revogação de sessões pela API Auth
+está implementada, mas ainda não validada por esse canônico.
+
+Trace `d1068ee7-23be-43bb-ae45-de18ecfed120`: Worker recebeu HTTP 503;
+Edge da primeira tentativa terminou 503 em 1817 ms e gateway confirmou o status.
+A segunda execução terminou 200 em 1412 ms, depois da resposta de erro; não
+recupera a disponibilidade do documento reprovado. Falta localizar a etapa interna
+que produziu o 503. Diagnóstico local restrito a staging observa leitura primária,
+headers, corpo e resultado do SDK, além de identificar a etapa de falha sem
+registrar seletores, payloads, erros brutos ou dados pessoais. Não muda os dois
+limites de 900 ms, a precedência, o status ou o consumo único da resposta.
+47 testes focados passaram; validação integral e entrega do diagnóstico pendentes.
+
+Finalizador e watchdog `38062967880` verdes. Terminal `11673513343`, digest
+`0511861b222f56f8814501202d5f53d28fe910f1ff606300f32992cac66abfe9`,
+verificado: 82 respostas, zero 5xx, p95 1061,907 ms; seis leases terminais,
+zero ativos. Métricas `11673817942`, digest
+`2a4fe8605e5ccdec5f482b25c320b9c7d24094142e9ed833610a80c40ab93638`:
+1101 s no caminho reprovado, deploy 718 s e etapa reprovada 209 s.
+Evidência sanitizada local:
+`outputs/catalog-staging-f3211fc-canonical-38061729738-evidence/document-transport-correlation.json`.
+Estado remoto: zero operações concorrentes, fences, leases QA, overrides ativos
+e produtos; Cloudflare 705/705 deployments únicos, nenhum ativo; flag global OFF.
+CAT-001–010 não homologados; CAT-011 fora do escopo; CAT-012 pendente.
+Nenhuma publicação, carga comercial, cutover ou alteração em produção.
+
+### Histórico de 10 de outubro sobre a limpeza de sessões
 
 Canônico `38057930080/1`, SHA `ce1b425`, reprovou no encerramento G11:
 `G11_STAGING_MANAGEMENT_QUERY_FAILED:502:unknown` ao revogar sessões pela

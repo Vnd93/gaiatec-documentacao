@@ -26,6 +26,35 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+SHA `f3211fcf2f6194a91806d5b26d20e0629af38311`: CI `38060207911/1`
+verde nos sete jobs (362 s) e bridge `38060981114/1` verde. O pacote original
+`11673131369`, digest
+`d93dba1808ff9db93e031907178bf670bf3fa7f50a314a91092bc10a273c1028`,
+foi preservado e promovido sem rebuild. A validação canônica `38061729738/1`
+falhou na primeira janela pública G12: `/contato` retornou HTTP 503,
+81 de 82 respostas válidas. G11 e Chrome não chegaram a executar nessa tentativa.
+
+O trace `d1068ee7-23be-43bb-ae45-de18ecfed120` correlaciona o documento,
+Worker e backend: a primeira execução Edge terminou 503 em 1817 ms; a segunda
+terminou 200 em 1412 ms, depois da resposta de erro. O gateway registrou 503
+para o marcador da primeira tentativa. Isso comprova um erro HTTP do backend
+nesta ocorrência, não sua causa interna nem a causa do 503 histórico.
+
+Finalizador e watchdog `38062967880` concluíram com sucesso. Artefato terminal
+`11673513343`, digest
+`0511861b222f56f8814501202d5f53d28fe910f1ff606300f32992cac66abfe9`,
+verificado antes da extração: 82 respostas válidas, zero 5xx, p95 1061,907 ms,
+seis leases terminais e nenhum ativo. Nova consulta confirmou zero operações
+concorrentes, fences, leases QA, overrides ativos e produtos; flag global OFF.
+Produção permanece intocada. O diagnóstico local acrescenta correlação da leitura
+primária e identificação fechada da etapa de erro de `page-by-path`, somente em
+staging, sem alterar status, timeout, tentativas ou precedência. Os 47 testes
+focados passaram; validação integral e entrega deste diagnóstico estão pendentes.
+CAT-001–010 continuam implementados, não homologados; CAT-011 fora do escopo;
+CAT-012 e Chrome real autenticado pendentes.
+
+### Histórico da falha na limpeza de sessões
+
 O canônico `38057930080/1`, SHA `ce1b425`, reprovou na limpeza sintética
 G11: revogação de sessões recebeu `G11_STAGING_MANAGEMENT_QUERY_FAILED:502:unknown`
 da API de gestão do Supabase. Não foi um 503 de documento: os três probes
