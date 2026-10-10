@@ -24,7 +24,39 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro sobre desempenho administrativo
+### Checkpoint vigente de 10 de outubro sobre o diagnóstico de snapshot
+
+Fonte `a300c857f2807111d9ad29b30854738dfe3a0bd6`, enviada a `main`:
+validação local integral aprovada, 235 arquivos e 1644 testes da aplicação,
+contratos de segurança/release, avaliações e build de 19,47 s. CI
+`38071335889/1` verde nos sete jobs. Pacote original `11676818044`, digest
+`86fb408efe54624e6136814c3d2ad9515e30290f8d7d3b363e1dd942c7356d4f`,
+não implantado. O staging continua servindo `64a87ed`.
+
+O diagnóstico local de snapshot exige modo explícito, destino de evidência,
+SHA de fonte e SHA servido; é recusado no CI e não aprova release.
+A CLI foi fixada na versão 2.116.0 e no diretório canônico. Duas recusas de
+preflight ocorreram antes das fixtures: falta de vínculo local e argumento
+com aspas literais no Windows. A reprodução isolada comprovou
+`EINVALIDPACKAGENAME`; a correção tem regressão e preflight real aprovado.
+
+Uma janela serial, 20 aquecimentos e 20 medições, sem formulário ou lead
+ativos, concluiu de 17:17:40,975 a 17:18:05,130 UTC: p95 administrativo
+663 ms. Estatísticas do banco sem reset: 40 chamadas, 1868,572476 ms de
+execução agregada, 61183 hits de buffers e zero leituras físicas. A média
+agregada de 46,714 ms não atribui exclusivamente o intervalo ao diagnóstico
+nem explica a reprovação anterior de 3546 ms. Evidência local sanitizada
+`outputs/g11-snapshot-diagnostic-64a87ed-a300c85.json`, SHA-256
+`0227d483d0bc270ed83fde6a7a2ffab245b9517059b9ce6f3193cc4fe6430be6`.
+
+Dez checks passaram; dois leases encerrados, nove eventos imutáveis de
+auditoria e zero resíduo ativo. Estado real: zero leases QA, overrides
+ativos e produtos, flag global OFF. Próxima investigação: comparação
+isolada com fixture pertencente ao lease, sem entrega externa, produtos ou
+nova tentativa de release. CAT-001–010 não homologados; CAT-011 fora do
+escopo; CAT-012 pendente. HTTP 503 históricos continuam sem causa comprovada.
+
+### Histórico de 10 de outubro sobre desempenho administrativo
 
 SHA `64a87ed07a5f246fa86f14add0b669a60b08e8ff`: validação local integral
 aprovada, CI `38065762352/1` verde (sete jobs, 422 s), bridge
