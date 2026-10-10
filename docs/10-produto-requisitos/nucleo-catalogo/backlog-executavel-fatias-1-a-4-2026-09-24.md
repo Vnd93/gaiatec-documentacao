@@ -24,7 +24,48 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro sobre leitura de projeção e recuperação
+### Checkpoint vigente de 10 de outubro sobre a coleção pública
+
+O canônico `38048258644/1`, SHA `6cf5178b1cc294042fcca6c4196ae960f29577e2`,
+falhou em `public_collection_available:503`, depois de 47 testes públicos,
+mobile e acessibilidade, CSP, canário autenticado de backend e ciclo editorial
+aprovados. A janela temporal registra uma resposta Edge 503 em 2201 ms, mas
+não vincula a consulta PostgREST por trace; o identificador de execução é
+reutilizado. A causa permanece não comprovada.
+
+Finalizador e watchdog `38049964687` concluíram com sucesso. Artefato terminal
+`11669580720`, digest
+`8435c0b26f67e26b0cb99f263342efc2b00410016e257be243b73e046a4a0567`;
+métricas `11669186098`, digest
+`9ba2c4dbbb5c55cc7e6aa66b12341b27097734916ca409caf6e10adb08cd9e01`.
+Digests verificados antes da extração. Recuperação: 82 respostas, zero 5xx,
+p95 público 825,209 ms; pipeline com falha 1732 s, deploy 1233 s.
+Ausência de concorrência, leases QA, overrides habilitados e produtos confirmada;
+flag global permanece desligada. Evidência sanitizada local:
+`outputs/catalog-staging-6cf5178-canonical-38048258644-evidence/collection-edge-correlation.json`.
+
+Diagnóstico direcionado `7eb9c7fa488db3277df7683ee52435063815a04a` inclui
+somente a leitura primária de `products` na correlação por SHA/trace. O probe
+registra início e resposta sanitizados, continua reprovando HTTP 503 e não
+faz request adicional. Sem logs de payload, seletores, credenciais ou erros brutos.
+Validação local completa aprovada: 235 arquivos e 1639 testes Vitest, contratos,
+avaliações, segurança, lint, tipos e build; após revisão, 55 testes focados e dois
+testes do probe também aprovados. Build 19,05 s; orçamento inicial 799883 bytes.
+
+CI `38050782235/1`: sete jobs verdes, 334 s, qualidade 224 s. Pacote original
+`11669815028`, digest
+`e0382e8494dd6f57f690dcf72d9f1e3679f913272079c2c5281ed6b5d7170895`;
+arquivo dist `4b37602232c5c8f184f4080c844c0d2fa085c1aced98f37627c67992effe2230`;
+árvore `bddc767cc33817c3cb0bb8aa53aecb96ac17c2cff5dcae6021e0e78959937920`.
+Seleção/plano/métricas verificados por digest e validador oficial; produtor e
+gate attempt 1. Bridge e canônico deste SHA ainda pendentes. Não é homologação.
+
+Inventário vigente: CAT-001–CAT-010 implementados e aguardando gates reais;
+CAT-011 fora do escopo da entrega vazia; CAT-012 pendente de recuperação durável
+dos dados sintéticos, UAT manual das operações e rollback. Não reiniciar fatias
+concluídas nem tratar testes simulados como homologação. Produção, carga e cutover proibidos.
+
+### Histórico de 10 de outubro sobre leitura de entidade e recuperação
 
 O candidato `52be92c31f23fdb7a944fd078d299036cf26a41f` concluiu a CI
 `38042537850/1` e o bridge `38043253517/1`, com o pacote original

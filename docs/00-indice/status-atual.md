@@ -26,6 +26,26 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+Em 10 de outubro, o candidato `7eb9c7fa488db3277df7683ee52435063815a04a`
+concluiu a CI `38050782235/1`, com sete jobs aprovados em 334 s. O pacote
+original `11669815028` permanece selado; seleção, plano e métricas foram
+verificados por digest e pelo validador oficial. A instrumentação da coleção
+pública é restrita a staging, sem novos retries ou alteração de timeouts.
+Bridge e validação canônica deste candidato ainda estão pendentes.
+
+O canônico anterior `38048258644/1`, de `6cf5178`, falhou em
+`public_collection_available:503`, depois de 47 testes públicos/mobile/acessibilidade
+e do ciclo editorial aprovados. Finalizador e watchdog `38049964687` recuperaram
+staging com sucesso: 82 respostas, zero 5xx e p95 público de 825,209 ms.
+A causa no transporte/consulta ainda não foi comprovada. Catálogo vazio,
+flag global OFF, nenhum lease QA ou override habilitado ativo.
+Ainda faltam recuperação durável do catálogo sintético, homologação manual
+com Chrome autenticado e backend real, rollback funcional e relatório de entrega.
+Não carregar catálogo comercial nem alterar produção ou realizar cutover.
+[Checkpoint e evidências atuais](../10-produto-requisitos/nucleo-catalogo/backlog-executavel-fatias-1-a-4-2026-09-24.md).
+
+## Histórico da primeira validação de 10 de outubro
+
 Em 10 de outubro, CI `38042537850/1` e bridge `38043253517/1` aprovados
 para `52be92c31f23fdb7a944fd078d299036cf26a41f`, preservando o pacote
 selado original. Canônico `38044372481/1` reprovado por HTTP 503 em
