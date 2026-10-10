@@ -26,6 +26,41 @@ carga/cutover futuro não são dispensados nem bloqueiam a homologação do sist
 
 ### Checkpoint vigente de 10 de outubro sobre o diagnóstico de snapshot
 
+O CI `38072650903/1`, fonte `20fee6f`, terminou verde nos sete jobs.
+Pacote original `11677114581`, digest
+`65b6c19d81f7f93a2a217ce08ea4547f905ba29637561faf840c969407484d1e`,
+não implantado. O staging continua em `64a87ed`.
+
+A fonte `9da477363722316a0178b77278b89f4c5dc42e01` adicionou observação
+numérica de recursos durante o diagnóstico local: no máximo 13 leituras,
+intervalo mínimo de cinco segundos, sem sobreposição ou retries, sem
+labels ou dados pessoais. Validação integral local aprovada: 235 arquivos,
+1644 testes da aplicação, contratos, avaliações e build de 19,28 s.
+Uma janela de 17:49:53,629 a 17:50:49,475 UTC reproduziu p95 3537 ms,
+pico 4474 ms. Banco: 40 chamadas, 24264,68343 ms, 65165 hits, zero leituras
+físicas. As nove projeções de recursos eram idênticas; a atualização
+temporal não foi comprovada. Esses valores não excluem pressão de recursos
+durante o pico. Evidência local
+`outputs/g11-snapshot-resource-with-fixture-64a87ed-9da4773.json`, SHA-256
+`cd2938827e35cfcdac48a0116143ad32099a6b7237314f8faa974cc91c086adb`.
+
+A fonte `9f19fce84db24c7a2e643af1e58c7fe72a96543d` acrescentou contagens
+diretas e agregadas de `pg_stat_activity`, excluindo a própria conexão,
+sem query text ou identidades. Contratos G11, onze testes focados, lint,
+formatação e revisão aprovados. A janela de 17:54:52,594 a 17:55:19,860 UTC
+teve p95 1314 ms e pico 1468 ms. Banco: 40 chamadas, 4910,554357 ms,
+66150 hits, zero leituras físicas. Nas cinco amostras diretas, zero
+bloqueios, esperas de I/O e transações ociosas; zero ou uma conexão ativa.
+Isso não explica a janela anterior nem dispensa o gate canônico.
+Evidência local
+`outputs/g11-snapshot-live-waits-with-fixture-64a87ed-9f19fce.json`, SHA-256
+`85f3e398697cb58daf42436a9cdb348a8593966da7eccb865d569cee82810290`.
+
+Ambas as janelas tiveram 12 checks aprovados, dois leases encerrados,
+nove eventos imutáveis de auditoria e zero resíduo ativo. Sem entrega
+externa, produtos, ativação global, deploy ou mutação de produção.
+São diagnósticos, não aprovação de release ou Chrome UAT.
+
 Fonte `a300c857f2807111d9ad29b30854738dfe3a0bd6`, enviada a `main`:
 validação local integral aprovada, 235 arquivos e 1644 testes da aplicação,
 contratos de segurança/release, avaliações e build de 19,47 s. CI
