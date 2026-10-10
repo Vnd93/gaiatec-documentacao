@@ -24,7 +24,41 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro sobre a coleção pública
+### Checkpoint vigente de 10 de outubro sobre diagnóstico da janela medida
+
+O bridge `38051410344/1` do SHA `7eb9c7f` passou com os artefatos originais.
+O canônico `38052712195/1` reprovou uma resposta 5xx em `/`, com 81 de 82
+respostas válidas e p95 público de 616,872 ms. O finalizador reprovou no probe
+terminal. O watchdog `38053635334` recuperou staging: 82 respostas válidas,
+zero 5xx e p95 público 624,238 ms. Artefato `11670782411`, digest
+`8c875483a5160e7e4fd0bdb34fc081ab298c97cacc6bf1215228e0db9383eaa9`,
+verificado antes da extração; quatro leases terminais e zero ativos restantes.
+Ausência de operações concorrentes, produtos e overrides habilitados confirmada;
+flag global OFF. Evidência sanitizada local:
+`outputs/catalog-staging-7eb9c7f-canonical-38052712195-evidence/public-route-failure-correlation.json`.
+
+A janela temporal contém 127 respostas Edge `page-by-path` HTTP 200, com
+duração interna máxima de 356 ms. Isso não identifica a requisição falha nem
+comprova a causa: o probe não persistiu o diagnóstico calculado da janela medida
+sem um caminho opcional de saída. O SHA `48cda0bfcab508ede74399b22831af4d81605369`
+corrige somente esse registro. Uma resposta 503 permanece fatal, sem novo request;
+nenhum payload, corpo, header privado ou erro bruto é registrado.
+
+Check local completo aprovado: 235 arquivos/1640 testes Vitest, contratos,
+avaliações, segurança, lint, tipos e build de 20,19 s; 11 testes focados aprovados.
+CI `38054246328/1`: sete jobs verdes. Pacote original `11670509121`, digest
+`bb082829cd9668050d7d9f4c4680a7d486fa7aa1698ab8477eaca18174d21e96`;
+arquivo dist `7e3e5495dc9828187655f886b2d783254fde5257ce84bf5cc816e8244759a5a5`;
+árvore `85998a174a7edf000cc07cd9c387433e6f1d2ba2a938a9f103df940d9a52bb0a`.
+Seleção, plano e métricas verificados por digest e validador oficial; produtor
+e gate attempt 1. Bridge/canônico desse SHA ainda pendentes; não é homologação.
+
+CAT-001–CAT-010 permanecem implementados, não homologados; CAT-011 fora do
+escopo vazio; CAT-012 pendente de recuperação durável do catálogo sintético,
+UAT manual e rollback. Não reiniciar fatias nem relaxar gates para obter verde.
+Produção, carga comercial, publicação global e cutover continuam proibidos.
+
+### Histórico de 10 de outubro sobre a coleção pública
 
 O canônico `38048258644/1`, SHA `6cf5178b1cc294042fcca6c4196ae960f29577e2`,
 falhou em `public_collection_available:503`, depois de 47 testes públicos,

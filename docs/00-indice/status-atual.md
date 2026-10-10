@@ -26,6 +26,33 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+O candidato vigente é `48cda0bfcab508ede74399b22831af4d81605369`. A CI
+`38054246328/1` concluiu sete jobs com sucesso. O pacote original `11670509121`,
+digest `bb082829cd9668050d7d9f4c4680a7d486fa7aa1698ab8477eaca18174d21e96`,
+teve seleção, plano e métricas verificados por digest e pelo validador oficial.
+Bridge e validação canônica desse SHA ainda não foram executados.
+
+O bridge anterior `38051410344/1` passou, mas o canônico `38052712195/1`
+reprovou uma resposta 5xx em `/`: 81 de 82 respostas válidas, p95 público
+616,872 ms. O finalizador reprovou no probe terminal; o watchdog `38053635334`
+recuperou staging com 82 respostas válidas, zero 5xx e p95 de 624,238 ms.
+Seu artefato `11670782411` foi verificado por digest. Zero leases QA,
+overrides habilitados ativos e produtos; flag global OFF. Produção intocada.
+
+O probe calculava, mas não registrava o diagnóstico sanitizado da janela medida
+quando o workflow não definia um arquivo opcional. A correção vigente registra
+esse diagnóstico no log em caso de falha, sem alterar orçamento, timeout, retry
+ou resultado do gate. Validação completa local aprovada: 235 arquivos/1640
+testes Vitest, contratos, avaliações, lint, tipos e build; 11 testes focados
+incluem uma resposta 503 fatal, sem request adicional ou exposição de corpo/header
+privado. Isso corrige a perda de evidência, não comprova a causa dos 503.
+
+CAT-001–CAT-010 continuam implementados, não homologados. CAT-011 permanece
+fora do escopo comercial da entrega vazia; CAT-012 depende de recuperação
+durável dos dados sintéticos, Chrome autenticado com backend real e rollback.
+
+### Histórico de 10 de outubro sobre instrumentação da coleção
+
 Em 10 de outubro, o candidato `7eb9c7fa488db3277df7683ee52435063815a04a`
 concluiu a CI `38050782235/1`, com sete jobs aprovados em 334 s. O pacote
 original `11669815028` permanece selado; seleção, plano e métricas foram
