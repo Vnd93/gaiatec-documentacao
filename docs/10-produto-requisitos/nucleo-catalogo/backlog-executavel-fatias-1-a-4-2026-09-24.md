@@ -62,8 +62,15 @@ Correção mínima local em validação: preservar o relatório principal quando
 limpeza falha e seus diagnósticos sanitizados, mantendo status failed, saída não
 zero e a recuperação obrigatória. Eventos imediatos seguem para stderr e o
 artefato stdout permanece um documento JSON único, exigido pelo gate existente.
-Os 18 testes focados passaram; check completo e entrega desse complemento ainda
-pendentes. Nenhum timeout, retry, gate ou controle de segurança foi relaxado.
+Complemento local `7b4a17d0d6394b50dccdc5ec77218dca617cd33e`: 18 testes focados,
+91 contratos G7, 232 arquivos/1589 testes Vitest, demais contratos, avaliações de
+segurança, lint, tipos e build aprovados. Na execução ampla, dois contratos G7
+exigiam a antiga chamada direta; foram atualizados para provar a limpeza única,
+a saída não zero e a ausência de comprovação de resíduo zero em caso de falha.
+Os gates anteriores ainda válidos foram reutilizados e os afetados e restantes
+revalidados. Build: 18,05 s, quatro chunks iniciais/799883 bytes. CI e promoção
+desse complemento ainda pendentes. Nenhum timeout, retry, gate ou controle de
+segurança foi relaxado.
 
 Chrome real autenticado ainda não foi alcançado. CAT-001–010 permanecem
 implementados, não homologados; CAT-011 fora do escopo desta entrega vazia;
