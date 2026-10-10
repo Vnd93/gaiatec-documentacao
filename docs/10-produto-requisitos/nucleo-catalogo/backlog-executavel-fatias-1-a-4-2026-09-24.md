@@ -24,7 +24,54 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro — 503 no documento do artigo arquivado
+### Checkpoint vigente de 10 de outubro sobre a falha e a recuperação editorial
+
+CI `38028596441/1` aprovada nos sete jobs para
+`9e94d1e9e0095f455ab2891ed169399420022985`. Bridge `38029087139/1` aprovado,
+preservando o produtor e o pacote original `11661615141`, digest
+`ac897c8892a92c5c34f257df43025f980cea6011fd7921a9f2f72f3048f43a13`.
+Deployment canônico `ecce63fd-7015-4e7d-a3d8-2375c40408a0`, no SHA exato;
+restauração do backend legado validada, sem rebuild ou operação em produção.
+Promoção: 760 s; convergência do legado: 121 s.
+
+Validação canônica `38030018015/1` falhou no ciclo editorial governado, entre
+06:29:53Z e 06:31:34Z. Uma exceção da limpeza sobrescreveu o relatório principal,
+deixando o artefato de lifecycle com zero bytes. O SQLSTATE `57014` registrado às
+06:30:57,361Z referencia `cms_feature_flag_overrides`; não comprova falha na
+projeção de produtos nem a causa dos 503 históricos. Não há diagnóstico documental
+nesse run que permita atribuir a falha original ao Worker, transporte ou backend.
+
+Finalizador aprovado e watchdog `38031423537` concluído com sucesso. ZIPs
+verificados antes da extração: terminal `11661764419`,
+`8357a7a5ac210b604a00c1621589d3c40691ec29b1e2e7a7bee5abf94350756c`;
+preliminar `11662018811`,
+`f4516fed772bc3d276c019cd46adf124131960d0132e545d9853fac376bb079e`;
+métricas `11662099131`,
+`13ecd16ea9f3a58cca80a8de1c2cfa00bff6fdc5a74ee7dd36d56e6290f02056`.
+Probe terminal: 82 respostas, 100% de disponibilidade, zero 5xx, p95 520,977 ms.
+Deploy: 1127 s; três janelas G12: 292 s. Isso confirma recuperação, não homologação.
+
+Retomada confirmou Vnd93, main sincronizada, handoff do mesmo holder, zero
+workflows/fences concorrentes, 673 deployments únicos sem operação ativa, health
+no SHA exato, zero leases QA e overrides ativos, zero produtos e flag global OFF.
+As três linhas antigas de overrides expirados foram preservadas. Uma leitura
+equivalente por ator sintético inexistente levou 0,157 ms, sem locks atuais;
+não explica retrospectivamente o timeout.
+
+Correção mínima local em validação: preservar o relatório principal quando a
+limpeza falha e seus diagnósticos sanitizados, mantendo status failed, saída não
+zero e a recuperação obrigatória. Eventos imediatos seguem para stderr e o
+artefato stdout permanece um documento JSON único, exigido pelo gate existente.
+Os 18 testes focados passaram; check completo e entrega desse complemento ainda
+pendentes. Nenhum timeout, retry, gate ou controle de segurança foi relaxado.
+
+Chrome real autenticado ainda não foi alcançado. CAT-001–010 permanecem
+implementados, não homologados; CAT-011 fora do escopo desta entrega vazia;
+CAT-012 pendente. Próximo passo é concluir a validação e entrega do diagnóstico,
+investigar a falha preservada e completar a homologação, sem repetir fases
+concluídas nem carregar dados comerciais. Produção permanece intocada.
+
+### Checkpoint histórico de 10 de outubro sobre o 503 no artigo arquivado
 
 O diagnóstico de preview foi implementado no controle
 `684593052b87ce47e6e6fd46323cd0d97db261e2`, validado integralmente e aprovado
