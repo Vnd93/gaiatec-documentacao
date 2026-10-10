@@ -24,7 +24,48 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro sobre a correlação da leitura editorial
+### Checkpoint vigente de 10 de outubro sobre a política de retries
+
+O diagnóstico `eb8092e9c122ffeafe7d46b28c044af5de764523` passou nos sete jobs
+da CI `38036857823/1`. Ainda não foi promovido em staging: antes de uma nova
+entrega, foi reproduzida uma violação concreta do orçamento de transporte.
+
+O PostgREST 2.112.4 selado para as Edge Functions habilita três retries por
+padrão, com esperas de 1, 2 e 4 segundos. Cada tentativa do SDK envolve as
+duas tentativas de 900 ms do transporte existente. Em teste isolado, sem
+rede e com relógio controlado, uma leitura permanentemente bloqueada fez
+oito chamadas e terminou em 14200 ms. Com o retry do SDK desligado, foram
+duas chamadas e 1800 ms, sem alterar o limite do transporte ou do Worker.
+
+O pacote oficial foi verificado por SRI antes da extração. O bundle
+PostgREST testado tem SHA256
+`d457ad36136e6c47328fb948aff16bc74058885d07e7a2a61b2adb9d600a4dd0`.
+O código oficial do wrapper Supabase 2.112.4 também foi verificado:
+repassa `db.retry` ao PostgREST. O wrapper local 2.105.3 não repassa essa
+opção; por isso as regressões versionadas exercitam o proprietário do
+retry diretamente. Nenhuma dependência ou versão de runtime foi alterada.
+
+A correção mínima no cliente público desliga apenas o retry interno do
+SDK. Preserva as duas leituras limitadas pelo transporte, não repete
+escritas ambíguas nem erros HTTP 400, 403, 409, 503 e 520 para obter verde.
+Dez regressões versionadas e dois testes isolados da versão exata passaram.
+Correção `d381676384cb3251f20ef3589016a4f9277bc7d5`, três arquivos próprios,
+110 inserções, revisada e validada integralmente: 234 arquivos e 1615 testes
+Vitest, demais contratos, avaliações de segurança, lint e tipos aprovados.
+Build em 18,09 s; quatro chunks iniciais e 799883 bytes. CI, pacote selado
+e gates em staging vinculados a esse novo SHA continuam necessários.
+Referência: [política oficial de retries](https://supabase.com/docs/guides/api/automatic-retries-in-supabase-js).
+
+A sobreposição de retries está comprovada, mas isso não identifica a
+causa inicial da lentidão de cada incidente nem comprova a resolução do
+503 mobile histórico. A instrumentação de headers, corpo e consulta é
+preservada para correlacionar a próxima validação controlada. Não repetir
+o candidato antigo, reconstruir artefatos equivalentes, aumentar prazos
+ou aceitar o 503. CAT-001–010 permanecem implementados e não homologados;
+CAT-011 está fora do escopo vazio; CAT-012 permanece pendente. Flag global
+OFF, zero produtos e produção intocada.
+
+### Checkpoint histórico de 10 de outubro sobre a correlação da leitura editorial
 
 CI `38032919187/1` aprovada nos sete jobs para
 `7b4a17d0d6394b50dccdc5ec77218dca617cd33e`. Bridge `38033671093/1` aprovado,
