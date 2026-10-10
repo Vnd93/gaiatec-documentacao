@@ -8,7 +8,7 @@ fase: execucao
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-10-09
+ultima_revisao: 2026-10-10
 fonte_canonica: gaiatec-documentacao
 substitui:
   - gaiatec-status-atual-2026-09-06
@@ -25,6 +25,25 @@ relacionados:
 # Status atual do site e CMS GAIATEC
 
 ## Estado vigente — entrega vazia para operação manual
+
+Em 10 de outubro, CI `38042537850/1` e bridge `38043253517/1` aprovados
+para `52be92c31f23fdb7a944fd078d299036cf26a41f`, preservando o pacote
+selado original. Canônico `38044372481/1` reprovado por HTTP 503 em
+`/industrias/saneamento`; 46 testes aprovados e três ignorados. A correlação
+documento–Worker–Edge comprova a resposta 503 de `entity-detail`, mas não
+a causa da falha no transporte ou na consulta. Sem rerun cego.
+
+Finalizador e watchdog `38045678647` verdes; artefatos terminais verificados
+por digest. Sonda de recuperação: 82 respostas, zero 5xx e p95 656,953 ms,
+com SHA e budgets exatos. Ausência de operações concorrentes/fences e
+resíduos QA ativos reconfirmada. Catálogo vazio e flag global OFF.
+Instrumentação direcionada da leitura primária em validação local, sem
+alterar timeouts, retries ou resultados HTTP. Ainda não homologado em
+Chrome real; CAT-012, fluxo manual do catálogo e relatório final pendentes.
+Produção, carga comercial e cutover permanecem proibidos.
+[Checkpoint e evidências atuais](../10-produto-requisitos/nucleo-catalogo/backlog-executavel-fatias-1-a-4-2026-09-24.md).
+
+## Histórico da retomada de 9 de outubro
 
 Retomada em 9 de outubro: candidato de diagnóstico
 `add1312b1edbc4f9ac8de4d653754c11993fcc9a`, validação local integral verde

@@ -24,7 +24,55 @@ da lista nominal nos checkpoints históricos abaixo, que permanecem preservados.
 CAT-011 é **fora do escopo desta entrega vazia**, não `done`; os gates de eventual
 carga/cutover futuro não são dispensados nem bloqueiam a homologação do sistema vazio.
 
-### Checkpoint vigente de 10 de outubro sobre renderização e recuperação
+### Checkpoint vigente de 10 de outubro sobre leitura de projeção e recuperação
+
+O candidato `52be92c31f23fdb7a944fd078d299036cf26a41f` concluiu a CI
+`38042537850/1` e o bridge `38043253517/1`, com o pacote original
+`11665424890`, digest
+`436486d202c11f3eaa25ccfa433ff4d8304a1668a6eb0ed2d3840c40bd5c672b`.
+Sem rebuild. A validação canônica `38044372481/1` falhou no documento
+`/industrias/saneamento`: HTTP 503, 46 testes aprovados e três ignorados.
+O diagnóstico de renderização registrou sete módulos HTTP 200, nenhuma
+leitura de página, nenhum erro de execução e zero eventos descartados.
+
+A correlação exata de documento, Worker e Edge identifica `entity-detail`:
+documento em 2235 ms; Worker recebeu HTTP 503 em 2071 ms; Edge terminou
+HTTP 503 em 1811 ms. Isso não identifica a causa no transporte ou na
+consulta PostgREST. O identificador de execução da função é reutilizado
+entre invocações; respostas posteriores HTTP 200 do gateway não são prova
+da consulta que falhou. A atribuição ao service worker também não prova
+que ele causou a falha. Evidência sanitizada preservada, sem payloads,
+seletores, credenciais ou mensagens brutas de erro.
+
+Finalizador e watchdog `38045678647` concluíram com sucesso. ZIP terminal
+`11667263774`, digest
+`3c11fc05d673958ab47907a8d12e4a901c11d056791e4d61fcfc985d22bd2e9f`;
+métricas `11666943114`, digest
+`b973bd942ff5aea89909c7fa05cf84fd99c146e76a1f650b7d78ef39e4962095`.
+Digests verificados antes da extração. Sonda terminal: 82 respostas,
+100% disponibilidade, zero 5xx, p95 656,953 ms, SHA e budgets exatos.
+Pipeline observado: 1348 s; deploy: 962 s; três janelas G12: 267 s;
+finalização: 220 s. Caminho com falha, não comparação de caminho feliz.
+
+Instrumentação mínima `6cf5178b1cc294042fcca6c4196ae960f29577e2`: leitura primária `entity-detail`
+e `detail`, com trace vinculado ao SHA, headers, consumo único do corpo,
+duração da consulta e classificação fechada do envelope do SDK. Exclui
+leituras relacionadas, outras tabelas, outros ambientes e escritas.
+Mantém duas tentativas de 900 ms, os resultados HTTP e os controles.
+Não é correção de causa comprovada nem autorização para rerun cego.
+Quatro arquivos próprios revisados; validação integral local aprovada:
+235 arquivos e 1635 testes Vitest, contratos, avaliações, segurança,
+formatação, lint, tipos e build em 19,25 s, com 799883 bytes iniciais.
+Novo SHA exige CI, artefatos selados e gates próprios antes de staging.
+
+Retomada: GitHub `Vnd93`, checkouts canônicos sincronizados, zero operações
+concorrentes e fences, 688 deployments únicos sem atividade, zero leases
+QA/overrides ativos/produtos e flag global OFF. CAT-001–010 implementados,
+não homologados; CAT-011 fora do escopo vazio; CAT-012 pendente de recovery
+durável do catálogo, Chrome autenticado, backend real, rollback e resíduo
+ativo zero. Nenhuma carga comercial, produção ou cutover.
+
+### Checkpoint histórico de 10 de outubro sobre renderização e recuperação
 
 A correção `d381676384cb3251f20ef3589016a4f9277bc7d5` passou nos sete jobs
 da CI `38038282653/1`. Bridge `38039040077/1` aprovado, com validador
