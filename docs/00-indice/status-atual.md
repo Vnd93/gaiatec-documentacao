@@ -26,6 +26,21 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Verificações reais de leitura em 10 de outubro
+
+Chrome real autenticado confirmou catálogo em preparação, menu mobile com
+contenção e restauração de foco e três famílias editoriais fechadas com
+`noindex`. Nenhum produto ou conteúdo foi criado; flag global OFF, QA ativo e
+manifest aberto iguais a zero. A busca editorial falhou por solicitar
+`content_id` em uma tabela cuja chave real é `item_id`; a correção mínima nas
+buscas de artigos e produtos foi commitada em
+`a6c2c2e2a3004cea8c0d51084b9a16a606a12939` e passou em 11 regressões focadas
+e no `npm run check` integral (238 arquivos, 1.681 testes). Ainda não foi
+homologada no ambiente. Consulte o
+[registro de leitura e busca administrativa](../10-produto-requisitos/nucleo-catalogo/registro-chrome-leitura-e-busca-administrativa-2026-10-10.md).
+O 503 e o ciclo de escrita/recuperação real permanecem pendentes; inspeção do
+catálogo fechado não equivale à entrega homologada.
+
 ### Atualização da preparação em 10 de outubro
 
 CMS `main` em `7ed72cc9cf277b57569149495a04d116a905b727`, CI
