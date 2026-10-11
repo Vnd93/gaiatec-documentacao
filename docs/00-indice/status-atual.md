@@ -26,6 +26,18 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Recusas da recuperação e nova observação do 503
+
+Quatro gates negativos passaram no banco real sem criar produtos, atores ou
+habilitar a flag. O preflight oficial confirmou `catalog_qa_recovery_0118_exact=true`;
+zero produtos do novo catálogo, leases QA ativos e manifests abertos.
+O 503 histórico teve boot de 44 ms e handler executado, com `EDGE_FUNCTION_ERROR`,
+não uma recusa de boot. Sua fase nativa de transporte continua não comprovada.
+Chrome real renderizou a rota na observação atual, sem provar correção causal.
+Não houve novo deploy. A compensação positiva após interrupção continua pendente,
+sem usar um ciclo vazio como homologação. Consulte o
+[registro de recuperação negativa e 503](../10-produto-requisitos/nucleo-catalogo/registro-recuperacao-negativa-e-503-2026-10-10.md).
+
 ### Promoção da correção e buscas funcionais em staging
 
 O bridge `38099931970/1` concluiu verde em 539 s, promovendo os mesmos bytes
