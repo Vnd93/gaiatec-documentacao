@@ -26,6 +26,14 @@ carga/cutover futuro não são dispensados nem bloqueiam a homologação do sist
 
 ### Estado da entrega vazia em 10 de outubro
 
+Preparação operacional atual:
+[roteiro de homologação do sistema vazio em staging](roteiro-homologacao-sistema-vazio-staging-2026-10-10.md).
+A recuperação 0118 passou no preflight remoto somente leitura; o ciclo real
+com transações separadas e Chrome autenticado continua pendente. CI
+`38093863981/1` verde em `7ed72cc`; staging preservado em `46d4fef`, sem novo
+release após o 503 reproduzido. Chamado sanitizado enviado ao suporte. As
+validações e fotografias históricas abaixo não substituem essas pendências.
+
 O contrato `CatalogManualSystemUatSchema`, fonte CMS
 `247c605125fe68aff384c7a6d39430f191689f1a`, separa homologação do sistema
 manual da lista comercial CAT-011. Exige provas dos sete fluxos funcionais,

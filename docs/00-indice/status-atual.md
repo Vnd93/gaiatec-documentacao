@@ -26,6 +26,27 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Atualização da preparação em 10 de outubro
+
+CMS `main` em `7ed72cc9cf277b57569149495a04d116a905b727`, CI
+`38093863981/1` verde nos sete jobs. Staging preserva
+`46d4fef53d5c3bd728898f31d909ea0219e29e77`; canônico `38091738439/1`
+reprovado, finalizador e watchdog `38093214688` concluídos com sucesso.
+O 503 posterior foi reproduzido em Chrome real: duas tentativas expiraram
+antes dos headers. Chamado sanitizado enviado ao Supabase sem acesso humano/IA
+adicional ao projeto. A causa interna continua pendente, sem novo release.
+
+Preflight somente leitura `catalog_qa_recovery_0118_exact=true`, zero leases
+QA ativos, manifests abertos e produtos, flag global OFF. A recuperação instalada
+não equivale ao ciclo real homologado. O
+[roteiro de homologação do sistema vazio](../10-produto-requisitos/nucleo-catalogo/roteiro-homologacao-sistema-vazio-staging-2026-10-10.md)
+prepara os sete fluxos, nove gates, transações separadas e evidência vinculada ao
+candidato. Nenhuma fixture de produto, mutação de staging, carga comercial ou
+alteração em produção foi executada nesta preparação documental. CAT-001–010
+continuam não homologados; CAT-011 fora do escopo; CAT-012 pendente.
+
+### Histórico da validação do candidato 64a87ed
+
 SHA `64a87ed07a5f246fa86f14add0b669a60b08e8ff`: validação local integral
 aprovada, CI `38065762352/1` verde nos sete jobs (422 s) e bridge
 `38066354913/1` verde (674 s). O pacote original `11674632761`, digest
