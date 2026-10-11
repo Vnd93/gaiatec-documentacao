@@ -73,6 +73,16 @@ arquivos próprios, 26 inserções e quatro remoções. `npm run check` passou:
 238 arquivos Vitest, 1.681 testes, contratos, avaliações, lint, tipos e build
 em 19,73 segundos. A revisão do diff e `git diff --check` passaram.
 
+O [CI 38099349665](https://github.com/Vnd93/gaiatec-cms/actions/runs/38099349665)
+concluiu com sucesso nos sete jobs, no SHA exato acima. Durações: plano 15 s,
+runtime 148 s, banco 149 s, qualidade 214 s, navegador 109 s, pacote 100 s e
+métricas 8 s, com validações independentes paralelas. O pacote original de staging
+é o artefato `11687154595`, digest de arquivo informado pelo GitHub
+`sha256:f0b4581a01287ec23910b46f32dc5b92c596cdfe43ef2e2439fc194804f7b6fe`.
+O pacote não foi baixado, promovido nem recompilado para deploy nesta sessão.
+Plano `11687260455`, seleção `11687054861` e métricas `11687460378` permanecem
+vinculados ao mesmo produtor e tentativa 1.
+
 O ajuste ainda precisa ser homologado em staging depois da promoção dos bytes
 selados e dos gates aplicáveis. Não declarar que a busca observada no Chrome já
 foi corrigida no ambiente remoto. O 503 público continua com causa interna do

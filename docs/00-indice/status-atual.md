@@ -36,7 +36,8 @@ manifest aberto iguais a zero. A busca editorial falhou por solicitar
 buscas de artigos e produtos foi commitada em
 `a6c2c2e2a3004cea8c0d51084b9a16a606a12939` e passou em 11 regressões focadas
 e no `npm run check` integral (238 arquivos, 1.681 testes). Ainda não foi
-homologada no ambiente. Consulte o
+homologada no ambiente. CI `38099349665/1` concluiu verde nos sete jobs e selou
+o pacote original `11687154595`, ainda não promovido. Consulte o
 [registro de leitura e busca administrativa](../10-produto-requisitos/nucleo-catalogo/registro-chrome-leitura-e-busca-administrativa-2026-10-10.md).
 O 503 e o ciclo de escrita/recuperação real permanecem pendentes; inspeção do
 catálogo fechado não equivale à entrega homologada.
