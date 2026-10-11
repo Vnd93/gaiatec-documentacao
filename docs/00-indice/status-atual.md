@@ -26,6 +26,24 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Promoção da correção e buscas funcionais em staging
+
+O bridge `38099931970/1` concluiu verde em 539 s, promovendo os mesmos bytes
+do pacote original `11687154595` do CI `38099349665/1`, sem rebuild.
+O deployment canônico `f7761b44-4816-44cc-ae4b-9cd833daf89b` confirma o SHA
+`a6c2c2e2a3004cea8c0d51084b9a16a606a12939`. Recuperação durável antes da
+mutação, CAS, restauração do backend, limpeza e resíduo passaram; watchdog
+`38100447116` terminou como `skipped`. Zero concorrência, fences, QA ativo,
+manifests abertos e produtos do novo catálogo; flag global OFF.
+
+Chrome real autenticado verificou buscas positivas e vazias de artigos e
+produtos, limpeza dos filtros, combinação por situação e mobile sem overflow,
+usando somente registros preexistentes. Não houve cadastro, carga ou produção.
+A captura de screenshot falhou; os resultados funcionais do DOM não equivalem
+à homologação visual completa, à resolução do 503 nem ao ciclo real de escrita
+e recuperação do catálogo. Consulte o
+[registro da promoção e buscas](../10-produto-requisitos/nucleo-catalogo/registro-promocao-e-buscas-staging-2026-10-10.md).
+
 ### Verificações reais de leitura em 10 de outubro
 
 Chrome real autenticado confirmou catálogo em preparação, menu mobile com
