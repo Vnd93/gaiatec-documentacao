@@ -8,7 +8,7 @@ fase: execucao
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-10-10
+ultima_revisao: 2026-10-11
 fonte_canonica: gaiatec-documentacao
 substitui:
   - gaiatec-status-atual-2026-09-06
@@ -25,6 +25,19 @@ relacionados:
 # Status atual do site e CMS GAIATEC
 
 ## Estado vigente — entrega vazia para operação manual
+
+### Recuperação positiva no backend de staging
+
+Em 11 de outubro, a autorização de fixtures sintéticas isoladas permitiu comprovar
+COMMIT do manifest antes das escritas, autenticação real AAL2 por SDK, override
+somente QA, criação/reabertura de dois rascunhos e compensação pelo hook terminal
+após interrupção do executor. O CMS permanece `a6c2c2e`; não houve novo release.
+O banco confirmou manifest `cleaned`, dois produtos sintéticos arquivados, um termo
+inativo, oito eventos de auditoria preservados, zero sessões/overrides/QA ativos
+e recuperação aberta, com global OFF e produção intocada. Isso não é prova de
+Chrome: conflito/CAS, relações, editorial e gates completos continuam pendentes,
+assim como a causa interna do 503. A contagem histórica de fixtures não é carga
+comercial. Ver [evidência e limites](../10-produto-requisitos/nucleo-catalogo/registro-recuperacao-positiva-backend-2026-10-11.md).
 
 ### Recusas da recuperação e nova observação do 503
 
