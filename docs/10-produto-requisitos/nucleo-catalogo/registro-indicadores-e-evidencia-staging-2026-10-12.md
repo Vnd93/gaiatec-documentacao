@@ -82,8 +82,12 @@ houve nova falha HTTP 503 nessa etapa.
 
 A correção mínima separa os dois diagnósticos no stderr, mantendo apenas o
 relatório final no stdout. O gate continua recusando JSON misturado e um 503
-continua fatal, sem retry. Dez testes focados passaram; a validação integral e
-a entrega dessa correção seguem pendentes deste registro.
+continua fatal, sem retry. Dez testes focados e a validação integral passaram:
+240 arquivos Vitest, 1.688 testes, suites de segurança/release e build em
+18,07 segundos. A correção foi commitada em
+`7951ed36753581466803a976f27be57ae26aef97`, com três arquivos próprios e checkout
+limpo. CI, selagem e promoção desse novo SHA continuam pendentes; a evidência do
+candidato anterior não os substitui.
 
 Finalizador e [watchdog 38300477200](https://github.com/Vnd93/gaiatec-cms/actions/runs/38300477200)
 terminaram com sucesso. O backend convergiu para o candidato forward, em vez

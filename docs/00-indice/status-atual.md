@@ -37,8 +37,9 @@ acessibilidade, CSP e ciclo editorial, mas recusou `g12-staging-boundary.json`
 por conter três objetos JSON concatenados. A coleção retornou 200 nessa etapa;
 isso não prova a causa dos 503 históricos. Finalizador e watchdog concluíram a
 recuperação, com zero QA, manifestos abertos ou operações concorrentes e global
-OFF. A correção mínima do formato passou nos testes focados; validação integral,
-pipeline completo e Chrome autenticado permanecem pendentes. Ver
+OFF. A correção mínima do formato, commitada em `7951ed3`, passou nos testes
+focados e na validação integral. CI, selagem, promoção, pipeline completo e
+Chrome autenticado desse novo SHA permanecem pendentes. Ver
 [diagnóstico dos indicadores e evidência](../10-produto-requisitos/nucleo-catalogo/registro-indicadores-e-evidencia-staging-2026-10-12.md).
 
 ### Mensagens homologadas no Chrome e recuperação concluída
