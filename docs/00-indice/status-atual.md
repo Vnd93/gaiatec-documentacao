@@ -26,6 +26,21 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Indicadores corrigidos no banco e evidência canônica reprovada
+
+Staging serve `2ade633e`, com a migration 0119 aplicada e verificada: o timeout
+da auditoria foi correlacionado ao escopo QA avaliado por evento; a política
+agora pré-filtra os atores candidatos sem remover os guards originais. CI e
+bridge passaram com os artefatos originais. O canônico `38297942976` passou
+pelos gates automáticos de migrations, compatibilidade, saúde, mobile,
+acessibilidade, CSP e ciclo editorial, mas recusou `g12-staging-boundary.json`
+por conter três objetos JSON concatenados. A coleção retornou 200 nessa etapa;
+isso não prova a causa dos 503 históricos. Finalizador e watchdog concluíram a
+recuperação, com zero QA, manifestos abertos ou operações concorrentes e global
+OFF. A correção mínima do formato passou nos testes focados; validação integral,
+pipeline completo e Chrome autenticado permanecem pendentes. Ver
+[diagnóstico dos indicadores e evidência](../10-produto-requisitos/nucleo-catalogo/registro-indicadores-e-evidencia-staging-2026-10-12.md).
+
 ### Mensagens homologadas no Chrome e recuperação concluída
 
 Em 12 de outubro, o SHA `0dd17227` passou pela homologação focada no Chrome real,
