@@ -26,6 +26,20 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Mensagens homologadas no Chrome e recuperação concluída
+
+Em 12 de outubro, o SHA `0dd17227` passou pela homologação focada no Chrome real,
+com senha definida pelo responsável, MFA/AAL2 e backend staging: slug duplicado
+recusado com mensagem correta, sucesso editorial limpo diante de formulário
+inválido e de mudança de termo. O convite anterior estava expirado; um reenvio
+oficial para a mesma identidade pendente chegou à definição de senha, sem
+ampliar validade ou lease. A limpeza durável encerrou um produto, dois termos e
+um editorial, preservando nove auditorias e duas revisões; QA, sessões,
+permissões, overrides, recuperação aberta, snapshots e outbox ativos zerados.
+Flag global OFF e produção intocada. O 503, os indicadores e os gates integrais
+continuam pendentes; não é declaração de sistema pronto. Ver
+[homologação focada e recuperação](../10-produto-requisitos/nucleo-catalogo/registro-homologacao-mensagens-chrome-2026-10-12.md).
+
 ### Correções de mensagens promovidas em staging
 
 Staging agora serve `0dd17227`, com duplicidade distinguida de conflito CAS e
