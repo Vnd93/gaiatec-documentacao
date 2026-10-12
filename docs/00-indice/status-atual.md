@@ -26,6 +26,18 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Correções de mensagens promovidas em staging
+
+Staging agora serve `0dd17227`, com duplicidade distinguida de conflito CAS e
+avisos editoriais anteriores limpos. Quatro regressões reproduziram os desvios;
+check completo, CI `38193383120/1` e bridge `38194011137/1` passaram. O pacote
+original selado foi promovido sem rebuild; watchdog `38194755204` terminou skipped,
+com zero concorrência, QA e recuperação aberta, global OFF e produção intocada.
+As três famílias editoriais continuam fechadas/noindex no Chrome sem sessão.
+As mensagens corrigidas ainda precisam de revalidação autenticada no novo SHA;
+503 e indicadores permanecem pendentes. Ver
+[bindings, tempos e limites da promoção](../10-produto-requisitos/nucleo-catalogo/registro-correcao-mensagens-staging-2026-10-12.md).
+
 ### Chrome real e recuperação durável do ciclo completo isolado
 
 Em 12 de outubro UTC, Chrome autenticado com MFA/AAL2 comprovou cadastro manual
