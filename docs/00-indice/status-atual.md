@@ -8,7 +8,7 @@ fase: execucao
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-10-11
+ultima_revisao: 2026-10-12
 fonte_canonica: gaiatec-documentacao
 substitui:
   - gaiatec-status-atual-2026-09-06
@@ -25,6 +25,18 @@ relacionados:
 # Status atual do site e CMS GAIATEC
 
 ## Estado vigente — entrega vazia para operação manual
+
+### Chrome real e recuperação durável do ciclo completo isolado
+
+Em 12 de outubro UTC, Chrome autenticado com MFA/AAL2 comprovou cadastro manual
+sintético, conflito CAS em duas abas, histórico/restauração, recusa real de edição
+sem permissão, composição, heranças e rascunhos das três famílias editoriais.
+O hook terminal encerrou quatro produtos, quatro termos, três relações, duas
+heranças e três editoriais; zero resíduos e acessos QA ativos, com 37 auditorias
+e 12 revisões preservadas. A flag global continuou OFF e produção intocada.
+O SHA testado permanece `a6c2c2e2`; isso não aprova a entrega integral: 503,
+indicadores, dois desvios de mensagens e demais gates estão discriminados na
+[evidência e inventário de pendências](../10-produto-requisitos/nucleo-catalogo/registro-chrome-qa-recuperacao-2026-10-12.md).
 
 ### Recuperação positiva no backend de staging
 
