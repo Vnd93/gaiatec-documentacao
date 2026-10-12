@@ -26,6 +26,19 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Correção da evidência promovida e gate administrativo reprovado
+
+Staging serve `7951ed3`. CI `38301399256` e bridge `38302262780` passaram com o
+pacote original selado `11771081446`. O canônico `38303496333` reprovou a medição
+administrativa G11: p95 de 2.147 ms contra limite de 2.000 ms, após 20 aquecimentos
+e em uma única janela de 20 amostras. Não foi uma nova reprovação HTTP 503 nem
+autorização para elevar o limite ou repetir o release. Finalizador e watchdog
+`38305298324` terminaram com sucesso; o probe terminal passou e foram confirmados
+zero QA, manifesto aberto, fence ou operação concorrente, com global OFF. A
+causa da cauda de latência e do 503 histórico permanece sem comprovação; a
+homologação autenticada e os gates integrais não estão concluídos. Ver
+[diagnóstico e estado da promoção](../10-produto-requisitos/nucleo-catalogo/registro-indicadores-e-evidencia-staging-2026-10-12.md#promoção-da-correção-e-reprovação-de-desempenho).
+
 ### Indicadores corrigidos no banco e evidência canônica reprovada
 
 Staging serve `2ade633e`, com a migration 0119 aplicada e verificada: o timeout

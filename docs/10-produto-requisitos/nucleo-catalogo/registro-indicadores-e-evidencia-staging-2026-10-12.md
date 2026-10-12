@@ -119,3 +119,78 @@ sistema pronto e homologado integralmente nem liberação em produção. A próx
 identidade QA deve ser nova, temporária e isolada; o responsável realiza senha
 e MFA. O cadastro comercial fica a cargo do operador, sem importação ou carga
 de produtos por esta execução.
+
+## Promoção da correção e reprovação de desempenho
+
+A correção `7951ed36753581466803a976f27be57ae26aef97` passou no
+[CI 38301399256](https://github.com/Vnd93/gaiatec-cms/actions/runs/38301399256):
+sete jobs verdes em 370 segundos. O verificador canônico aceitou a seleção sem
+violações; os ZIPs de seleção, plano e migrations foram verificados em memória.
+
+- Pacote original `11771081446`, digest
+  `43f7769dfa764f40db0f9eeca0d5cbd8b70537a458943df4067e1a2cefd574b1`.
+- Seleção `11770581878`, digest
+  `af7b2fea2ebed0cf2fe4389d3a4c9315b0e4feb255e6f0809b830448f6ae1590`.
+- Payload de migrations `11770616399`, digest
+  `665e77f53c781b188a752874c057ff58fdbfe586d7150272ca8e0c4b056a6444`.
+- Perfil `full-release`, confiança `bootstrap-full`, sem redução de gates.
+- [Bridge 38302262780](https://github.com/Vnd93/gaiatec-cms/actions/runs/38302262780)
+  aprovado, com restauração obrigatória e watchdog `38303292385` skipped.
+- Evidência v5 `11770613779`, digest
+  `d2edc91474d3ec178d44730385c397f94882a3d2ee6f4e54405774556ba4e4da`,
+  validada com pacote, SHA, perfil e digests exatos.
+- Deployment canônico `97e680a4-f645-4708-baa6-a695e43e34df`.
+
+O [canônico 38303496333](https://github.com/Vnd93/gaiatec-cms/actions/runs/38303496333)
+passou preflight, fonte, baseline, migrations e compatibilidade, mas G11 reprovou
+a medição administrativa. Entre `20:31:24Z` e `20:33:25Z`, uma janela serial de
+20 amostras, precedida de 20 aquecimentos, produziu:
+
+| Medida                                 | p95 observado                |
+| -------------------------------------- | ---------------------------- |
+| Leitura administrativa no servidor     | 2.147 ms, limite de 2.000 ms |
+| Parcela RPC                            | 2.140 ms                     |
+| Parcela do núcleo de snapshot no banco | 1.691 ms                     |
+| Leitura administrativa no aquecimento  | 545 ms                       |
+| Parede da chamada administrativa       | 2.411,07 ms                  |
+
+As cinco primeiras amostras medidas foram inferiores a 226 ms; as seguintes
+aumentaram, chegando a 3.080 ms no servidor. Isso localiza a variação em
+servidor/RPC, incluindo banco, mas não comprova CPU, I/O, lock, transporte ou
+defeito SQL específico como causa. As consultas sanitizadas de logs não
+forneceram registros do endpoint administrativo nem erros PostgreSQL nessa
+janela; isso não prova ausência de entrega ou de erro.
+
+O resultado permaneceu reprovado, sem elevar limites, mudar estimador, aumentar
+aquecimento, escolher outra janela ou repetir release. Os três checks de revisão
+da medição não chegaram à aprovação. Chrome foi skipped, sem challenge. O gate
+do JSON não foi alcançado após essa reprovação anterior.
+
+A limpeza G11 confirmou zero atores, credenciais, sessões, permissões,
+overrides e conteúdo sintético ativo. Finalizador e
+[watchdog 38305298324](https://github.com/Vnd93/gaiatec-cms/actions/runs/38305298324)
+terminaram com sucesso. Evidência terminal `11772750566`, digest
+`5456ce09947e2bcb8643448c4afd48c18826a760015892fca82d0e139905a81a`,
+verificada em memória: probe aprovado, 100% de disponibilidade e zero 5xx no SHA
+`7951ed3`.
+
+Depois da recuperação: zero operações GitHub nos cinco estados consultados nos
+dois repositórios, zero fences, QA ativo ou manifesto aberto. Os 740 deployments
+Cloudflare foram paginados até a página vazia; os estados terminais eram
+sucesso. Health, ambiente e header `x-release` correspondiam ao candidato; flag
+global desligada e nenhum convite QA adicional emitido.
+
+O advisor de segurança Supabase retornou um INFO e três WARN, não um inventário
+sem avisos. Funções `SECURITY DEFINER` expostas exigem avaliação dos controles de
+sessão, escopo e privilégios, conforme os avisos de
+[acesso anônimo](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable)
+e [acesso autenticado](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable).
+A função 0119 é executável por authenticated para a política RLS, com verificação
+de sessão e escopo; anon e service_role não recebem EXECUTE. Também permanece o
+warning de [proteção contra senhas vazadas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+A inspeção não encerra os gates integrais de segurança.
+
+O próximo passo seguro é a homologação funcional isolada no Chrome com uma nova
+identidade QA e recuperação preparada, sem nova promoção cega. O p95 reprovado
+e a causa do 503 histórico continuam pendentes, independentemente do resultado
+dessa homologação.
