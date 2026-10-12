@@ -194,3 +194,55 @@ O próximo passo seguro é a homologação funcional isolada no Chrome com uma n
 identidade QA e recuperação preparada, sem nova promoção cega. O p95 reprovado
 e a causa do 503 histórico continuam pendentes, independentemente do resultado
 dessa homologação.
+
+## Homologação funcional autenticada e recuperação concluída
+
+No mesmo SHA `7951ed36753581466803a976f27be57ae26aef97` e deployment
+`97e680a4-f645-4708-baa6-a695e43e34df`, o responsável concluiu senha e MFA.
+O backend confirmou uma identidade QA ativa, fator verificado, sessão AAL2 e
+perfil ativo. A sessão anônima não estava acessível à automação; após login
+humano na janela normal, a homologação ocorreu no Google Chrome real conectado.
+
+O painel carregou os quatro indicadores sem o aviso de indisponibilidade e
+exibiu a atividade recente. Antes do acesso isolado, o Núcleo de Catálogo
+mostrou a mensagem de preparação. A flag global permaneceu `false`; somente
+essa identidade recebeu um override de usuário por 20 minutos, limitado pelo
+prazo original do lease. O manifesto 0118 estava preparado e comprometido em
+transação anterior à permissão e às mutações. Nenhum prazo foi ampliado.
+
+| Fluxo no Chrome e backend real | Resultado observado                                                                      |
+| ------------------------------ | ---------------------------------------------------------------------------------------- |
+| Formulário vazio de produto    | Nome obrigatório recusado por validação nativa; nenhum cadastro criado                   |
+| Taxonomia                      | Proposta e ativação de uma categoria e uma indústria sintéticas                          |
+| Cadastro manual                | Um produto e um kit sintéticos, apenas rascunhos                                         |
+| Revisões                       | Edição e restauração da revisão inicial como nova revisão; histórico anterior preservado |
+| Composição                     | Kit contém produto com quantidade 2 e unidade un; relação direta registrada              |
+| Editorial                      | Rascunho com bloco e parágrafos, revisão 1; sem publicação ou indexação                  |
+| Mobile                         | Editorial a 412 por 915 px, sem rolagem horizontal; viewport restaurado após o teste     |
+| Revogação                      | Após limpeza e recarga, Chrome mostrou acesso administrativo não autorizado              |
+
+Antes da limpeza, o ledger privado registrava dois produtos, dois termos e uma
+relação próprios, quatro revisões de produto, um editorial draft e zero
+snapshots públicos. O encerramento usou `cms_complete_qa_actor_lease` pelo fluxo
+normal, depois de remover overrides e papéis, suspender o perfil, revogar
+sessões e bloquear a identidade QA. O trigger terminal executou a compensação
+durável: manifesto `cleaned`, lease `cleaned`, failureCount zero, sem sweeper
+prévio e sem chamada direta ao compensador privado.
+
+A verificação posterior confirmou zero leases ativos, sessões, papéis CMS,
+overrides, perfis ativos, produtos não arquivados, termos ativos, relações
+ativas, editoriais não retirados, snapshots atuais e mapeamentos ativos nesse
+coorte. A identidade temporária ficou bloqueada. Foram preservadas seis
+revisões de produto, duas de relação e duas editoriais. Nenhum produto
+comercial, SKU, importação, publicação ou mutação de produção ocorreu.
+
+Esta é homologação funcional focada, não a aprovação Chrome do pipeline
+canônico: nenhum challenge foi criado e o run `38303496333` continua reprovado.
+A causa do 503 histórico e a cauda administrativa de 2.147 ms contra 2.000 ms
+continuam pendentes. Na janela histórica de 20:31 a 20:34 UTC, os logs de
+funções disponíveis contêm oito Boot (máximo 72 ms), dezoito Log e dois
+Shutdown EarlyDrop (máximo cpu_time_used 109 e memory_used.total 24.259.111).
+Esses agregados do projeto não atribuem recurso a uma chamada específica nem
+comprovam a causa. Os crons de 20:30 a 20:35 UTC terminaram com sucesso em 7 a
+273 ms, também sem comprovação causal. Não houve nova execução de release,
+alteração de limite ou seleção de outra janela para obter verde.

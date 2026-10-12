@@ -26,6 +26,21 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Indicadores e catálogo validados no Chrome com recuperação durável
+
+No SHA `7951ed3`, a sessão humana MFA/AAL2 do Chrome real validou os indicadores
+sem o aviso de indisponibilidade, cadastro sintético manual, revisão e
+restauração, classificação, composição de kit e rascunho editorial. A página
+editorial foi verificada a 412 px sem rolagem horizontal. A recuperação 0118
+encerrou o ciclo pelo RPC público normal, preservando histórico e zerando
+efeitos ativos e acesso QA; Chrome recusou o acesso após a limpeza. Flag global
+OFF, nenhum cadastro comercial, publicação ou alteração em produção.
+
+Isso não encerra a entrega integral: o canônico `38303496333` continua reprovado
+por p95 administrativo de 2.147 ms contra 2.000 ms e a causa do 503 histórico
+permanece sem comprovação. Nenhum challenge Chrome formal foi emitido. Ver
+[homologação funcional e recuperação](../10-produto-requisitos/nucleo-catalogo/registro-indicadores-e-evidencia-staging-2026-10-12.md#homologação-funcional-autenticada-e-recuperação-concluída).
+
 ### Correção da evidência promovida e gate administrativo reprovado
 
 Staging serve `7951ed3`. CI `38301399256` e bridge `38302262780` passaram com o
