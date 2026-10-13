@@ -246,3 +246,80 @@ Esses agregados do projeto não atribuem recurso a uma chamada específica nem
 comprovam a causa. Os crons de 20:30 a 20:35 UTC terminaram com sucesso em 7 a
 273 ms, também sem comprovação causal. Não houve nova execução de release,
 alteração de limite ou seleção de outra janela para obter verde.
+
+## Diagnóstico de recursos e transporte sem nova promoção
+
+Uma única execução do modo existente `--snapshot-diagnostic-with-fixture`,
+no mesmo SHA `7951ed3`, conservou 20 aquecimentos e 20 amostras medidas seriais.
+O relatório [sanitizado e versionado](evidencia-latencia-7951-2026-10-12.json)
+tem digest SHA256
+`0721d83192866b8630c884d64402150d772edfd1d574614d5e3a3ee1de26a2d5`.
+O resultado é `G11_SNAPSHOT_DIAGNOSTIC`, `releaseEligible: false`; não representa
+retry de release nem substitui o canônico reprovado.
+
+| Parcela medida              | p95 diagnóstico |
+| --------------------------- | --------------- |
+| Servidor administrativo     | 667 ms          |
+| RPC                         | 661 ms          |
+| Núcleo de snapshot no banco | 70 ms           |
+| Rate limit                  | 2 ms            |
+| Parede                      | 963,28 ms       |
+
+A soma de 40 chamadas foi 27.898 ms na parcela RPC, contra 8.174,61 ms de
+execução agregada em `pg_stat_statements`; o delta contou exatamente 40 chamadas,
+68.439 shared hits e zero shared reads. A diferença entre camadas não atribui
+automaticamente todo o custo a rede, pool ou autenticação. O núcleo de snapshot
+somou 6.641 ms; rate limit somou 828 ms. Sem mudança de código, o resultado
+diferente confirma variação temporal, não uma correção.
+
+Oito observações de recursos não registraram lock, I/O wait, conexão bloqueada
+ou transação idle; uma observação registrou uma conexão ativa. Os gauges de
+infraestrutura vieram de um único scrape, reutilizado conforme a cadência de
+um minuto: load1 0,32, duas CPUs e `pgrst_db_pool_waiting` 1. Não há delta de CPU
+nesse scrape, e contagens pontuais não descartam esperas entre observações.
+
+O relógio local marcou 00:06:33,835 a 00:07:12,398 UTC de 13 de outubro; os
+snapshots do banco marcaram 00:07:57,973 a 00:08:34,855 UTC. Todos correspondem
+à noite de 12 de outubro em São Paulo. A correlação não mistura esses relógios
+como se fossem sincronizados. Na janela do provedor, logs REST disponíveis
+registraram 32 respostas 200 do RPC, origin_time de 194 a 2.418 ms e upstream
+service time de 33 a 1.876 ms. Essa cobertura não é a coleção completa de 40
+amostras. As consultas à janela histórica do run não retornaram chamadas
+`cms-system`, mesmo na fonte correta `function_edge_logs`; ausência não prova
+nondelivery nem a causa histórica.
+
+A fixture usou somente atores sintéticos com lease durável e um lead sintético
+resolvido sem entrega externa. A limpeza normal confirmou zero atores,
+credenciais, overrides, papéis legados e com escopo, RDO, conteúdo, sessões,
+formulários e payloads pessoais ativos, com dois leases `cleaned`. Histórico
+anônimo e auditoria foram preservados. O catálogo global continuou OFF,
+nenhum produto foi criado e produção permaneceu intocada.
+
+Uma comparação separada de apenas duas chamadas públicas, sem configuração
+persistente ou deploy, utilizou a invocação regional documentada. Ambas
+retornaram HTTP 200 e contrato de coleção válido:
+
+| Região efetiva       | Trace técnico                          | Projeção até headers | Corpo | Documento no handler | Parede local |
+| -------------------- | -------------------------------------- | -------------------- | ----- | -------------------- | ------------ |
+| sa-east-1 automática | 7c200068-0d20-4d4c-a485-b6ed8e73e107.1 | 828 ms               | 1 ms  | 2.548 ms             | 3.066 ms     |
+| us-east-1 solicitada | a226295c-687c-4252-8527-7b4b0af0ab67.1 | 218 ms               | 1 ms  | 634 ms               | 1.314 ms     |
+
+Os logs sanitizados confirmaram somente uma tentativa upstream em cada chamada,
+sem deadline nem 503. O trace REST disponível de us-east-1 registrou 184 ms
+origin_time e 33 ms upstream service time. O resolvedor separado respondeu em
+2 e 7 ms, respectivamente; esses números não medem DNS/TCP/TLS internos do
+fetch. A diferença regional é indício de custo de transporte, mas duas chamadas
+sequenciais, sem contrabalanceamento ou igualdade comprovada de cache, não
+estabelecem causalidade histórica. Não foi fixada região nem removido failover
+automático, conforme a cautela da
+[documentação de invocação regional](https://supabase.com/docs/guides/functions/regional-invocation).
+
+O changelog vigente e a documentação de logs foram consultados. As consultas
+usaram o endpoint ClickHouse atual, `event_message` e `log_attributes`; não foi
+introduzida dependência em `logs.all`. `EarlyDrop` dos agregados históricos não
+equivale a uma interrupção por CPU ou wall clock, conforme a
+[documentação de supervisão](https://supabase.com/docs/guides/troubleshooting/edge-functions-worker-timeouts-and-websocket-drops).
+Os prazos upstream de 900 ms e do Worker de cinco segundos continuam iguais.
+Nenhuma causa adicional de código foi comprovada para justificar patch.
+O gate canônico continua reprovado; ainda falta correlacionar a falha histórica
+com transporte/gateway/backend antes de corrigir ou promover novamente.

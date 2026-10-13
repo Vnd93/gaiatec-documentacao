@@ -26,6 +26,17 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Diagnóstico de latência sem alteração de limites
+
+No mesmo SHA `7951ed3`, uma única janela diagnóstica com fixture sintética
+resolvida mediu p95 administrativo de 667 ms, RPC 661 ms e núcleo de snapshot
+70 ms, com limpeza completa. O relatório não é elegível para release e não
+anula o p95 canônico reprovado de 2.147 ms. Um par regional de leituras públicas
+retornou 200 em ambas as regiões, com projeção de 828 ms em sa-east-1 e 218 ms
+em us-east-1; isso não comprova a causa histórica nem autoriza fixar região.
+Flag global OFF e produção intocada. Ver
+[diagnóstico de recursos e transporte](../10-produto-requisitos/nucleo-catalogo/registro-indicadores-e-evidencia-staging-2026-10-12.md#diagnóstico-de-recursos-e-transporte-sem-nova-promoção).
+
 ### Indicadores e catálogo validados no Chrome com recuperação durável
 
 No SHA `7951ed3`, a sessão humana MFA/AAL2 do Chrome real validou os indicadores
