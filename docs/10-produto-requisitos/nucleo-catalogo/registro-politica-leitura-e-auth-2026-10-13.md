@@ -38,17 +38,17 @@ desconhecidos mantêm 500 ms. Comandos continuam independentes: 2.000 ms em
 staging e 800 ms em produção. Amostragem p95, revisão independente, segurança,
 MFA/AAL2, RLS, auditoria, acessibilidade e recuperação continuam obrigatórios.
 
-| Evidência | ID ou digest SHA256 |
-| --- | --- |
-| Pacote frontend original | `11816914807` |
-| Digest do pacote | `a061899d044952acf5ca3a6fe386a826c7ba8efc6b04b1ee8b68c1638cec8639` |
-| Seleção validada | `11817004759` |
-| Digest da seleção | `f131885071b670b6930aed577894fd8d40466fe94708c06548eec4316f3a8e97` |
-| Archive do dist | `60048d1edd4bc88a6c611851a2399c9fddbf758dd1462664e32324e13f4b767f` |
-| Árvore do dist | `a38b1589d20c87e43a1791b87c8532f7a2b4870897f8a2667c0f532d75ca87df` |
-| Payload de banco | `11819182307` |
-| Digest do payload | `cef9b9e3e2da0a011d7f4ce4a2a7850b48acdeff551f8be9cead21b816b9a739` |
-| Migration 0120 | `f4aa323251419b7a95e9cb8077b2b8a0e87cc00ab4f516aa0b4f6f1fdfa99a88` |
+| Evidência                | ID ou digest SHA256                                                |
+| ------------------------ | ------------------------------------------------------------------ |
+| Pacote frontend original | `11816914807`                                                      |
+| Digest do pacote         | `a061899d044952acf5ca3a6fe386a826c7ba8efc6b04b1ee8b68c1638cec8639` |
+| Seleção validada         | `11817004759`                                                      |
+| Digest da seleção        | `f131885071b670b6930aed577894fd8d40466fe94708c06548eec4316f3a8e97` |
+| Archive do dist          | `60048d1edd4bc88a6c611851a2399c9fddbf758dd1462664e32324e13f4b767f` |
+| Árvore do dist           | `a38b1589d20c87e43a1791b87c8532f7a2b4870897f8a2667c0f532d75ca87df` |
+| Payload de banco         | `11819182307`                                                      |
+| Digest do payload        | `cef9b9e3e2da0a011d7f4ce4a2a7850b48acdeff551f8be9cead21b816b9a739` |
+| Migration 0120           | `f4aa323251419b7a95e9cb8077b2b8a0e87cc00ab4f516aa0b4f6f1fdfa99a88` |
 
 ## Segurança de senha comprovada em staging
 
