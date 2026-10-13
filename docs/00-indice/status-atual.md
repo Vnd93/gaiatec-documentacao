@@ -26,6 +26,24 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Prévia editorial privada promovida em staging
+
+Staging serve `15290b5bfa65124669756ed4c5277ee857e6d93f`. A lacuna de prévia
+da revisão editorial salva foi corrigida sem nova permissão, RPC ou publicação.
+CI `38333159253/1` passou em 443 s e a ponte `38333868864/1` em 583 s,
+promovendo o pacote original selado `11784106712`, sem rebuild. A restauração
+do backend e a limpeza das fixtures da ponte foram comprovadas; não há operação
+concorrente, QA ativo, recovery aberto ou override ativo do catálogo.
+
+No Chrome real, a conta operacional abriu o painel com indicadores carregados,
+sem aviso de indisponibilidade e sem rolagem horizontal a 412 × 915 px. O
+catálogo permaneceu fechado pela flag global OFF. Nenhum papel ou acesso QA
+foi acrescentado à conta. A prévia positiva, conflitos entre sessões e hierarquia
+ainda exigem ciclo QA isolado no SHA atual. O 503 histórico e o p95 canônico
+reprovado não foram dispensados nem houve nova tentativa canônica para obter
+verde. Produção intocada. Ver
+[evidência e inventário atual](../10-produto-requisitos/nucleo-catalogo/registro-indicadores-e-evidencia-staging-2026-10-12.md#prévia-editorial-privada-promovida-em-staging).
+
 ### Diagnóstico de latência sem alteração de limites
 
 No mesmo SHA `7951ed3`, uma única janela diagnóstica com fixture sintética

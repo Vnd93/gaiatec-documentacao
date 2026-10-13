@@ -14,6 +14,109 @@ fonte_canonica: gaiatec-documentacao
 
 # Diagnóstico dos indicadores e da evidência de staging
 
+## Prévia editorial privada promovida em staging
+
+Estado confirmado em 12 de outubro, com timestamps dos provedores já em 13 de
+outubro UTC. SHA atual: `15290b5bfa65124669756ed4c5277ee857e6d93f`.
+Os registros abaixo desta seção continuam históricos; o avanço não resolve o
+503 nem transforma testes focados em entrega integral homologada.
+
+A tela editorial não possuía prévia privada da revisão salva. A correção altera
+somente `CatalogEditorialWorkspace.tsx` e seu teste de componente. A prévia usa
+a resposta já autorizada do workspace, sem chamada adicional ou nova permissão.
+Não abre rota pública, iframe, indexação ou publicação. Renderiza texto escapado
+pelo React e fecha ao trocar termo ou iniciar operação; alterações não salvas,
+operação em curso ou conflito ocultam e desabilitam a prévia. O controle possui
+`aria-expanded` e alvo existente de `aria-controls`. O leitor autorizado sem
+permissão de edição pode visualizar a revisão carregada.
+
+Validação local integral: 240 arquivos Vitest e 1.692 testes aprovados, além dos
+contratos QA, segurança, release, avaliações e build de 25,37 s. Os seis testes
+focados incluem conteúdo salvo sem mutação, bloqueio de conteúdo não salvo,
+troca de termo, leitor sem edição e escape de markup. A validação final de
+formatação, lint e diff passou. Esses testes não são prova de Chrome/backend.
+
+### Artefatos e finalização da promoção
+
+CI [38333159253/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/38333159253)
+concluiu os sete jobs com sucesso em 443 s. O perfil continuou `full-release`
+com confiança `bootstrap-full`; nenhum gate foi reduzido. A ponte
+[38333868864/1](https://github.com/Vnd93/gaiatec-cms/actions/runs/38333868864)
+concluiu em 583 s, em modo forward, sobre baseline `7951ed3`.
+
+| Vínculo                              | Valor exato                                                                              |
+| ------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Pacote original, produtor 1 e gate 1 | `11784106712`; `sha256:2668041358aa61c604103837151d86a4d6247db05c0926e4c225de54015a0f26` |
+| Seleção CI                           | `11783926940`; `sha256:02186ad48dd0308d0cbf30024af4b47839a0307eb40274984d5ac0214d6ea204` |
+| Plano de release                     | `11783188486`; `sha256:b47838f2f9f0ffa389981f925d77b49ba4c8a842e2376e1878a48da8381a833a` |
+| Arquivo dist                         | `60ba71c98a21c6a8cff19266399fbc6e6c802bed97702cc934bf8fa83ce80c83`                       |
+| Árvore dist                          | `454206239d2cb050800b7dc376b40007f6c2b837b8345c92053d88b9fc4978c2`                       |
+| Evidência da ponte                   | `11783798779`; `sha256:abcb5eb0d2952cada228a9957cb86d53a0abe276b59c63e19c9716f1c36a4d96` |
+| Deployment canônico                  | `8685579a-4208-4c6b-8d88-f4ce4b0c7189`; criado `2026-10-13T01:55:21.001741Z`             |
+| Restauração de backend               | `11783968536`; `sha256:84d03b4145a31ab842dd539f3354dafd2e81317312950db961c397add5c9c805` |
+
+Os ZIPs pequenos de seleção, plano, evidência e restauração tiveram digest
+verificado. O pacote grande não foi baixado novamente para validação local;
+a ponte verificou e promoveu o pacote original, sem recompilação. Os validadores
+oficiais de run e evidência retornaram `valid: true`, sem violações, com vínculos
+externos da seleção CI e do deployment Cloudflare, não apenas autodeclaração.
+O dist contém 1.493 arquivos e 167.661.511 bytes; o archive possui 168.837.120 bytes.
+
+A restauração registrou versão capturada 800, temporária 801 e restaurada 802,
+bundle `83f2f7f1e2f483511f71b3768a9b998dc95babc0a2e4301574da80825b6d63f9`,
+com três respostas consecutivas 200 do contrato `public-v2`. O watchdog
+[38334629031](https://github.com/Vnd93/gaiatec-cms/actions/runs/38334629031)
+terminou `skipped`, pois não havia recuperação a executar. A ponte prova
+compatibilidade com `legacy-f48` e limpeza de suas fixtures; explicitamente
+não prova submissão positiva, persistência de lead ou backend integral candidato.
+
+Depois da finalização, os cinco estados ativos consultados do GitHub estavam
+zerados nos dois repositórios e não havia fence. A varredura completa Cloudflare
+abrangeu 742 deployments, nenhum ativo. `/healthz` retornou 200, ambiente
+`staging`, release e header `x-release` exatos do SHA atual. O preflight de
+recovery 0118 permaneceu válido; 13 de 13 tabelas públicas de catálogo tinham
+RLS, com zero QA ativo, recovery aberto ou override ativo e flag global false.
+Não foi criada fixture de catálogo neste avanço, nem alterada produção.
+
+### Verificações independentes no navegador e backend
+
+Antes da promoção, no baseline `7951ed3`, as quatro RPCs de workspace e comando,
+manual e editorial, recusaram chamadas anônimas com HTTP 401 / SQLSTATE `42501`.
+Leituras anônimas de produtos, termos e revisões editoriais também foram
+recusadas. A sondagem editorial usou as colunas reais `term_id,revision`; uma
+sondagem anterior de coluna inexistente não foi contada como prova de segurança.
+O acesso direto sem sessão ao catálogo redirecionou para login. O teclado passou
+por e-mail, senha, entrar e recuperação; submit vazio focou o e-mail obrigatório.
+A rota editorial sintética retirada retornou 404 e `no-store`, sem seu conteúdo
+temporário, e mostrou a mensagem de conteúdo indisponível no Chrome real.
+
+Após a promoção, a aba operacional foi recarregada e autorizada com suas
+permissões existentes. O catálogo mostrou que permanece em preparação, sem
+controles de cadastro ou prévia expostos pela flag OFF. O painel mostrou
+indicadores carregados, fila vazia e atividade recente, sem aviso de
+indisponibilidade. A 412 × 915 px, não houve rolagem horizontal; o viewport foi
+restaurado ao final. Não foram lidos senha, TOTP, cookies ou storage, nem
+alterados papel, MFA, metadata ou flag da conta. Esses checks são somente
+leitura e não cobrem casos positivos de QA ou todos os gates de acessibilidade.
+
+### Pendências que impedem a entrega integral
+
+O canônico `38303496333` continua reprovado por p95 administrativo de 2.147 ms
+contra 2.000 ms. O diagnóstico posterior mais rápido não anula essa janela.
+A causa interna do 503 histórico continua sem comprovação; o chamado sanitizado
+já enviado ao suporte permanece a via de correlação técnica. Nenhum timeout,
+limite, região ou tratamento de erro foi relaxado, nem foi repetido o release.
+
+Para concluir conflitos entre duas sessões, hierarquia, referências negativas e
+prévia privada, falta um ator QA dedicado novo, com MFA humano e recovery
+durável preparado antes de qualquer efeito. A conta operacional fornecida não
+é QA e não será convertida ou usada para fixtures. As provas positivas do ciclo
+`7951ed3` permanecem históricas e parciais; bytes e estado dependentes devem ser
+revalidados em `15290b5`. O contrato de entrega exige sete fluxos e nove gates
+coerentes com SHA, digest, deployment e snapshot. Não há aprovação de produção.
+
+## Registro histórico anterior à prévia privada
+
 A indisponibilidade parcial do painel foi correlacionada ao timeout da leitura
 de auditoria. A correção RLS foi aplicada e verificada em staging, mas ainda não
 foi homologada no Chrome autenticado. A execução canônica parou posteriormente

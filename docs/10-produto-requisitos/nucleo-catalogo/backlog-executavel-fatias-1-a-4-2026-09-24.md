@@ -8,11 +8,42 @@ fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-10-10
+ultima_revisao: 2026-10-12
 fonte_canonica: gaiatec-documentacao
 ---
 
 # Backlog executável das Fatias 1–4
+
+## Inventário vigente de implementação e homologação
+
+Staging serve `15290b5bfa65124669756ed4c5277ee857e6d93f`, com CI e ponte
+verdes, pacote original e recuperação da ponte comprovados. O sistema ainda
+não está integralmente homologado. Os estados abaixo distinguem implementação
+de testes focados e de entrega canônica. Evidência:
+[prévia privada e checks independentes](registro-indicadores-e-evidencia-staging-2026-10-12.md#prévia-editorial-privada-promovida-em-staging).
+
+| Fluxo                  | Implementado                                                     | Validado                                                                            | Pendente                                                                |
+| ---------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Cadastro manual        | Rascunhos e edição manual                                        | Chrome real com fixtures no ciclo `7951ed3`                                         | Revalidar vínculos dependentes no SHA atual                             |
+| Permissões             | Guards, papéis, sessão e MFA preservados                         | Ciclo QA anterior; anônimo recusado; conta operacional somente leitura no SHA atual | Matriz autenticada de escopos, sem converter conta operacional          |
+| Formulários            | Contratos, validações e mensagens                                | Regressões CI e casos focados anteriores                                            | Casos negativos restantes com backend real e isolamento                 |
+| Revisões e conflitos   | Histórico, restauração e CAS                                     | Restauração como revisão nova no ciclo anterior                                     | Conflito real entre duas sessões no SHA atual                           |
+| Taxonomia e relações   | Classificação, composição e hierarquia                           | Classificação e kit direto no ciclo anterior                                        | Hierarquia, origem herdada, ciclo e referência fora do escopo           |
+| Editorial              | Rascunhos e leitor; prévia privada salva adicionada em `15290b5` | CI e seis testes de componente da prévia; rascunho indústria no ciclo anterior      | Prévia positiva autenticada, tecnologia e aplicação com fixture isolada |
+| Estados vazios e erros | Fechamento seguro e mensagens                                    | Painel autenticado, catálogo OFF, rota retirada 404 e teclado de login              | Matriz completa de erros e acessibilidade                               |
+
+Os nove gates (`security`, `mfaAal2`, `rls`, `audit`, `accessibility`, `mobile`,
+`compatibility`, `rollback`, `zeroActiveResidue`) continuam pendentes como conjunto
+de entrega. Há provas parciais válidas: recovery 0118 e RLS remoto, limpeza
+anterior, compatibilidade/restore da ponte e painel mobile atual. Nenhuma delas
+substitui o vínculo integral exigido pelo contrato `CatalogManualSystemUatSchema`.
+O 503 histórico e a cauda administrativa canônica permanecem abertos, sem retry
+cego, aumento de limites ou novo challenge formal Chrome.
+
+O próximo ciclo positivo precisa de ator QA novo com MFA humano e manifesto
+durável anterior aos efeitos. A conta operacional permanece com seu acesso
+atual e catálogo fechado. Não alimentar produtos comerciais, SKUs ou importação;
+CAT-011 segue fora deste escopo. Flag global OFF e produção intocada.
 
 ## Escopo vigente — sistema vazio para operação manual, 8 de outubro
 
