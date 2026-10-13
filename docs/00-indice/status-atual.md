@@ -28,10 +28,17 @@ relacionados:
 
 ### Política de leitura aprovada e senha alinhada em staging
 
+A ponte `38407652775/1` terminou verde e staging agora serve `b99595c` com o
+pacote original do CI, sem rebuild. Backend restaurado na versão 804, probes
+de contrato e limpeza comprovados; watchdog `38409781589` sem necessidade
+de ação. A migration 0120 e a validação canônica ainda estão pendentes.
+O Chrome conectado está no login; foi solicitada autenticação/MFA da conta
+operacional existente para preparar o gate, sem alterar seus acessos.
+
 O responsável confirmou p95 de leitura administrativa de 2.147 ms em staging
 e no futuro candidato de produção, sem autorizar publicação. O candidato
 `b99595c` e a migration aditiva 0120 passaram no CI `38405653746/1`;
-promoção, aplicação em staging e homologação real permanecem pendentes.
+aplicação da migration em staging e homologação real permanecem pendentes.
 Os runs históricos não foram reclassificados. O Auth de staging agora exige
 12 caracteres, alinhado ao painel, com mudança de apenas esse campo.
 A proteção contra senhas vazadas foi recusada pelo plano com HTTP 402, sem

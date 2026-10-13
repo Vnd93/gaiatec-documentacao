@@ -81,7 +81,54 @@ de instrumentação ou proteção catódica. Ambas responderam HTTP 200 em uma
 observação posterior, o que não prova renderização ou ausência de intermitência.
 A autorização condicional de remoção não foi aplicada.
 
-Faltam a promoção e os gates no mesmo candidato, os casos de atores/escopos,
+Na fotografia anterior à ponte, faltavam a promoção e os gates no mesmo candidato, os casos de atores/escopos,
 referências e formulários, acessibilidade integral, homologação autenticada,
 rollback e limpeza comprovada. O [guia de operação manual](../../30-cms/manual-do-usuario/operacao-catalogo-manual.md)
 continua preparado, não liberado. Produção permanece intocada.
+
+## Ponte concluída e próximo gate canônico
+
+A [ponte 38407652775, tentativa 1](https://github.com/Vnd93/gaiatec-cms/actions/runs/38407652775)
+terminou verde. Staging serve o SHA `b99595c15e364a573aac1a4516f6ed2d5c660e51`
+na implantação `a5ede3de-67f0-488f-8695-05ca864d342d`, criada em
+`2026-10-13T13:57:30.606Z`. O pacote e os digests permanecem os mesmos do CI,
+sem rebuild. As validações oficiais do run e da evidência da ponte retornaram
+válidas, sem violações, e o health respondeu 200 com ambiente e SHA exatos.
+
+A evidência da ponte é o artefato `11820077607`, digest
+`5a7d1f0848f244da86dc4194e66abc3b430c808f3fd47d2979888682d8e15684`.
+A restauração é o artefato `11820397250`, digest
+`f9ac0c9f6894bc3449a2955ad8978d22768ddc9c80f828dc69389ba15c2fdb8c`.
+O backend `cms-public` foi restaurado da versão capturada 802 para 804 ACTIVE,
+com três probes consecutivos de contrato HTTP 200. A limpeza das duas fixtures
+de renderização passou, mantendo auditoria. O watchdog `38409781589` terminou
+`skipped`, sem necessidade de compensação.
+
+O scan completo de 744 implantações Cloudflare encontrou zero operação ativa.
+GitHub sem runs ativos nos cinco estados consultados e sem fences. O banco
+confirmou zero QA ativo, recovery de catálogo aberto e override ativo do catálogo;
+flag global OFF. A migration 0120 ainda não foi aplicada.
+
+A ponte prova compatibilidade com o backend anterior, renderização e recusa do
+formulário sem token. Ela não prova envio positivo, persistência de lead ou o
+backend integral do candidato. A validação canônica e a homologação real
+continuam necessárias; não houve repetição cega de release ou remoção de páginas.
+
+O Chrome conectado está na tela de login. Foi solicitada somente autenticação
+humana da conta operacional existente, sem mudar seu papel ou transformá-la em QA,
+para preparar o gate real. O novo convite QA continua aguardando o ciclo apropriado.
+Nenhuma senha, token, identidade pessoal ou credencial foi incluída na evidência.
+
+## Tempos observados por componente
+
+O relatório selado do CI registrou 514 s, contra 443 s do ciclo anterior:
+diferença de 71 s. Seu gargalo foi qualidade, com 338 s no job e 279 s no
+`npm run check`. O relatório da ponte registrou 900 s, contra 583 s antes:
+diferença de 317 s. Seu maior step foi o download do pacote exato do baseline,
+105 s. Isso identifica o maior step observado, não atribui toda a diferença
+ao download nem prova uma regressão do aplicativo.
+
+Os artefatos de duração são `11818628641` para CI e `11820996319` para a ponte.
+Ambos são relatórios de componente, com `gatesRelaxed=false`; não comprovam
+o SLO integral de 40–60 minutos. O p95 real do novo candidato ainda exige
+nova medição canônica, sem descartar amostras ou alterar timeouts.
