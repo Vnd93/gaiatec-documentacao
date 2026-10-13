@@ -8,7 +8,7 @@ fase: execucao
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-10-12
+ultima_revisao: 2026-10-13
 fonte_canonica: gaiatec-documentacao
 substitui:
   - gaiatec-status-atual-2026-09-06
@@ -25,6 +25,18 @@ relacionados:
 # Status atual do site e CMS GAIATEC
 
 ## Estado vigente — entrega vazia para operação manual
+
+### Política de leitura aprovada e senha alinhada em staging
+
+O responsável confirmou p95 de leitura administrativa de 2.147 ms em staging
+e no futuro candidato de produção, sem autorizar publicação. O candidato
+`b99595c` e a migration aditiva 0120 passaram no CI `38405653746/1`;
+promoção, aplicação em staging e homologação real permanecem pendentes.
+Os runs históricos não foram reclassificados. O Auth de staging agora exige
+12 caracteres, alinhado ao painel, com mudança de apenas esse campo.
+A proteção contra senhas vazadas foi recusada pelo plano com HTTP 402, sem
+alteração de faturamento. Flag OFF e produção intocada. Ver
+[evidência atual e gates pendentes](../10-produto-requisitos/nucleo-catalogo/registro-politica-leitura-e-auth-2026-10-13.md).
 
 ### Prévia e relações homologadas com recuperação terminal
 
