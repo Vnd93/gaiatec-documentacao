@@ -20,6 +20,9 @@ relacionados:
 
 # Manual do Usuário do CMS GAIATEC
 
+- [Guia do Núcleo de Catálogo manual](operacao-catalogo-manual.md): complemento
+  operacional com status e limitações explícitos; liberação integral pendente.
+
 - [DOCX canônico](manual-do-usuario-cms-gaiatec.docx): formato editável.
 - [PDF canônico](manual-do-usuario-cms-gaiatec.pdf): formato de distribuição.
 
