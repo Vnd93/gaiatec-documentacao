@@ -26,6 +26,23 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Prévia e relações homologadas com recuperação terminal
+
+No mesmo SHA `15290b5`, o Chrome real autenticado com MFA/AAL2 validou as
+prévias privadas de indústria, tecnologia e aplicação, bloqueio da prévia
+com edição não salva e leitor sem edição/publicação. Duas abas da mesma sessão
+QA comprovaram CAS sem sobrescrita e comparação da tentativa; isso não prova
+duas autenticações independentes. A hierarquia Variante → Modelo → Produto,
+origem herdada e composição de 2 un foram verificadas. Logs do banco confirmaram
+recusa de conflito, kit aninhado e ciclo. A prévia mobile passou a 412 × 915 px.
+
+A recuperação 0118 encerrou o ciclo pelo RPC público normal, sem sweep, com
+zero efeito ativo e acesso QA; revisões e auditoria permaneceram. As duas abas
+recusaram acesso após a limpeza. Flag global OFF, nenhum dado comercial ou
+publicação e produção intocada. Não houve novo release. A causa do 503, o
+p95 canônico e a matriz integral de gates continuam pendentes. Ver
+[homologação focada e limpeza](../10-produto-requisitos/nucleo-catalogo/registro-indicadores-e-evidencia-staging-2026-10-12.md#homologação-focada-da-prévia-e-relações-com-recuperação-terminal).
+
 ### Prévia editorial privada promovida em staging
 
 Staging serve `15290b5bfa65124669756ed4c5277ee857e6d93f`. A lacuna de prévia

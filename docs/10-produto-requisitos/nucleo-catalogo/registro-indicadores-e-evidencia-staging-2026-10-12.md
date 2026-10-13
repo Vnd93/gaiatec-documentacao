@@ -14,6 +14,81 @@ fonte_canonica: gaiatec-documentacao
 
 # Diagnóstico dos indicadores e da evidência de staging
 
+## Homologação focada da prévia e relações com recuperação terminal
+
+O ciclo posterior à promoção usou o SHA
+`15290b5bfa65124669756ed4c5277ee857e6d93f`, o pacote original `11784106712`
+e o deployment `8685579a-4208-4c6b-8d88-f4ce4b0c7189`. Não houve mudança de
+código, rebuild, migration ou novo release durante a homologação.
+O destinatário confirmou senha e MFA pessoalmente. O backend confirmou um
+fator verificado, sessão AAL2 e lease ativa, e o Chrome conectado abriu o painel
+e o catálogo fechado antes da liberação isolada.
+
+O manifesto 0118 foi confirmado em transação separada antes de qualquer efeito
+de catálogo. Vínculos: snapshot de backend
+`9405996a4c99e19c815f27f4eff97b1b1baecad2cb6768fb75bc5dd81a79dc2b`
+e intenção de recovery
+`342d05508a8bd1cf566c0cb5c94ee70bd2cfa3417953dcf3dd3169fe1eebf220`.
+O snapshot inclui versões das 34 funções, estado de migrations e digest das
+funções de catálogo; seu digest corresponde à serialização JSON exata
+capturada em memória. A lease original de 240 minutos não foi prorrogada.
+Somente esse ator QA recebeu override de catálogo por 40 minutos; a flag global
+permaneceu false e a conta operacional não foi alterada.
+
+### Provas no Chrome real e no backend
+
+| Caso                           | Resultado observado                                                                                                                                           |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cadastro manual                | Cinco rascunhos sintéticos: produto, modelo, variante e dois kits; nenhum SKU, importação ou dado comercial                                                   |
+| CAS concorrente                | Duas abas carregaram revisão 1. A salvou revisão 2; B foi recusada e preservou a tentativa com comparação. Descarte carregou a revisão atual, sem sobrescrita |
+| Hierarquia                     | Modelo → Produto e Variante → Modelo persistiram; relações efetivas mostraram origem herdada do Produto                                                       |
+| Relações                       | Acessório e composição válida com quantidade 2 un persistiram; composição de kit aninhado e ciclo foram recusados                                             |
+| Editorial                      | Três termos isolados e três rascunhos, de indústria, tecnologia e aplicação, exibiram título, resumo e blocos nas respectivas prévias privadas da revisão 1   |
+| Prévia com alteração não salva | Alterar o título ocultou o artigo e desabilitou a prévia; descarte e troca de termo não exibiram conteúdo anterior                                            |
+| Leitor sem edição              | Papel QA temporário reduzido a reviewer: prévia acessível, salvar desabilitado e zero controle de publicação; nenhuma conta operacional alterada              |
+| Mobile                         | Segundo editor observado a 412 × 915 px, documento de 397 px, sem rolagem horizontal e sem link ou iframe na prévia; viewport restaurado                      |
+
+A consulta de confirmação verificou revisão 2 e resumo da tentativa A no
+produto, duas relações ativas, uma composição exata de 2 un, duas heranças e
+três editoriais draft. Nenhum snapshot público ou editorial publicado foi criado.
+Os logs PostgreSQL entre `2026-10-13T02:32:00Z` e `02:40:00Z` registraram
+`CMS_CATALOG_REVISION_CONFLICT` uma vez, `CMS_CATALOG_NESTED_KIT` duas vezes e
+`CMS_CATALOG_RELATION_CYCLE` uma vez. Nenhuma rejeição foi contada como gravação
+bem-sucedida. O manifesto protegia 12 entidades cadastradas no ledger.
+
+Os dois editores compartilhavam a mesma sessão autenticada. A prova de CAS
+cobre estado desatualizado em clientes concorrentes, não duas autenticações
+independentes nem a matriz de escopos entre pessoas. O ensaio mobile confirmou
+DOM e geometria; a captura mobile falhou na ferramenta e não foi contada como
+prova visual. A captura desktop sanitizada preservada mostra o formulário da
+revisão salva, não a totalidade da prévia abaixo da dobra.
+
+### Limpeza comprovada e limites da homologação
+
+O encerramento revogou o override exato, papel QA, perfil e sessões desse ator
+e bloqueou a identidade temporária, sem trocar sua senha. O RPC público normal
+`cms_complete_qa_actor_lease` retornou `cleaned`, `replayed: false`; a recuperação
+terminal 0118 retirou somente efeitos pertencentes ao manifesto. Não foi
+invocada compensação privada diretamente nem forjado PID, XID ou contexto Auth.
+
+Estado terminal: lease e manifesto cleaned, failure_count 0, sem sweep de
+watchdog; zero QA ativo, sessão, papel, perfil ativo, override ativo, produto ou
+termo ativo, relação, herança, editorial ativo, snapshot ou mapeamento deste
+ciclo. Foram preservadas 11 revisões de produto, quatro de relação, quatro de
+hierarquia, seis editoriais e 13 eventos de auditoria do ator. As duas abas
+recarregadas mostraram acesso administrativo não autorizado. Histórico retido
+não é resíduo ativo. Flag global false e produção intocada.
+
+Esta é homologação funcional focada, não fechamento do contrato de entrega.
+Continuam pendentes a causa comprovada do 503 e a cauda administrativa canônica,
+matriz de escopos e referências externas, demais negativos de formulários,
+acessibilidade integral e o vínculo dos sete fluxos e nove gates na evidência
+canônica. O challenge formal Chrome não foi emitido e o canônico anterior não
+foi repetido ou dispensado. A identidade deste ciclo foi encerrada e não será
+reaberta. Nenhum catálogo comercial é necessário para resolver essas pendências.
+
+## Registro da promoção anterior à homologação focada
+
 ## Prévia editorial privada promovida em staging
 
 Estado confirmado em 12 de outubro, com timestamps dos provedores já em 13 de

@@ -14,6 +14,28 @@ fonte_canonica: gaiatec-documentacao
 
 # Backlog executável das Fatias 1–4
 
+## Avanço da homologação focada no candidato atual
+
+No SHA `15290b5`, foram concluídos os ensaios reais de prévia privada de
+indústria/tecnologia/aplicação, bloqueio de prévia com edição não salva, leitor
+sem edição, hierarquia e origem herdada, composição de 2 un e CAS entre duas
+abas da mesma sessão QA. O backend confirmou as gravações e as rejeições de
+conflito, kit aninhado e ciclo. A recuperação 0118 encerrou pelo fluxo normal,
+preservou histórico/auditoria e zerou efeitos ativos e acesso. Não houve novo
+release, carga comercial, publicação ou mudança em produção; global OFF.
+
+Esses casos deixam de ser pendências de ensaio funcional focado. Não equivalem
+a duas autenticações independentes nem encerram a matriz completa de escopos,
+referências externas, negativos de formulário, acessibilidade e os gates
+canônicos. O 503 histórico e o p95 canônico de 2.147 ms continuam abertos, sem
+reduzir o limite de 2.000 ms. O ciclo QA está encerrado, sem reabertura ou
+conversão de conta operacional. Ver
+[provas e limpeza no candidato atual](registro-indicadores-e-evidencia-staging-2026-10-12.md#homologação-focada-da-prévia-e-relações-com-recuperação-terminal).
+
+Os inventários abaixo registram o ponto anterior a esses ensaios e permanecem
+preservados como histórico; prevalece este avanço para os casos explicitamente
+cobertos, sem marcar a entrega integral como concluída.
+
 ## Inventário vigente de implementação e homologação
 
 Staging serve `15290b5bfa65124669756ed4c5277ee857e6d93f`, com CI e ponte
