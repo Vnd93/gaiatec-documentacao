@@ -41,6 +41,20 @@ desativada. O 503 de transporte e os demais gates reais continuam pendentes;
 não houve repetição cega do canônico nem alteração em produção. Ver
 [evidências e limitações atuais](../10-produto-requisitos/nucleo-catalogo/registro-entrega-manual-e-gates-2026-10-14.md).
 
+### Autenticação QA confirmada e acesso temporário encerrado
+
+No mesmo candidato `5187b2e`, o backend confirmou MFA e sessão AAL2 e o
+Chrome real abriu Diagnósticos sem alertas. O acesso terminou no prazo
+registrado, antes de haver tempo suficiente para os casos mutantes restantes.
+O sweeper automático revogou sessões e papéis, bloqueou o ator e preservou
+a auditoria; não houve produto, termo, override ou manifesto de catálogo.
+
+A janela de 40 minutos encurtada neste ciclo foi insuficiente. O próximo
+ciclo deve preparar os atores e o plano de recuperação antes do convite e
+usar o prazo padrão já aprovado de 240 minutos, sem reabrir o acesso encerrado.
+Flag global OFF, produção intacta e homologação integral ainda pendente.
+Ver [autenticação e encerramento QA](../10-produto-requisitos/nucleo-catalogo/registro-entrega-manual-e-gates-2026-10-14.md#autenticação-humana-e-encerramento-automático-do-acesso-qa).
+
 ### Fotografias anteriores preservadas neste histórico
 
 ### Candidato promovido e recuperação comprovada

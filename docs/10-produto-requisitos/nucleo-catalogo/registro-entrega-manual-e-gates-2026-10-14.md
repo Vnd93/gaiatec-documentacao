@@ -218,6 +218,34 @@ verificado. O probe terminal passou sem violações e a recuperação de navegad
 constatou estado já terminal. A fotografia posterior de banco e ambientes
 comprovou ausência de efeitos ativos; revisões e auditoria permanecem.
 
+## Autenticação humana e encerramento automático do acesso QA
+
+No candidato `5187b2eb2d3dd99e90f8f704425dc18c5ae7b672`, o backend de
+staging confirmou um fator MFA verificado e uma sessão AAL2 em
+`2026-10-14T17:47:43.036217Z`. O Chrome real conectado abriu Diagnósticos
+com todos os cartões numéricos, zero alertas e “Nenhuma falha aberta”.
+Senha, códigos MFA, tokens e cookies não foram lidos nem registrados.
+
+O lease desse acesso havia sido encurtado para 40 minutos e terminava em
+`2026-10-14T17:49:06.526228Z`. O intervalo restante não comportava os casos
+mutantes com recuperação e limpeza; nenhum manifesto, override, produto ou
+termo de catálogo foi criado. Essa prova cobre autenticação e leitura,
+não a homologação funcional restante do catálogo.
+
+O sweeper periódico encerrou o acesso sem intervenção ou extensão. A leitura
+de `2026-10-14T17:50:17.437344Z` confirmou todos os três leases históricos
+do grupo terminais, zero lease ativo, falha de limpeza, sessão ou papel.
+A leitura dirigida ao ator humano em `2026-10-14T17:50:39.165772Z` confirmou
+banimento, zero perfil ativo, override, produto ou termo, com onze eventos
+QA de auditoria preservados. A flag global permanece OFF; produção intacta.
+
+Para o próximo ciclo, os atores e o plano de recuperação devem estar
+preparados antes do convite. A janela padrão já instalada e aprovada é de
+240 minutos, conforme a migration 0091; não será alterado nem reaberto o
+lease encerrado. O próximo endereço QA precisa ser novo e ter recebimento
+confirmado. Os casos de atores, escopos, referências e formulários continuam
+pendentes, assim como a causa do 503 e os gates integrais do candidato.
+
 ## Inventário de entrega
 
 | Área                          | Implementado e evidência disponível                                                                                | Pendência para entrega integral                                                       |
