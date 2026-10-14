@@ -35,11 +35,27 @@ críticos continuam selecionados, com auditoria, permissões e RLS preservadas.
 No Chrome real autenticado, a área corrigida mostrou os indicadores, zero alertas
 e estado vazio correto, sem erro, com foco por teclado e sem overflow mobile.
 
-A restauração do backend passou com três probes 200; não há QA ativo, recovery
-aberto, override ou operação concorrente. A flag permanece OFF e a IA externa
+A restauração do backend passou com três probes 200; a fotografia anterior à
+preparação QA tinha zero ator ativo, recovery aberto, override ou operação
+concorrente. A flag permanece OFF e a IA externa
 desativada. O 503 de transporte e os demais gates reais continuam pendentes;
 não houve repetição cega do canônico nem alteração em produção. Ver
 [evidências e limitações atuais](../10-produto-requisitos/nucleo-catalogo/registro-entrega-manual-e-gates-2026-10-14.md).
+
+### Auxiliares QA preparados antes do novo convite
+
+Três auxiliares novos estão preparados em staging com papéis distintos,
+MFA real, AAL2 e leases de 240 minutos. O plano durável foi registrado antes
+da criação das identidades; o sweeper passou numa prova descartável separada,
+revogando sessão e papéis e preservando auditoria, sem encerrar os auxiliares.
+Os 34 testes aplicáveis passaram. Não houve convite humano, override, produto
+ou termo. Todas as leituras autenticadas mantiveram o catálogo fechado.
+
+O manifesto final de catálogo depende da nova identidade humana para incluir
+o grupo completo antes de qualquer override ou gravação. A expiração mais
+próxima dos auxiliares é `2026-10-14T22:12:37.823699Z`, sem prorrogação ou
+reabertura. A preparação não é homologação final; o SHA e os artefatos permanecem
+inalterados. Ver [plano e recuperação QA](../10-produto-requisitos/nucleo-catalogo/registro-entrega-manual-e-gates-2026-10-14.md#preparação-dos-auxiliares-e-do-plano-durável).
 
 ### Autenticação QA confirmada e acesso temporário encerrado
 

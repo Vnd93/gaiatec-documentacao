@@ -251,6 +251,61 @@ lease encerrado. O próximo endereço QA precisa ser novo e ter recebimento
 confirmado. Os casos de atores, escopos, referências e formulários continuam
 pendentes, assim como a causa do 503 e os gates integrais do candidato.
 
+## Preparação dos auxiliares e do plano durável
+
+A preparação permanece no SHA `5187b2eb2d3dd99e90f8f704425dc18c5ae7b672`,
+com o mesmo artefato e deployment acima. O preflight real confirmou zero
+concorrência GitHub e Cloudflare, fences vazios, migrations até 0121,
+contrato privado de recuperação válido, nove funções vinculadas, sweeper
+periódico ativo e janela padrão instalada de 240 minutos. Não houve mudança
+de código, migration, runtime, variável de ambiente ou deploy de aplicação.
+
+O plano foi gravado em auditoria antes da criação dos auxiliares. Ele vincula
+staging, SHA, pacote selado, deployment, fotografia real de backend e definições
+instaladas da recuperação. Os digests são:
+
+- Plano durável: `d25362f8f8e9088ea205f9dc607086cecccdd4b7102cb432d74451e15c102ae7`.
+- Fotografia do backend: `125bb2f9d65f4bfc5dce3336b12dda1f60ca024edb45fbdb76c9f75b46c42b37`.
+- Funções reais de recuperação: `241c6a3d6f9211061d2e21aab0b6d6a9418b3efaf3215061ed06860005411e2d`.
+- Receita executável de limpeza: `41c42a98d31dfa076cb1d208235385f58791bd46feb4082ccbf1f461d9147864`.
+
+Foram preparados três auxiliares sintéticos novos: editor para escrita,
+reviewer somente leitura e super_admin para testar referências de outro ator.
+O lease privado foi capturado pelo gatilho antes de qualquer privilégio.
+Todos concluíram MFA real e AAL2 antes do provisionamento de perfil e papel,
+sem exceção MFA e sem alteração das definições dos papéis ou contas operacionais.
+Os leases mantêm exatamente 240 minutos; o primeiro termina em
+`2026-10-14T22:12:37.823699Z`. A segregação instalada permite somente linhas
+do próprio ator durante seu lease, nunca visibilidade corporativa.
+
+As três leituras autenticadas do workspace retornaram HTTP 200, catálogo
+desabilitado e zero produtos. Os guards reais recusaram uso sem manifesto
+comprometido e preparação com grupo incompleto, sem criar um manifesto.
+Passaram cinco testes contratuais de recuperação, quatro de leases e 25
+da fixture e receita de limpeza. São provas preparatórias, não homologação
+final dos casos funcionais ou do rollback de registros de catálogo.
+
+Uma quarta identidade descartável, separada dos três auxiliares, comprovou
+o sweeper real. Apenas seu prazo foi encurtado para acionar a limpeza;
+nenhum prazo foi estendido. O resultado foi um ator processado, zero falhas,
+lease expired, banimento, zero sessão, papel, perfil ativo ou override,
+com auditoria terminal preservada. A renovação da sessão foi recusada com
+HTTP 400 e sem sessão. Os três auxiliares permaneceram ativos e intactos.
+
+O recibo sanitizado dessa preparação também foi gravado na auditoria de
+staging. Não há produto, termo, override de catálogo ou convite humano novo;
+flag global OFF, IA externa desativada e produção intacta.
+
+O manifesto final não aceita inclusão posterior de atores. Por isso, somente
+depois de conhecer o novo endereço e criar sua identidade QA será possível
+selar o grupo completo em uma transação comprometida. Antes do convite,
+reconfirmar SHA, artefato, deployment, ausência de concorrência, situação dos
+auxiliares e prazo restante. O novo acesso humano usará o prazo padrão de
+240 minutos; o ciclo respeitará a menor expiração de todos os participantes.
+Não estender, reabrir ou contornar leases encerrados. Antes de qualquer override
+ou gravação, revalidar a fotografia e os digests e comprovar o manifesto
+comprometido com todos os atores. Senha e MFA humanos continuam fora das ferramentas.
+
 ## Inventário de entrega
 
 | Área                          | Implementado e evidência disponível                                                                                | Pendência para entrega integral                                                       |
