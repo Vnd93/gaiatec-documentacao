@@ -226,6 +226,11 @@ staging confirmou um fator MFA verificado e uma sessão AAL2 em
 com todos os cartões numéricos, zero alertas e “Nenhuma falha aberta”.
 Senha, códigos MFA, tokens e cookies não foram lidos nem registrados.
 
+A conferência posterior em Perfil e acesso identificou a sessão do Chrome
+conectado como operacional, não QA. Portanto, os cartões vistos pertencem à
+prova de leitura operacional; a autenticação humana QA foi comprovada apenas
+no backend. Nenhum fluxo de catálogo foi homologado como QA nesse Chrome.
+
 O lease desse acesso havia sido encurtado para 40 minutos e terminava em
 `2026-10-14T17:49:06.526228Z`. O intervalo restante não comportava os casos
 mutantes com recuperação e limpeza; nenhum manifesto, override, produto ou

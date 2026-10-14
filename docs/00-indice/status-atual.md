@@ -43,8 +43,9 @@ não houve repetição cega do canônico nem alteração em produção. Ver
 
 ### Autenticação QA confirmada e acesso temporário encerrado
 
-No mesmo candidato `5187b2e`, o backend confirmou MFA e sessão AAL2 e o
-Chrome real abriu Diagnósticos sem alertas. O acesso terminou no prazo
+No mesmo candidato `5187b2e`, o backend confirmou MFA e sessão AAL2 do ator
+QA. O Chrome conectado abriu Diagnósticos sem alertas, mas Perfil e acesso
+confirmou que a sessão visível era operacional, não QA. O acesso QA terminou no prazo
 registrado, antes de haver tempo suficiente para os casos mutantes restantes.
 O sweeper automático revogou sessões e papéis, bloqueou o ator e preservou
 a auditoria; não houve produto, termo, override ou manifesto de catálogo.
