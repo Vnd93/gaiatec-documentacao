@@ -72,6 +72,14 @@ sem RLS. Ela não substitui o ensaio hospedado de preparação em transação
 anterior, conflito entre atores, compensação e resíduo zero. O novo endereço
 QA informado ainda não recebeu convite; a conta operacional foi preservada.
 
+No backend real de staging, a leitura anônima de workspace, workspace editorial
+e histórico de produto, com assinaturas e parâmetros válidos, foi recusada com
+HTTP 401 e código `42501`. O mesmo ocorreu nas leituras de produtos, termos,
+revisões editoriais e revisões de produto, usando colunas reais. Não houve
+mutação nem criação de ator. No Chrome operacional, o catálogo permaneceu
+fechado pela flag, sem controles de criação e sem alerta. Essas sete recusas
+não substituem os casos autenticados entre atores e escopos distintos.
+
 ## Promoção anterior e validação canônica reprovada
 
 O [bridge 38580934706, tentativa 1](https://github.com/Vnd93/gaiatec-cms/actions/runs/38580934706)
