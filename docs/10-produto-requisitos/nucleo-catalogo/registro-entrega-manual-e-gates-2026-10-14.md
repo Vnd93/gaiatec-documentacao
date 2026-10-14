@@ -19,7 +19,60 @@ do responsável. A entrega integral ainda depende dos gates e da homologação
 real. A flag global `ev2.catalog_v1` permanece OFF. Não há autorização de
 publicação em produção, cutover, importação de SKUs ou carga comercial.
 
-## Promoção concluída e validação canônica reprovada
+## Correção dos alertas operacionais promovida
+
+O candidato vigente é `5187b2eb2d3dd99e90f8f704425dc18c5ae7b672`.
+No Chrome real autenticado, Diagnósticos apresentava 50+ alertas, todos os
+50 exibidos sendo eventos informativos da rotina de retenção, sem falha.
+O banco confirmou 23.123 eventos informativos abertos e nenhum warning ou
+critical nessa fotografia. A consulta confundia informação com alerta e
+ocupava a lista destinada às ocorrências que exigem acompanhamento.
+
+A correção acrescentou somente a seleção de severidades warning e critical
+à leitura paginada. Nenhum evento, auditoria, permissão, RLS, índice ou timeout
+foi alterado. A regressão exige ambas as severidades, a seleção de eventos
+não resolvidos, a ordenação e o limite de 51 registros; proíbe exclusão por
+tipo de evento, mutação e contagem exata do acervo. Os cinco testes focados
+e a validação completa passaram: 244 arquivos Vitest, 1.717 testes, suites
+contratuais, lint, tipos e build em 24,95 s.
+
+O [CI 38595985790, tentativa 1](https://github.com/Vnd93/gaiatec-cms/actions/runs/38595985790)
+passou nos sete jobs em 471 s. O
+[bridge 38597503867, tentativa 1](https://github.com/Vnd93/gaiatec-cms/actions/runs/38597503867)
+passou em 770 s, promovendo exatamente o pacote original `11909144529`,
+ZIP SHA256 `cb77ab3cce4b1a5e3783a29ae01ba177b6a327721e57c8238855013f1555a074`.
+O archive do dist é `39b705134c4d12a895994cbfa7d2c62b6ebd9e9d1a595dc4ce0be6bc64536b59`
+e a árvore é `cb7b3ceaeeee9e4dd7c680bfe13893c373718ee93db58aefffdf76b4e898e0db`.
+Os validadores oficiais de origem, seleção, run e evidência passaram.
+
+A implantação canônica é `dc59f88a-62a3-442f-b14d-102cc57cb308`, criada em
+`2026-10-14T16:32:22.254Z`, marcador `g12-staging-bridge-run-38597503867-1`.
+O ZIP da evidência `11913236726` foi verificado com SHA256
+`d065d28e26aa939b2d6ecbc95f1f6188a667cdef7ead45dec45e16515a9961e9`.
+O cms-public foi restaurado na versão 848, com três probes consecutivos 200;
+ZIP da restauração `11912526984`, SHA256
+`a4f6c40b9ea67667d5cbc92f548a393850ed6907e1534540298011694b18d5cd`.
+O watchdog `38599335136` ficou skipped, sem recuperação adicional necessária.
+
+A fotografia cliente `2026-10-14T16:36:32.922Z` confirmou o SHA exato no
+health e header, ambiente staging, migrations até 0121 e zero QA ativo,
+recovery aberto, override ativo, operação concorrente ou fence. O scan
+completo confirmou 774 implantações e zero deploy ativo. A flag segue OFF.
+
+Depois da promoção, a mesma sessão operacional no Chrome mostrou zero
+alertas, “Nenhuma falha aberta”, todos os indicadores numéricos e nenhum
+erro. O teclado alcançou Atualizar diagnóstico com foco de 2 px. A tela
+a 390 × 844 permaneceu sem overflow; o viewport temporário foi restaurado.
+Essas são provas da área corrigida, não da homologação integral do sistema.
+Nenhum novo canônico foi repetido para tentar obter verde no 503.
+
+A leitura do contrato oficial de recuperação confirmou funções owner-only,
+fences e integração da recuperação terminal, e nenhuma tabela do catálogo
+sem RLS. Ela não substitui o ensaio hospedado de preparação em transação
+anterior, conflito entre atores, compensação e resíduo zero. O novo endereço
+QA informado ainda não recebeu convite; a conta operacional foi preservada.
+
+## Promoção anterior e validação canônica reprovada
 
 O [bridge 38580934706, tentativa 1](https://github.com/Vnd93/gaiatec-cms/actions/runs/38580934706)
 promoveu o SHA `110d4e319a094a1c1c49b1ea71dd4ac719936c70` com o pacote

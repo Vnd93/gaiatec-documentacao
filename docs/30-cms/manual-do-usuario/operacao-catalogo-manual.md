@@ -8,7 +8,7 @@ fase: homologacao
 ambiente: staging
 responsavel: Vnd93
 data_criacao: 2026-10-13
-ultima_revisao: 2026-10-13
+ultima_revisao: 2026-10-14
 fonte_canonica: gaiatec-documentacao
 ---
 
@@ -37,6 +37,18 @@ contornar esse fechamento.
 O código atual também bloqueia esse workspace em produção. Preparação de
 candidato, homologação em staging e liberação de produção são estados distintos.
 Nenhum endereço de produção ou cutover é entregue como autorizado neste guia.
+
+## Operação sem IA externa
+
+Esta entrega adota operação manual. O assistente informa que geração e execução
+assistida estão desativadas; não é necessário contratar provedor, fornecer chave
+ou usar IA para preencher campos, revisar conteúdo ou salvar um rascunho autorizado.
+Essa decisão não remove validações, permissões, MFA ou revisão editorial.
+
+Em **Diagnósticos**, a lista de alertas considera avisos e eventos críticos não
+resolvidos. A rotina de retenção continua registrada, mas seus eventos informativos
+não são falhas abertas. Se a leitura falhar, a tela deve informar indisponibilidade;
+um erro de leitura não deve ser interpretado como zero alertas.
 
 ## Cadastro e revisão de produtos
 

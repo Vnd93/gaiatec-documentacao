@@ -26,6 +26,23 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Diagnósticos corrigidos e homologados na área afetada
+
+Staging serve `5187b2eb2d3dd99e90f8f704425dc18c5ae7b672`, com pacote original
+do CI `38595985790/1` e bridge `38597503867/1`, ambos verdes. A correção impede
+que eventos informativos de retenção ocupem a lista de alertas; avisos e eventos
+críticos continuam selecionados, com auditoria, permissões e RLS preservadas.
+No Chrome real autenticado, a área corrigida mostrou os indicadores, zero alertas
+e estado vazio correto, sem erro, com foco por teclado e sem overflow mobile.
+
+A restauração do backend passou com três probes 200; não há QA ativo, recovery
+aberto, override ou operação concorrente. A flag permanece OFF e a IA externa
+desativada. O 503 de transporte e os demais gates reais continuam pendentes;
+não houve repetição cega do canônico nem alteração em produção. Ver
+[evidências e limitações atuais](../10-produto-requisitos/nucleo-catalogo/registro-entrega-manual-e-gates-2026-10-14.md).
+
+### Fotografias anteriores preservadas neste histórico
+
 ### Candidato promovido e recuperação comprovada
 
 Staging serve `110d4e319a094a1c1c49b1ea71dd4ac719936c70`, promovido pelo
