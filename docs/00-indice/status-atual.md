@@ -26,6 +26,25 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Candidato promovido e recuperação comprovada
+
+Staging serve `110d4e319a094a1c1c49b1ea71dd4ac719936c70`, promovido pelo
+bridge `38580934706/1` com os artefatos originais. O canônico `38583490582/1`
+falhou com HTTP 503 na página inicial, em desktop e mobile. Finalizador e
+watchdog `38586776143` passaram; a recuperação terminal não teve violações.
+A verificação posterior confirmou migrations até 0121, flag OFF e zero QA,
+recovery aberto, override ativo, deploy concorrente, run ativo ou fence.
+
+Os traces comprovam duas expirações REST antes dos headers no `cms-public`;
+a causa interna do transporte ainda não foi comprovada. Não houve repetição
+cega de release, remoção de páginas, tolerância a erro ou aumento de timeout.
+Os casos funcionais independentes e a homologação real permanecem pendentes.
+IA externa segue desativada; nenhuma carga comercial ou alteração de produção
+foi feita. Ver a atualização do
+[registro de 14 de outubro](../10-produto-requisitos/nucleo-catalogo/registro-entrega-manual-e-gates-2026-10-14.md).
+
+### Fotografia anterior à promoção do candidato
+
 ### Candidato manual validado e homologação pendente
 
 Staging serve `cbb373663f1cdafcff4f7dc13c1a9a5e98dfdf8d`, com migrations

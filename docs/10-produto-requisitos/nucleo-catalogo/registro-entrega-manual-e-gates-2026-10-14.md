@@ -19,7 +19,71 @@ do responsável. A entrega integral ainda depende dos gates e da homologação
 real. A flag global `ev2.catalog_v1` permanece OFF. Não há autorização de
 publicação em produção, cutover, importação de SKUs ou carga comercial.
 
-## Candidato e ambiente atual
+## Promoção concluída e validação canônica reprovada
+
+O [bridge 38580934706, tentativa 1](https://github.com/Vnd93/gaiatec-cms/actions/runs/38580934706)
+promoveu o SHA `110d4e319a094a1c1c49b1ea71dd4ac719936c70` com o pacote
+original listado abaixo, sem rebuild. A implantação canônica é
+`b40a10ba-f2a7-4d3d-a0b1-b2ebaf2c18e8`, criada em
+`2026-10-14T14:41:10.761Z`, com marcador `g12-staging-bridge-run-38580934706-1`.
+Os validadores oficiais passaram. O ZIP da evidência `11903288680` foi
+verificado com SHA256 `f7cb7a563f7a29d6c6732ccb7c82ccbd9a5bc44640be809eec37195af0e282f0`.
+
+O [canônico 38583490582, tentativa 1](https://github.com/Vnd93/gaiatec-cms/actions/runs/38583490582)
+falhou no gate de acessibilidade da página inicial `/`, em desktop e mobile,
+porque o documento retornou HTTP 503. Os gates anteriores de preflight,
+origem e baseline passaram. Nenhum challenge, convite QA humano ou prova
+positiva de Chrome foi emitido nesse ciclo. Os gates posteriores não passaram.
+
+O finalizador e o [watchdog 38586776143](https://github.com/Vnd93/gaiatec-cms/actions/runs/38586776143)
+passaram. O ZIP terminal `11904943693` foi verificado com SHA256
+`c86253d5f9033804c3c81048db9223af709ebaf6f56d71860df41365d8510a5c`.
+O probe terminal passou sem violações; banco, Auth e as 34 funções
+reconvergiram. A fotografia posterior, com relógio cliente
+`2026-10-14T15:59:02.360Z`, confirmou health 200, header e ambiente do SHA
+exato, migrations até 0121, zero QA ativo, recovery aberto ou override ativo
+e flag OFF. O scan completo de 772 implantações confirmou zero deploy ativo;
+GitHub confirmou zero runs nos cinco estados ativos em ambos os repositórios
+e zero fences. Recuperação comprovada não converte o canônico em aprovado.
+
+## Correlação do HTTP 503
+
+No intervalo do provedor `2026-10-14T15:01:25Z` a `15:01:55Z`, o Worker
+recebeu HTTP 503 do `cms-public`; não foi timeout local do navegador nem
+resposta de Service Worker. A função iniciou e executou a consulta primária.
+Cada uma das duas tentativas de leitura REST expirou em aproximadamente
+900 ms, antes dos headers, e o handler devolveu 503 em cerca de 1.812–1.823 ms.
+A sondagem DNS independente resolveu dois registros em 3–4 ms; ela não
+mede a resolução usada pelo fetch nativo. Os logs do gateway contêm leituras
+200, mas não demonstram a fase DNS, TCP ou TLS dos requests expirados.
+
+O EXPLAIN ANALYZE isolado da consulta primária encontrou a página inicial
+em 10,602 ms, com planejamento de 19,021 ms. Essa leitura pelo plano de
+gerenciamento não mede o transporte nem prova a latência SQL durante o
+incidente. Não houve alteração de índice, schema, RLS ou região.
+
+Uma comparação somente leitura de oito pares de invocações explícitas
+teve sete respostas 200 e uma 503 em `us-west-1`, e oito respostas 200 em
+`us-east-1`. Os p95 de parede, incluindo a amostra inicial, foram 2.874 ms
+e 3.147 ms, respectivamente. Trata-se de diagnóstico, não evidência elegível
+de release ou justificativa para fixar região. A correlação posterior dos
+traces iniciais confirmou duas expirações no oeste; no leste, a segunda
+tentativa recebeu resposta. A causa interna do transporte permanece pendente.
+
+O relógio cliente marcou o diagnóstico em `15:22:35.952Z` a `15:22:45.311Z`.
+As observações de HTTP Date do Cloudflare e do GitHub autenticado ficaram
+cerca de 89 s à frente desse relógio; a correlação usou a janela do provedor
+`15:24:00Z` a `15:26:00Z`. Essa diferença deve ser respeitada nos timestamps
+e verificada antes de um challenge real, sem falsificar horários ou ampliar
+validade e antirreplay. Nenhuma configuração de relógio foi alterada.
+
+Como `/` também falhou, a condição para remover apenas Instrumentação e
+Proteção Catódica não foi demonstrada. Não foram removidas páginas, aumentados
+timeouts ou tolerados erros para obter verde. A continuidade segura consiste
+nos casos funcionais independentes e na correlação técnica do suporte,
+mantendo a validação canônica reprovada até uma correção comprovada.
+
+## Fotografia anterior à promoção
 
 Em `2026-10-14T14:21:59Z`, staging serve
 `cbb373663f1cdafcff4f7dc13c1a9a5e98dfdf8d`, na implantação
