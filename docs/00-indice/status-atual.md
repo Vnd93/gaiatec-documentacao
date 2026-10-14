@@ -8,7 +8,7 @@ fase: execucao
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-10-13
+ultima_revisao: 2026-10-14
 fonte_canonica: gaiatec-documentacao
 substitui:
   - gaiatec-status-atual-2026-09-06
@@ -25,6 +25,33 @@ relacionados:
 # Status atual do site e CMS GAIATEC
 
 ## Estado vigente — entrega vazia para operação manual
+
+### Candidato manual validado e homologação pendente
+
+Staging serve `cbb373663f1cdafcff4f7dc13c1a9a5e98dfdf8d`, com migrations
+0120 e 0121 aplicadas, flag global OFF e IA externa desativada. O deploy e
+os dois gates pós-deploy do canônico `38571333154/1` passaram; o bootstrap
+de campanha falhou porque o preparador deixou vazios dois blocos obrigatórios.
+Finalizador e watchdog `38577330506` passaram. A verificação posterior confirmou
+zero QA ativo, recovery de catálogo aberto, override ativo ou operação concorrente.
+
+O commit `110d4e319a094a1c1c49b1ea71dd4ac719936c70` corrigiu somente o teste,
+preservando a validação do editor. A regressão passou em desktop e mobile,
+a validação local completa passou e a CI `38578642654/1` terminou verde nos
+sete jobs. Pacote original e seleção foram verificados; promoção e validação
+canônica desse novo SHA estão pendentes. No Chrome real do SHA anterior,
+indicadores carregaram e os controles de IA e catálogo permaneceram fechados.
+
+A causa do 503 histórico não foi comprovada; páginas não foram removidas.
+Ainda faltam os casos e gates finais no mesmo candidato, a homologação QA
+real isolada e a consolidação da entrega operacional. Não houve carga comercial,
+ativação global, cutover ou alteração em produção. Ver
+[inventário e evidência de 14 de outubro](../10-produto-requisitos/nucleo-catalogo/registro-entrega-manual-e-gates-2026-10-14.md).
+
+### Fotografias anteriores preservadas
+
+Os registros abaixo retratam os estados anteriores e seus SHAs. Pendências
+antigas de migrations ou promoção não substituem o estado vigente acima.
 
 ### Política de leitura aprovada e senha alinhada em staging
 
