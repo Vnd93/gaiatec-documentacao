@@ -26,16 +26,43 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
-### Correção do foco promovida e causa do 503 pendente
+### Disponibilidade pública bloqueada antes do deploy completo
 
-O diagnóstico adicional de mídia foi publicado em `main` como
-`b19b06b149b1dc3dd84f452ff320889dec3ccad0`, ainda sem promoção em staging.
-Ele correlaciona somente chamadas de mídia permitidas e explicitamente rastreadas
-em staging, sem mudar conteúdo, status, prazos, retries ou controles. Check
-completo aprovado em 248 arquivos e 1.750 testes Vitest. A causa do 503 ainda
-não foi corrigida nem homologada; não serão excluídas páginas.
+Staging serve `b19b06b149b1dc3dd84f452ff320889dec3ccad0`, deployment
+`4beda195-d812-4a54-a234-5f32b7ab0921`, pela ponte `38791144187/1` verde,
+com o pacote original `12000546290`, sem rebuild do frontend. Os sete jobs
+do CI `38790041100/1` e os verificadores oficiais passaram. O `cms-public`
+do candidato foi restaurado na versão 875; o backend completo não foi promovido.
 
-O SHA servido agora é `473602e3dcd751c2d3df2c710cb538daa294f162`, promovido pela
+O canônico `38794562605/1` reprovou antes da faixa de mutação: `/contato`
+retornou 503 na sexta amostra medida, com 81 de 82 respostas válidas e
+p95 público de 584,755 ms. O p95 baixo não aprova a disponibilidade. A função
+em `us-west-1` esgotou duas leituras da projeção antes dos headers, antes de
+qualquer mídia. A segunda execução respondeu 200 depois da primeira falha.
+O finalizador recusou outputs vazios; o watchdog `38795112087` confirmou
+deploy pulado com zero steps e nenhuma compensação necessária. Nova fotografia:
+797 deployments sem operação ativa, alias preservado, health 200 no SHA exato,
+zero QA ativo, recuperação aberta, fence ou override; flag OFF e produção intocada.
+
+A correção restrita ao finalizador, em `50cf9673a942c750073c3ec33944d6456f6af968`,
+usa o resultado confiável do job para não classificar outputs de um deploy
+que não iniciou. Mantém o run reprovado e o watchdog independente. Regressão
+vermelha antes da correção, sete testes de fronteira e 139 testes QA aprovados;
+fase 12 com 803 aprovados, zero falhas, em 819 casos. CI `38796024460/1` verde nos sete jobs;
+nenhum novo release foi disparado para buscar verde no baseline reprovado.
+
+A comparação regional de 20 pares, com as 40 amostras preservadas, mediu
+mediana/p95 de 1.970/2.754 ms na seleção padrão e 892,5/1.128 ms na região do
+banco. Todas responderam 200. Isso comprova impacto de região na latência,
+não a causa de todos os 503; nenhuma região ou timeout foi alterado. O pedido
+direto ao backend dispensa o domínio oficial e o CMS de produção. Páginas
+permanecem preservadas. A homologação integral continua bloqueada pela
+disponibilidade e pela correlação interna do transporte, sem novo convite QA.
+Ver [registro e evidências](../10-produto-requisitos/nucleo-catalogo/registro-homologacao-focada-e-historico-2026-10-15.md#canônico-reprovado-antes-da-mutação).
+
+### Histórico da correção de foco homologada
+
+O SHA `473602e3dcd751c2d3df2c710cb538daa294f162` foi promovido pela
 ponte `38778727842/1` com o pacote original `11993664484`, sem rebuild. Os sete
 jobs do CI `38777455743/1`, ponte, métricas e verificadores oficiais passaram;
 watchdog `38780642552` terminou skipped. A mudança é restrita ao foco do atalho

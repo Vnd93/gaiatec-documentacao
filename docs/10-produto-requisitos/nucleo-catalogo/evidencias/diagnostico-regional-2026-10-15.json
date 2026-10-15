@@ -1,0 +1,495 @@
+{
+  "schemaVersion": 1,
+  "event": "cms.public.region.diagnostic",
+  "environment": "staging",
+  "diagnosticOnly": true,
+  "releaseApproval": false,
+  "candidateSourceSha": "b19b06b149b1dc3dd84f452ff320889dec3ccad0",
+  "backendVersion": 875,
+  "backendBundleSha256": "448cb809c742888520834b5a8ee0983d789aba631664495dd6fb274a88e872a4",
+  "observedReleaseEnvironmentSha": "135a14274a39aa8367e9d226a64f4900fd470979",
+  "databaseRegion": "us-east-2",
+  "plan": {
+    "pairs": 20,
+    "requestCount": 40,
+    "sequential": true,
+    "alternateOrder": true,
+    "deadlineMs": 5000,
+    "includeFirst": true,
+    "retries": 0,
+    "configChanges": 0
+  },
+  "results": [
+    {
+      "pair": 1,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 2422,
+      "trace": "1bedebfc-06c9-4385-95b3-edde848400f3.1",
+      "startedAt": "2026-10-15T19:26:04.867Z",
+      "endedAt": "2026-10-15T19:26:07.289Z"
+    },
+    {
+      "pair": 1,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 2684,
+      "trace": "fff0d0a9-b0ff-410d-b9f8-643684428bbc.1",
+      "startedAt": "2026-10-15T19:26:07.289Z",
+      "endedAt": "2026-10-15T19:26:09.973Z"
+    },
+    {
+      "pair": 2,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 2412,
+      "trace": "060fdeaa-c692-48f7-90fb-d1299285d882.1",
+      "startedAt": "2026-10-15T19:26:09.973Z",
+      "endedAt": "2026-10-15T19:26:12.385Z"
+    },
+    {
+      "pair": 2,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 898,
+      "trace": "62fcc93b-d04c-4dc4-8fe1-d8ea73c433d2.1",
+      "startedAt": "2026-10-15T19:26:12.385Z",
+      "endedAt": "2026-10-15T19:26:13.283Z"
+    },
+    {
+      "pair": 3,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 829,
+      "trace": "70ffe2dd-1796-4e67-a799-9c95c497a4f9.1",
+      "startedAt": "2026-10-15T19:26:13.283Z",
+      "endedAt": "2026-10-15T19:26:14.112Z"
+    },
+    {
+      "pair": 3,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 1690,
+      "trace": "a49709b9-557f-4266-a62c-07438b496698.1",
+      "startedAt": "2026-10-15T19:26:14.112Z",
+      "endedAt": "2026-10-15T19:26:15.803Z"
+    },
+    {
+      "pair": 4,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 2073,
+      "trace": "c82f0197-f66b-4587-86c5-9018f17c34a7.1",
+      "startedAt": "2026-10-15T19:26:15.803Z",
+      "endedAt": "2026-10-15T19:26:17.875Z"
+    },
+    {
+      "pair": 4,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 853,
+      "trace": "08933722-60e9-44fe-85f1-23c2b2e1dcec.1",
+      "startedAt": "2026-10-15T19:26:17.875Z",
+      "endedAt": "2026-10-15T19:26:18.729Z"
+    },
+    {
+      "pair": 5,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 810,
+      "trace": "4ce76442-cb97-4107-93cc-6c53cb2ebd68.1",
+      "startedAt": "2026-10-15T19:26:18.729Z",
+      "endedAt": "2026-10-15T19:26:19.538Z"
+    },
+    {
+      "pair": 5,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 2222,
+      "trace": "0914aed0-c9f8-436d-a4ba-a61a03bbb020.1",
+      "startedAt": "2026-10-15T19:26:19.538Z",
+      "endedAt": "2026-10-15T19:26:21.761Z"
+    },
+    {
+      "pair": 6,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 3118,
+      "trace": "a1d95d91-00cf-4c2b-8c24-2f8bf01dd1ae.1",
+      "startedAt": "2026-10-15T19:26:53.452Z",
+      "endedAt": "2026-10-15T19:26:56.571Z"
+    },
+    {
+      "pair": 6,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 929,
+      "trace": "c94119b8-c95e-442d-9507-121e97f01448.1",
+      "startedAt": "2026-10-15T19:26:56.571Z",
+      "endedAt": "2026-10-15T19:26:57.499Z"
+    },
+    {
+      "pair": 7,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 918,
+      "trace": "b6c9d4fb-ca3e-42a5-8bd7-5adb1f475809.1",
+      "startedAt": "2026-10-15T19:26:57.499Z",
+      "endedAt": "2026-10-15T19:26:58.417Z"
+    },
+    {
+      "pair": 7,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 2754,
+      "trace": "d18089e6-5e22-42cd-87b2-d762c3d6828f.1",
+      "startedAt": "2026-10-15T19:26:58.417Z",
+      "endedAt": "2026-10-15T19:27:01.172Z"
+    },
+    {
+      "pair": 8,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 1872,
+      "trace": "66743bef-1fbb-4fac-9a7a-690a90ddb01f.1",
+      "startedAt": "2026-10-15T19:27:01.172Z",
+      "endedAt": "2026-10-15T19:27:03.043Z"
+    },
+    {
+      "pair": 8,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 950,
+      "trace": "f775550c-4b1b-4929-b8d4-b98a6c4cb580.1",
+      "startedAt": "2026-10-15T19:27:03.043Z",
+      "endedAt": "2026-10-15T19:27:03.994Z"
+    },
+    {
+      "pair": 9,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 805,
+      "trace": "ab5e5634-1a20-421f-a4ad-1ba3afd0ca4a.1",
+      "startedAt": "2026-10-15T19:27:03.994Z",
+      "endedAt": "2026-10-15T19:27:04.798Z"
+    },
+    {
+      "pair": 9,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 1956,
+      "trace": "8c17564a-c412-4684-919a-1c16dc26e1b7.1",
+      "startedAt": "2026-10-15T19:27:04.798Z",
+      "endedAt": "2026-10-15T19:27:06.754Z"
+    },
+    {
+      "pair": 10,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 1630,
+      "trace": "3569d429-29ee-451e-adef-10bd96c28afb.1",
+      "startedAt": "2026-10-15T19:27:06.754Z",
+      "endedAt": "2026-10-15T19:27:08.384Z"
+    },
+    {
+      "pair": 10,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 887,
+      "trace": "05401616-6a76-4320-b5e3-c2089c1f8ef1.1",
+      "startedAt": "2026-10-15T19:27:08.384Z",
+      "endedAt": "2026-10-15T19:27:09.271Z"
+    },
+    {
+      "pair": 11,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 1127,
+      "trace": "fcbe556e-f2bd-454f-9bc3-9583b86686a0.1",
+      "startedAt": "2026-10-15T19:27:16.763Z",
+      "endedAt": "2026-10-15T19:27:17.890Z"
+    },
+    {
+      "pair": 11,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 1980,
+      "trace": "ed869ccd-c3c2-445c-a3ee-b4767595a272.1",
+      "startedAt": "2026-10-15T19:27:17.890Z",
+      "endedAt": "2026-10-15T19:27:19.870Z"
+    },
+    {
+      "pair": 12,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 1960,
+      "trace": "c34195ae-c54d-47a8-ba8f-4244951ddae3.1",
+      "startedAt": "2026-10-15T19:27:19.870Z",
+      "endedAt": "2026-10-15T19:27:21.830Z"
+    },
+    {
+      "pair": 12,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 798,
+      "trace": "6bf721c4-88b3-4d1e-9225-673b7932a474.1",
+      "startedAt": "2026-10-15T19:27:21.830Z",
+      "endedAt": "2026-10-15T19:27:22.628Z"
+    },
+    {
+      "pair": 13,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 837,
+      "trace": "9a1cfa8f-ad98-4cee-8548-b1086b18bf93.1",
+      "startedAt": "2026-10-15T19:27:22.628Z",
+      "endedAt": "2026-10-15T19:27:23.464Z"
+    },
+    {
+      "pair": 13,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 2561,
+      "trace": "ca2218d7-eec1-4acc-af7c-13ef056b0695.1",
+      "startedAt": "2026-10-15T19:27:23.464Z",
+      "endedAt": "2026-10-15T19:27:26.026Z"
+    },
+    {
+      "pair": 14,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 1986,
+      "trace": "6d260cf4-26bd-4732-a590-0147b130d66d.1",
+      "startedAt": "2026-10-15T19:27:26.026Z",
+      "endedAt": "2026-10-15T19:27:28.012Z"
+    },
+    {
+      "pair": 14,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 954,
+      "trace": "3ad35b52-58ca-4f35-9617-40666d75b72d.1",
+      "startedAt": "2026-10-15T19:27:28.012Z",
+      "endedAt": "2026-10-15T19:27:28.966Z"
+    },
+    {
+      "pair": 15,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 1128,
+      "trace": "1788427b-df43-4e37-9943-d1bb7867d62d.1",
+      "startedAt": "2026-10-15T19:27:28.966Z",
+      "endedAt": "2026-10-15T19:27:30.094Z"
+    },
+    {
+      "pair": 15,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 1723,
+      "trace": "d1e205b6-583d-4203-899d-99aa0d56aab9.1",
+      "startedAt": "2026-10-15T19:27:30.094Z",
+      "endedAt": "2026-10-15T19:27:31.818Z"
+    },
+    {
+      "pair": 16,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 1834,
+      "trace": "210fc455-a086-4fb4-b573-08f32c5258cd.1",
+      "startedAt": "2026-10-15T19:27:31.818Z",
+      "endedAt": "2026-10-15T19:27:33.651Z"
+    },
+    {
+      "pair": 16,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 992,
+      "trace": "2865587e-a4e4-4e13-87ed-90d07a4cdcd5.1",
+      "startedAt": "2026-10-15T19:27:33.651Z",
+      "endedAt": "2026-10-15T19:27:34.643Z"
+    },
+    {
+      "pair": 17,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 816,
+      "trace": "1e3c6888-f138-43cb-82d8-f4a094d6e78d.1",
+      "startedAt": "2026-10-15T19:27:34.643Z",
+      "endedAt": "2026-10-15T19:27:35.458Z"
+    },
+    {
+      "pair": 17,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 1614,
+      "trace": "870f7af3-c990-40c5-8c7d-1eb194b1d678.1",
+      "startedAt": "2026-10-15T19:27:35.458Z",
+      "endedAt": "2026-10-15T19:27:37.072Z"
+    },
+    {
+      "pair": 18,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 2307,
+      "trace": "f17d3aef-c431-4a8a-b0e4-8bd514d4907b.1",
+      "startedAt": "2026-10-15T19:27:37.072Z",
+      "endedAt": "2026-10-15T19:27:39.379Z"
+    },
+    {
+      "pair": 18,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 839,
+      "trace": "888fa8a1-d694-449b-837a-edde73723d73.1",
+      "startedAt": "2026-10-15T19:27:39.379Z",
+      "endedAt": "2026-10-15T19:27:40.218Z"
+    },
+    {
+      "pair": 19,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 922,
+      "trace": "3afbc043-ff24-4195-8edd-2af15d54b321.1",
+      "startedAt": "2026-10-15T19:27:40.218Z",
+      "endedAt": "2026-10-15T19:27:41.140Z"
+    },
+    {
+      "pair": 19,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 1372,
+      "trace": "e0844f42-d345-4c77-ba3c-9861a0f42f34.1",
+      "startedAt": "2026-10-15T19:27:41.140Z",
+      "endedAt": "2026-10-15T19:27:42.512Z"
+    },
+    {
+      "pair": 20,
+      "requestedRegion": "default",
+      "actualRegion": "sa-east-1",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 1665,
+      "trace": "0ea8b73d-e531-4665-aca7-ef6207464fd6.1",
+      "startedAt": "2026-10-15T19:27:42.512Z",
+      "endedAt": "2026-10-15T19:27:44.177Z"
+    },
+    {
+      "pair": 20,
+      "requestedRegion": "us-east-2",
+      "actualRegion": "us-east-2",
+      "status": 200,
+      "itemsArray": true,
+      "durationMs": 781,
+      "trace": "d9d3e3b9-ffc1-4564-b379-e2a515d73313.1",
+      "startedAt": "2026-10-15T19:27:44.177Z",
+      "endedAt": "2026-10-15T19:27:44.958Z"
+    }
+  ],
+  "summary": {
+    "default": {
+      "count": 20,
+      "ok": 20,
+      "statuses": [
+        200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200
+      ],
+      "actualRegions": ["sa-east-1"],
+      "medianMs": 1970,
+      "p95Ms": 2754,
+      "maxMs": 3118,
+      "durations": [
+        2684, 2412, 1690, 2073, 2222, 3118, 2754, 1872, 1956, 1630, 1980, 1960, 2561, 1986, 1723, 1834, 1614,
+        2307, 1372, 1665
+      ]
+    },
+    "us-east-2": {
+      "count": 20,
+      "ok": 20,
+      "statuses": [
+        200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200
+      ],
+      "actualRegions": ["us-east-2"],
+      "medianMs": 892.5,
+      "p95Ms": 1128,
+      "maxMs": 2422,
+      "durations": [
+        2422, 898, 829, 853, 810, 929, 918, 950, 805, 887, 1127, 798, 837, 954, 1128, 992, 816, 839, 922, 781
+      ]
+    }
+  }
+}

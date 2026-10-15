@@ -8,11 +8,41 @@ fase: nucleo-catalogo
 ambiente: staging-e-local
 responsavel: Comercial GAIATEC Sistemas
 data_criacao: 2026-09-24
-ultima_revisao: 2026-10-12
+ultima_revisao: 2026-10-15
 fonte_canonica: gaiatec-documentacao
 ---
 
 # Backlog executável das Fatias 1–4
+
+## Estado vigente em 15 de outubro
+
+Esta seção prevalece sobre as fotografias anteriores abaixo. As Fatias 1–4
+não serão reimplementadas e não há exigência de catálogo comercial para esta
+entrega. O limite administrativo aceito é 2.147 ms também para futuro candidato
+de produção; isso não autoriza produção nem dispensa disponibilidade.
+
+| Fluxo                            | Implementado                                                                             | Prova concluída                                                                                                                     | Pendente para entrega integral                                                           |
+| -------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Cadastro manual e formulários    | Rascunho, edição e validação                                                             | Chrome real no SHA `135a142`, campos obrigatórios e 18 recusas reais de permissão, escopo e entrada                                 | Vínculo integral ao candidato final após gate público verde                              |
+| Permissões e segurança           | Papéis, MFA/AAL2, escopos, RLS e auditoria                                               | Atores distintos no backend; workspace próprio, histórico externo vazio e 13 tabelas com RLS no ciclo `135a142`                     | Conjunto canônico de segurança no candidato final, sem converter conta operacional em QA |
+| Revisões e conflitos             | Histórico, CAS e restauração como nova revisão                                           | Chrome real: duas abas, tentativa preservada, comparação de três versões, resolução e revisão restaurada como nova no SHA `135a142` | Homologação integral vinculada ao candidato final                                        |
+| Taxonomia, relações e hierarquia | Termos, acessórios e herança                                                             | Chrome e backend no SHA `135a142`, com referências externas e autorrelação recusadas                                                | Vínculo final e rollback aplicável, sem carga comercial                                  |
+| Editorial                        | Rascunho e prévia privada da revisão salva                                               | Chrome no SHA `135a142`: marcação literal, zero script, prévia invalidada por edição e descarte explícito                           | Conjunto final no mesmo candidato                                                        |
+| Acessibilidade e mobile          | Shell, menu e atalho de conteúdo                                                         | Foco corrigido e homologado em Chrome no SHA `473602e`, com MFA/AAL2, Tab, Escape e mobile sem overflow                             | Acessibilidade integral no candidato final; não reabrir o desvio de foco já encerrado    |
+| Recuperação durável e limpeza    | Manifesto comprometido antes de efeitos, vínculo vitalício e ciclos sucessivos em `0122` | Ciclos reais e compensação terminal; zero efeito/acesso ativo, histórico e auditoria retidos                                        | Evidência terminal de toda a cadeia final, sem reabrir leases encerrados                 |
+
+Staging serve `b19b06b`, com diagnóstico compartilhado instalado e ponte verde.
+O canônico `38794562605/1` parou no baseline somente leitura por 503 em
+`/contato`; deploy e Chrome foram pulados. O watchdog comprovou que nenhum
+step de deploy executou. Não há novo convite, produto comercial ou produção;
+flag global OFF. A revisão de controle `50cf967` corrige a condição do
+finalizador para job não iniciado, sem aprovar o baseline ou remover recovery.
+
+As provas focadas acima continuam nos SHAs indicados. Não são reatribuídas
+automaticamente ao novo candidato e não devem ser tratadas como tarefas nunca
+executadas. Os nove gates como conjunto e a causa interna do transporte ainda
+bloqueiam a entrega. Não há nova aprovação funcional de catálogo a solicitar.
+Ver [evidências e causa imediata da falha](registro-homologacao-focada-e-historico-2026-10-15.md#canônico-reprovado-antes-da-mutação).
 
 ## Avanço da homologação focada no candidato atual
 

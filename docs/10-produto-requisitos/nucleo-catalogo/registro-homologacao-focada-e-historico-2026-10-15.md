@@ -776,3 +776,122 @@ corrige a causa de todos os 503. Antes das alterações, os cinco estados de
 workflows estavam vazios nos dois repositórios, o inventário completo tinha
 795 deployments sem operação ativa e não havia QA ativo, recuperação aberta
 ou override de catálogo. Flag global OFF e produção intocada.
+
+## Diagnóstico promovido e comparação regional
+
+O CI `38790041100/1` passou nos sete jobs, incluindo 73 arquivos e 2.334 testes
+de banco/RLS. Perfil `full-release`, confiança `bootstrap-full`, sem reutilizar
+gate mutante. Seleção oficial aprovada; produtor original attempt 1, pacote
+`12000546290`, digest ZIP
+`fc10d08bc96dc21967c5faa1a02c2c5147bb7e31e79a0b14d6b569ea5851d66f`.
+Archive `88dd4fa921b2c2956575e59e713ff48dd41b470ad230849cbe00cd74a6592a88`;
+árvore `8f38831a4da4554632be9119f83fe6ff0f32a0ddf284a50e4a98d14722628961`.
+
+A ponte `38791144187/1`, métricas e verificadores oficiais passaram;
+watchdog `38793596890` skipped. Deployment canônico
+`4beda195-d812-4a54-a234-5f32b7ab0921`, criado em
+`2026-10-15T19:20:14.423Z`, marker `g12-staging-bridge-run-38791144187-1`.
+Evidência `12001740629`, ZIP
+`5a68135f575048764638dff4c7af15a0689d9fdfc397dd24c033d31da295b84c`;
+restauração `12001470836`, ZIP
+`65f8d71435334e3fe28738fdb120fd99c895bdaee0656ac7f4214a47a1a897d8`.
+
+A restauração prevista usa o `cms-public` do candidato, não uma identidade
+presumida pelos números de versão. Capturou a versão 873, engajou 874 e
+restabeleceu o código candidato na 875, com bundle
+`448cb809c742888520834b5a8ee0983d789aba631664495dd6fb274a88e872a4`, source
+`bd4439ce0d7903768d202efcea3697e99baf50676c550b3b8e2b534daf317b37` e três
+probes 200 consecutivos. Esse bundle difere do anterior porque o código de
+diagnóstico mudou; não se declara igualdade com o bundle capturado na versão 873. A ponte não promove todo o backend nem fornece homologação integral.
+
+Uma leitura direta posterior confirmou os quatro estágios novos, no trace
+`ebde0b7e-827c-4b25-bb94-68ef6f93ecf1.1`: headers da consulta principal em
+889 ms; replacements em 256 ms, assets em 520 ms, variants em 278 ms e
+assinatura em 736 ms, todos 200. O handler levou 2.708 ms; o cliente mediu
+4.634 ms. O corpo das dependências terminou sem atraso relevante. A variável
+de release ainda era `135a142` antes do deploy completo; o vínculo de código
+é a versão 875 e o source/bundle acima, não uma aprovação do release antigo.
+
+O plano regional foi fixado antes de medir: 20 pares, 40 pedidos sequenciais,
+ordem alternada, mesmo código e dados, deadline de cliente de 5.000 ms,
+zero retry extra e primeira amostra incluída. A região do projeto foi
+confirmada na API de gerenciamento e a região efetiva nos headers.
+
+| Seleção                              | Pedidos 200 | Mediana  | p95      | Máximo   |
+| ------------------------------------ | ----------- | -------- | -------- | -------- |
+| Automática, efetivamente `sa-east-1` | 20/20       | 1.970 ms | 2.754 ms | 3.118 ms |
+| Região do banco `us-east-2`          | 20/20       | 892,5 ms | 1.128 ms | 2.422 ms |
+
+Todas as amostras, traces, horários e o máximo inicial estão na
+[evidência sanitizada](evidencias/diagnostico-regional-2026-10-15.json).
+O p95 usa nearest rank, sem descarte de aquecimento. A diferença demonstra
+impacto regional de latência, não prova a causa de todos os 503 históricos
+nem autoriza fixar região e perder rerroteamento automático. Não houve
+mudança de configuração, timeout, dados ou produção. A
+[documentação de invocação regional](https://supabase.com/docs/guides/functions/regional-invocation)
+descreve tanto o benefício de proximidade ao banco quanto a perda de
+rerroteamento automático quando uma região é explicitamente selecionada.
+
+## Canônico reprovado antes da mutação
+
+O canônico `38794562605/1`, do mesmo candidato e pacote original, passou no
+preflight e na validação da fonte. O baseline vivo reprovou em `/contato`,
+sexta amostra medida: HTTP 503, TTFB 2.168,527 ms, Worker 2.136 ms,
+CF Ray `a4b1427abfd00d12-LAX`. Foram 81 respostas válidas em 82,
+disponibilidade 98,7805%, taxa 5xx 1,2195% e p95 público 584,755 ms.
+Os gates de disponibilidade permaneceram reprovados; p95 baixo não os substitui.
+
+Trace `7091fe5b-de50-4b59-b269-01c7ba5c0091`, às
+`2026-10-15T19:34:12.521Z` no relógio do provedor. A primeira função,
+execução `e39aabd4-fe29-44cb-b196-7634be4c7424`, região `us-west-1`,
+teve duas leituras da projeção expiradas em 902 e 905 ms antes dos headers.
+Registrou falha no estágio `primary` e documento 503 em 1.817 ms;
+o gateway da função mediu 2.103 ms. A mídia não começou nessa execução.
+
+A segunda função começou 696 ms depois, esgotou a primeira leitura em
+902 ms e obteve 200 na segunda em 374 ms. Seu documento terminou 200 em
+1.305 ms, após a resposta de erro da primeira função. O Worker preservou
+a primeira resposta HTTP, sem substituir o 503 pelo sucesso posterior.
+O gateway REST confirmou apenas essa última leitura, origem 364 ms e
+Envoy 136 ms. O extrato não revela a fase DNS/TCP/TLS nativa dos pedidos
+que expiraram; resolução DNS independente de 4–5 ms não a comprova.
+Isso localiza a falha imediata no transporte da consulta primária, não em
+conteúdo de página ou assinatura de mídia, sem presumir a causa originária.
+
+O job deploy foi pulado e a API autoritativa do attempt confirmou zero steps.
+Os gates posteriores, inclusive Chrome, não executaram. O finalizador recusou
+outputs vazios com `G12_STAGING_MUTATION_BOUNDARY_AMBIGUOUS`, sem mutar o
+ambiente. Watchdog `38795112087` passou na classificação; compensação pulada
+porque o deploy nunca iniciou. Não se declara que o finalizador desse run passou.
+
+Às `2026-10-15T19:39:29.37592Z`, a fotografia de backend confirmou zero QA
+ativo, recuperação aberta, override ou fence e flag global OFF. O inventário
+completo mostrou 797 deployments sem operação ativa, o mesmo alias/deployment
+canônico e health 200 no SHA exato. Os cinco estados ativos de workflows
+estavam vazios nos dois repositórios. Não houve deploy completo, novo convite,
+produto, publicação, cutover ou alteração em produção. O run não foi repetido.
+
+## Correção da condição do finalizador
+
+A revisão `50cf9673a942c750073c3ec33944d6456f6af968` altera somente a condição
+do job finalizador e seu teste contratual. Se o resultado confiável do job
+deploy for `skipped`, o finalizador não tenta interpretar outputs inexistentes.
+O run permanece reprovado pelo baseline; o watchdog independente continua
+exigindo um único deploy com lista de steps presente e vazia para dispensar
+compensação. Deploy iniciado, cancelado, falho ou com evidência incompleta
+mantém os controles anteriores. Nenhum erro HTTP passa a ser aceito.
+
+A nova regressão falhou antes da mudança e os sete testes da fronteira passaram
+depois. Fase 12: 819 casos, 803 aprovados e zero falhas; QA: 139 aprovados.
+Lint e formatação focados passaram. O diff próprio de dois arquivos foi
+revisado, commitado e publicado em `origin/main`; CI `38796024460/1` passou
+nos sete jobs, incluindo banco/RLS, qualidade, navegador, runtime, pacote e métricas.
+Não há alteração de aplicação a promover por essa condição de controle.
+Staging continua no candidato `b19b06b`, sem reatribuir sua evidência ao novo SHA.
+
+A conclusão da disponibilidade exige correlação interna do transporte no
+Supabase para o trace e a janela acima. O chamado já registrado não teve
+número ou resposta recuperados pelas ferramentas disponíveis; não foi criado
+chamado duplicado. O próximo contato precisa do número/link do chamado
+existente para anexar a evidência sanitizada. Não se exige nova aprovação
+funcional, e-mail QA, remoção de páginas ou conexão ao domínio de produção.
