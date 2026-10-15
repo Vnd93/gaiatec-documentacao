@@ -26,17 +26,24 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
-### Recuperação QA instalada e contrato editorial em validação
+### Recuperação QA instalada; gate público de renderização pendente
 
-O SHA servido agora é `60b0efac868635e3d59b50e929052da497c6a473`. A ponte
+O SHA servido agora é `c2045ab4d380c99986eea790af80624173bdd825`, promovido pela
+ponte `38678981652` com o pacote original `11946731919`, sem rebuild. A ponte
 `38672871668` passou e a execução `38673962450` aplicou a migration `0122`, cujo
 preflight passou no backend real. A etapa autenticada falhou por uma asserção
 de teste desatualizada (`draft` em vez de `Rascunho`); finalizador e watchdog
 passaram. O ambiente está recuperado, sem QA ativo, manifesto aberto ou
 operação concorrente de ambiente, e a flag continua OFF. A correção restrita ao
 teste foi publicada como `c2045ab4d380c99986eea790af80624173bdd825`, com check
-completo aprovado e os sete jobs do CI `38678037524` verdes. O novo candidato ainda não
-foi implantado. A homologação autenticada integral continua pendente.
+completo aprovado e os sete jobs do CI `38678037524` verdes. A execução canônica
+`38680469214` falhou antes da etapa autenticada: documentos 200 sem o título
+visível no prazo original de 5 s em `/industrias` desktop e Instrumentação mobile.
+Finalizador e watchdog `38682260968` passaram. A fotografia posterior confirmou
+786 deployments, nenhum ativo, identidade canônica preservada, DB `0122`,
+zero QA ativo, manifesto aberto ou override e flag OFF. Essa falha de renderização
+não foi classificada como novo 503 nem como causa comprovada dos anteriores.
+A homologação autenticada integral continua pendente.
 
 Novos 503 ocorreram em `/`, `/contato` e `/produtos`, inclusive na própria região
 do projeto. A janela pós-deploy medida passou, mas não inclui as falhas de

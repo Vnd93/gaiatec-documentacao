@@ -297,8 +297,12 @@ pós-deploy somente leitura, mas a etapa autenticada não passou.
 O primeiro teste de ciclo de autenticação passou. No bootstrap editorial, a
 asserção em `expectEditorialState` exigia o código `draft`, enquanto o editor
 exibia corretamente `Rascunho`. A limpeza do mesmo cenário também procurava
-`published` e `archived` no texto humano para escolher a ação, gerando um timeout
-secundário. Não é evidência de falha do login nem comprovação da causa do 503.
+`published` e `archived` no texto humano para escolher a ação; esse contrato
+precisava ser corrigido. Houve ainda um timeout secundário de espera da resposta
+de arquivamento, cuja causa não foi isolada: no estado inicial de rascunho,
+ambas as comparações escolhem a mesma ação. O handler de confirmação nativa
+já existe no teste; ausência desse handler foi descartada como hipótese.
+Não é evidência de falha do login nem comprovação da causa do 503.
 
 O finalizador passou, e o
 [watchdog 38677323890](https://github.com/Vnd93/gaiatec-cms/actions/runs/38677323890)
@@ -319,8 +323,9 @@ de gate. O check completo passou: 246 arquivos Vitest, 1.730 testes, contratos,
 avaliações, lint, tipos e build em 17,98 s. A correção foi revisada e publicada
 como `c2045ab4d380c99986eea790af80624173bdd825`, em três arquivos somente de
 testes. O [CI 38678037524](https://github.com/Vnd93/gaiatec-cms/actions/runs/38678037524)
-passou nos sete jobs. O novo candidato ainda não foi implantado em staging e
-não substitui o vínculo das evidências anteriores. Seu pacote original é
+passou nos sete jobs. Naquele momento o novo candidato ainda não havia sido
+implantado em staging e não substituía o vínculo das evidências anteriores.
+A promoção e a falha subsequentes estão registradas abaixo. Seu pacote original é
 `11946731919`, digest
 `87540b60521e13996344ef1fc002410e203e249ea453658d083f49c91b80e77e`,
 produzido uma única vez no attempt 1.
@@ -350,3 +355,63 @@ representa todas as requisições da preparação. A passagem da janela estável
 não elimina os 503 observados. Permanecem pendentes a comprovação da causa e
 a homologação autenticada integral. Não houve repetição do release para obter
 verde, aumento de timeout, remoção de páginas ou alteração de produção.
+
+## Promoção de c2045ab e nova falha pública, sem convite humano
+
+A ponte `38678981652/1` passou, assim como os verificadores oficiais de run e
+evidência. O produtor continua `38678037524/1` e o pacote `11946731919`, sem
+rebuild. A evidência da ponte é `11947284518`, digest
+`bda269521e87bebd8b12abf3ebbfff85fb7245e6003a544b2b5d21cd64e405bf`;
+o arquivo frontend tem digest
+`63c47191c66c61582fc5f31361375377a8ccde4bd322a2f01ab03f6577a2e0ae`
+e a árvore
+`1bf7934646f85ee0d4c400b41f35149d05cb99ab023c4c3f7fe57d89f5a13463`.
+Deployment canônico `a245e2a6-2ddc-4052-95cf-8d580b115bbe`, criado em
+`2026-10-15T04:08:12.790Z`; o health confirmou o SHA exato em staging.
+
+A execução canônica `38680469214/1` passou no preflight, origem, baseline,
+compatibilidade de rollback e janelas de saúde, mas falhou no gate público.
+O smoke desktop de `/industrias` e a projeção mobile de
+`/industrias/instrumentacao` receberam documento 200, mas não encontraram o
+título no prazo original de 5 s. A projeção registrou lista vazia de eventos e
+nenhum estado ocupado ou de erro detectado pelos seletores existentes.
+Isso não comprova ausência de atividade nem causa do 503 anterior.
+
+Na janela `04:30:30Z–04:32:10Z`, o extrato observado de acesso de Funções
+registrou 570 respostas 200, com execução máxima de 1.745 ms, e quatro 404,
+em `us-east-1`. Não se interpreta a amostra sem 503 como prova de disponibilidade
+integral. No Chrome real, a primeira árvore mostrou o shell com main vazio;
+a observação posterior mostrou Instrumentação Industrial e nenhum erro de
+console. A passagem posterior não substitui o gate que falhou.
+
+Finalizador e watchdog `38682260968` passaram. Evidência terminal `11948158428`,
+digest `c5292968002af9dcbe39e9d2973aa3d2ba640a17b55fe63d5a79d749f5632dae`.
+Às `2026-10-15T04:34:18.423Z`, a fotografia confirmou DB `0122`, 786 deployments
+sem operação ativa, o mesmo deployment canônico e health 200 no SHA `c2045ab`.
+Depois do watchdog, os cinco estados ativos de workflows em ambos os
+repositórios e os fences estavam vazios. QA ativo, manifesto aberto e override
+ativo eram zero; flag global OFF. Não houve challenge publicado, convite humano,
+produto comercial ou produção. O observador local do challenge foi encerrado.
+
+Foi comprovada uma lacuna independente: o fallback de rota lazy contém somente
+spinner visual, sem estado acessível; o smoke também não preservava diagnóstico
+de fase de renderização. A correção mínima em validação anuncia o carregamento
+e registra somente estados booleanos e contagens de módulos pendentes,
+sem payloads, HTML, campos, URLs ou credenciais. Não aumenta prazo ou retry,
+não cria título artificial e não converte falha em sucesso. A causa dos 503 e
+a homologação autenticada integral permanecem abertas.
+
+A correção foi revisada e publicada em `origin/main` como
+`135a14274a39aa8367e9d226a64f4900fd470979`, em seis arquivos próprios.
+O componente anterior, extraído sem mudança de comportamento, falhou por não
+oferecer estado acessível; duas regressões também falharam para a observação de
+coleção e de módulo pendente. Após a correção, os 15 testes focados passaram.
+O check completo passou em 247 arquivos e 1.734 testes Vitest, além dos
+contratos QA/EV2, avaliações, lint, tipagem e build de 18,19 s.
+O CI `38682879078` foi iniciado; a promoção desse SHA ainda está pendente.
+
+Uma execução focada somente leitura dos dois cenários públicos, em desktop e
+mobile, passou nos quatro testes em 35,1 s, com dois workers e zero retries,
+contra o frontend ainda em `c2045ab`. Essa execução usou o diagnóstico local
+ampliado; não promoveu bytes, não substitui o gate vermelho da execução canônica
+e não constitui homologação autenticada no Chrome real.
