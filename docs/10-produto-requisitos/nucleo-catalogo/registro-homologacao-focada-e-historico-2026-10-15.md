@@ -690,3 +690,44 @@ aprovado. A conta operacional existente está ativa, com MFA, sem lease QA ou
 bloqueio e pode concluir somente leitura/teclado para a correção do foco,
 sem novo convite, e-mail ou mudança de permissão. Essa interação ainda não foi
 confirmada no Chrome. Produção permaneceu intocada.
+
+## Revalidação do foco no Chrome real
+
+Após a confirmação do responsável, a conta operacional existente foi conferida
+por comparação booleana do perfil, sem registrar sua identidade. O painel
+mostrou MFA verificado e acesso concedido; o backend de staging confirmou um
+perfil ativo com MFA, um fator verificado e uma sessão AAL2. A conta não foi
+convertida em QA, e nenhuma permissão ou configuração foi alterada.
+
+A aba ainda tinha o frontend anterior carregado. Sem formulário em edição,
+foi recarregada e passou a apresentar `tabindex=-1` no destino. O `/healthz`
+canônico retornou 200, ambiente staging e o SHA
+`473602e3dcd751c2d3df2c710cb538daa294f162` no corpo e no header `x-release`.
+O inventário completo confirmou 795 deployments, nenhum ativo, e o mesmo
+deployment canônico `f0719f81-8689-4940-aaef-7ad685dd8853`.
+
+No Chrome autenticado, passaram os seguintes casos:
+
+- Na página de perfil, Enter no atalho transferiu o foco ao `main#admin-main`;
+  o Tab seguinte levou a um link dentro do conteúdo, sem retornar ao menu.
+- No Núcleo de Catálogo, Enter também focou o main. A mensagem de preparação
+  permaneceu visível, sem campos para criar registros com a flag desligada.
+- A 390 × 844, o documento ficou com largura de 375 px e scroll de 375 px,
+  sem overflow horizontal. O menu abriu como modal, focou seu conteúdo e deixou
+  o main inerte. Escape fechou o modal, removeu o estado inerte e devolveu o
+  foco ao botão de abertura. O atalho mobile também focou o main.
+
+O override de viewport foi removido. A leitura agregada do backend em
+`2026-10-15T18:34:56.561488Z` confirmou zero QA ativo, recuperação aberta ou
+override de catálogo e flag global OFF. Os cinco estados ativos de workflows
+estavam vazios nos dois repositórios. Não houve convite, produto, publicação,
+mutação de catálogo ou alteração em produção. A consulta inicial do inventário
+Cloudflare foi recusada por paginação inválida; a paginação suportada de 25
+registros confirmou o inventário completo, sem disparar deployment.
+
+Esta prova encerra o desvio específico de foco no SHA promovido. Não atribui
+aos novos bytes toda a homologação funcional do SHA anterior nem aprova a
+disponibilidade pública: a causa do 503 continua aberta. A chamada exploratória
+a `/api/health` não é o health canônico e retornou HTML 503; não foi usada como
+prova de saúde ou como reprodução conclusiva da causa. A entrega permanece
+restrita a staging. Este registro documental não exige deploy da aplicação.
