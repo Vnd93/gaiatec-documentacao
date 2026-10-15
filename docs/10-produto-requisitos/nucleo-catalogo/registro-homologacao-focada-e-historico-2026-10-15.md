@@ -267,3 +267,86 @@ serviço. DNS independente resolvido em poucos milissegundos também não mede
 DNS, TCP ou TLS do fetch que falhou. A causa permanece sem comprovação; não
 houve aumento de timeout, remoção de páginas, nova tentativa cega de release
 ou duplicação do chamado de suporte. Flag global OFF e produção intocada.
+
+## Aplicação controlada da recuperação em staging
+
+A [ponte 38672871668](https://github.com/Vnd93/gaiatec-cms/actions/runs/38672871668),
+attempt 1, passou em 530 s, com métricas aprovadas. Os verificadores oficiais de
+run e evidência passaram; o watchdog `38673667178` terminou como não aplicável.
+O deployment canônico é `b7a8b9ca-fc41-43d6-86c8-09c1e2c045d8`, criado em
+`2026-10-15T02:54:16.426Z`, com o pacote e produtor originais. A evidência é
+`11944877632`, digest
+`9455e5c109a8ed71ba93cb278d535e05b55ac218aee20a991bedd30be9130631`.
+O arquivo frontend tem digest
+`0e72f38e11cfb917887e8217dadeceac2dd4c99378bd8d76b0a41a887ca5120d`
+e a árvore
+`65f6e5719be99a2e3e88bd5a9dd5ec72a82cd80fbb3c6cb7259c2a30419aefbf`.
+
+A [execução canônica 38673962450](https://github.com/Vnd93/gaiatec-cms/actions/runs/38673962450)
+aplicou `0122` por meio do payload selado. O preflight novo passou no backend
+real, com os dois índices exclusivos e os vínculos exatos de ator e lease.
+O digest das 11 funções de recuperação é
+`17f3aa40cbb4091ea379b7ec1ca362ea42d7663a58eb745f4cb897aaae4f812f`;
+o dos dois índices é
+`3a5e53ea3a788eced855dc50a7d7b363e507add407c1ef7963ae4d8cb70934c8`.
+Flag global permaneceu OFF. Passaram o deploy principal e os dois jobs
+pós-deploy somente leitura, mas a etapa autenticada não passou.
+
+## Falha comprovada no contrato do teste editorial
+
+O primeiro teste de ciclo de autenticação passou. No bootstrap editorial, a
+asserção em `expectEditorialState` exigia o código `draft`, enquanto o editor
+exibia corretamente `Rascunho`. A limpeza do mesmo cenário também procurava
+`published` e `archived` no texto humano para escolher a ação, gerando um timeout
+secundário. Não é evidência de falha do login nem comprovação da causa do 503.
+
+O finalizador passou, e o
+[watchdog 38677323890](https://github.com/Vnd93/gaiatec-cms/actions/runs/38677323890)
+passou sem nova mutação. A evidência terminal é `11946389122`, digest
+`39b95976593d5d7e19985b932e9b34cfff985ae0c79708b6e88e3730fba82747`.
+O probe terminal mediu 82 respostas, 100% na janela medida e p95 de 633,65 ms.
+A migration `0122` foi preservada. Depois da recuperação, o inventário completo
+contou 781 deployments, nenhum ativo; health e deployment continuavam no SHA
+`60b0efac868635e3d59b50e929052da497c6a473`, sem QA ativo, manifesto aberto,
+override ativo ou fence de recuperação. Não houve novo convite humano nem
+challenge de Chrome publicado. O watcher local foi encerrado.
+
+A correção local do teste exige os rótulos exatos de cada superfície e decodifica
+o texto antes da limpeza. As duas regressões falharam antes da correção; os 25
+testes focados passaram depois. O backend continua validando os códigos
+canônicos. Não houve mudança na interface, em permissões, em timeout ou remoção
+de gate. O check completo passou: 246 arquivos Vitest, 1.730 testes, contratos,
+avaliações, lint, tipos e build em 17,98 s. A correção foi revisada e publicada
+como `c2045ab4d380c99986eea790af80624173bdd825`, em três arquivos somente de
+testes. O [CI 38678037524](https://github.com/Vnd93/gaiatec-cms/actions/runs/38678037524)
+passou nos sete jobs. O novo candidato ainda não foi implantado em staging e
+não substitui o vínculo das evidências anteriores. Seu pacote original é
+`11946731919`, digest
+`87540b60521e13996344ef1fc002410e203e249ea453658d083f49c91b80e77e`,
+produzido uma única vez no attempt 1.
+
+## Novos 503 fora da janela medida
+
+Entre `2026-10-15T03:23:30Z` e `03:23:42Z`, a telemetria de aplicação registra
+seis documentos 503, vinculados aos traces
+`7b5e68e0-77e3-4f0e-acbf-30c8ed4b2d95`,
+`829f05a7-48dc-461a-96ad-125387f93362` e
+`d01665ef-011b-4f87-8808-c914f51390c4`, com tentativas de Worker `.1` e `.2`.
+Os logs de acesso de Funções mostram três 503 nas rotas `/`, `/contato` e
+`/produtos`, na versão 855. Os fetches primários encerraram duas vezes por
+deadline de 902–905 ms, antes dos headers; os documentos terminaram em
+1.808–1.816 ms. A consulta ao gateway REST pelos traces não retornou registros.
+Não se interpreta ausência de log como prova de ausência da requisição.
+
+Na mesma janela, os registros de Funções mostram 12 respostas 200 e três 503
+em `us-east-2`, a região do próprio projeto. A causa não está limitada às
+páginas de Instrumentação ou Proteção Catódica, nem foi atribuída a uma região
+remota. O código de `cms-public` e seus compartilhados não mudou entre
+`110d4e319a094a1c1c49b1ea71dd4ac719936c70` e este candidato.
+
+O probe pós-deploy passou com 82 respostas medidas, 100% e p95 de 555,90 ms.
+Seu readiness e aquecimento precedem a janela contabilizada; essa métrica não
+representa todas as requisições da preparação. A passagem da janela estável
+não elimina os 503 observados. Permanecem pendentes a comprovação da causa e
+a homologação autenticada integral. Não houve repetição do release para obter
+verde, aumento de timeout, remoção de páginas ou alteração de produção.

@@ -26,15 +26,29 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
-### Correção do ciclo QA em validação
+### Recuperação QA instalada e contrato editorial em validação
+
+O SHA servido agora é `60b0efac868635e3d59b50e929052da497c6a473`. A ponte
+`38672871668` passou e a execução `38673962450` aplicou a migration `0122`, cujo
+preflight passou no backend real. A etapa autenticada falhou por uma asserção
+de teste desatualizada (`draft` em vez de `Rascunho`); finalizador e watchdog
+passaram. O ambiente está recuperado, sem QA ativo, manifesto aberto ou
+operação concorrente de ambiente, e a flag continua OFF. A correção restrita ao
+teste foi publicada como `c2045ab4d380c99986eea790af80624173bdd825`, com check
+completo aprovado e os sete jobs do CI `38678037524` verdes. O novo candidato ainda não
+foi implantado. A homologação autenticada integral continua pendente.
+
+Novos 503 ocorreram em `/`, `/contato` e `/produtos`, inclusive na própria região
+do projeto. A janela pós-deploy medida passou, mas não inclui as falhas de
+readiness e aquecimento. Esses registros não foram aceitos como disponibilidade
+integral. Não houve novo convite, pedido de novo endereço ou produção.
+O registro vinculado preserva a sequência histórica.
 
 O candidato `60b0efac868635e3d59b50e929052da497c6a473` permite ciclos QA
 sucessivos após limpeza completa, preservando históricos, um manifesto aberto
 por grupo e um único vínculo vitalício por ator. A seleção da recuperação usa
 o ator e o lease exatos. O check local e os sete jobs do CI passaram, incluindo
-2.334 testes de banco/RLS. A aplicação controlada em staging ainda está
-pendente. O ambiente servido permanece em
-`19ab3b22db810faea0073c60188d7fdb8aae9708`.
+2.334 testes de banco/RLS; a aplicação controlada em staging foi comprovada.
 
 A próxima autenticação pode usar a caixa já indicada com novo ator e lease,
 arquivando somente o endereço da identidade QA terminal anterior. Não exige
