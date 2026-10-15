@@ -52,9 +52,11 @@ atores com zero resíduo ativo, preservando 11 revisões e 22 eventos de auditor
 
 O teste mobile a 390 × 844 não teve overflow nem controles sem nome, e Escape
 restaurou o foco do menu. Há uma pendência de acessibilidade no atalho para o
-conteúdo: a âncora muda, mas o destino não recebe foco. A correção mínima está
-em validação local, com regressão que falha no código anterior. O candidato
-servido e os artefatos originais permanecem preservados; não há homologação
+conteúdo: a âncora muda, mas o destino não recebe foco. A correção mínima foi
+publicada em `main` no SHA `473602e3dcd751c2d3df2c710cb538daa294f162`, com
+regressão vermelha no código anterior e check completo aprovado em 247 arquivos
+e 1.735 testes Vitest. CI e promoção estão pendentes. O candidato servido e os
+artefatos originais permanecem preservados; não há homologação
 integral nem liberação de produção. Flag global OFF, sem produto comercial.
 
 No histórico anterior, a ponte

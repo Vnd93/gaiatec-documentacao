@@ -630,3 +630,18 @@ foi restaurado e a segunda aba criada para CAS foi fechada. As ações
 Flag global OFF, IA externa desativada, nenhum produto comercial, publicação,
 importação, cutover ou alteração em produção. A causa do 503 e o foco do atalho
 impedem declarar homologação integral do sistema.
+
+## Correção restrita ao foco do atalho administrativo
+
+A correção em `473602e3dcd751c2d3df2c710cb538daa294f162` torna o main focável
+somente por programa, com `tabIndex=-1`, e transfere o foco ao acionar o atalho,
+preservando sua âncora. Não adiciona tab stop, permissão, exceção de MFA, chamada
+de backend, timeout ou mudança de workflow. O teste por teclado falhou no
+código anterior e os seis testes do shell passaram após a correção.
+
+O diff de dois arquivos próprios foi revisado. O check completo passou,
+incluindo 247 arquivos e 1.735 testes Vitest, contratos QA/EV2, avaliações,
+lint, tipagem e build de 29,25 s. Commit e push em `origin/main` concluídos;
+CI e promoção controlada em staging ainda pendentes. O frontend servido
+continua no SHA anterior, e a homologação autenticada acima não foi atribuída
+aos novos bytes. A causa do 503 permanece aberta.
