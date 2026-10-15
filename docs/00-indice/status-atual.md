@@ -42,12 +42,20 @@ Storage terminou 200 depois desse encerramento. A correlação aponta para a
 etapa posterior de mídia neste pedido, mas não explica todos os 503 históricos.
 Não houve aumento de prazo, remoção de validação de mídia ou repetição de release.
 
-O plano durável do próximo ciclo foi registrado antes de criar três auxiliares
-QA novos, com MFA/AAL2 e leases originais de 240 minutos. Às `05:44Z`, os três
-estavam preparados, sem acesso RDO, override ou efeito de catálogo; flag global
-OFF. Nenhuma identidade humana ou convite foi criado neste ciclo. O acesso
-humano usará a caixa já confirmada, após confirmação de disponibilidade, com
-novo ator e manifesto completo comprometido antes da entrega do convite.
+A homologação focada autenticada do SHA `135a142` passou no Chrome real e no
+backend de staging: histórico, conflito entre abas, restauração como nova revisão,
+prévia editorial privada, relações, herança e 18 recusas de permissão, escopo e
+entrada inválida. MFA/AAL2 foi confirmado antes de liberar somente quatro
+overrides individuais QA. O ciclo reutilizou a caixa já confirmada sem reabrir
+identidades ou estender leases. A compensação terminal encerrou os quatro
+atores com zero resíduo ativo, preservando 11 revisões e 22 eventos de auditoria.
+
+O teste mobile a 390 × 844 não teve overflow nem controles sem nome, e Escape
+restaurou o foco do menu. Há uma pendência de acessibilidade no atalho para o
+conteúdo: a âncora muda, mas o destino não recebe foco. A correção mínima está
+em validação local, com regressão que falha no código anterior. O candidato
+servido e os artefatos originais permanecem preservados; não há homologação
+integral nem liberação de produção. Flag global OFF, sem produto comercial.
 
 No histórico anterior, a ponte
 `38672871668` passou e a execução `38673962450` aplicou a migration `0122`, cujo

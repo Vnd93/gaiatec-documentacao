@@ -544,3 +544,89 @@ terminal bloqueada e criando uma identidade nova, sem alterar conta operacional,
 reabrir lease ou perder histórico. A disponibilidade humana deve ser confirmada
 antes do envio; senha e MFA continuam exclusivos do responsável. A homologação
 autenticada do candidato permanece pendente, com flag global OFF e produção intocada.
+
+## Homologação autenticada com reutilização da caixa confirmada
+
+Os três auxiliares da preparação anterior venceram sem convite humano. A
+revalidação encontrou os três bloqueados, sem sessão, papel ou perfil ativo.
+Nenhum prazo foi prorrogado nem lease reaberto. Com a disponibilidade do
+responsável confirmada, um novo plano foi persistido antes dos efeitos:
+
+- Plano: `fabc539b8ac4f03bd814561e388d92edfed7a4d44c4e803567b3ba4b47bbc8f6`.
+- Snapshot: `5e38527cd86dd24375ff424e46170ff113e5449b33a2831f734a1b99ca719b17`.
+- Recovery: `e9d524c9d615403f3a923636bc1aead9e20644815ff4362979ce06de63ee4b67`.
+
+O vínculo permaneceu no SHA `135a14274a39aa8367e9d226a64f4900fd470979`, arquivo
+selado `b31b8ddf05dc588ed7b3b4376c72d819a993fa4692c69c74cf1500c616c8e389` e
+deployment `4bc0a8dc-20de-4aff-badb-e2aee2fdce53`. O inventário completo
+posterior tinha 793 deployments, nenhum ativo; os dois acréscimos não alteraram
+o alias canônico. Workflows ativos e fences ativos estavam vazios, health 200
+no SHA exato e preflight da recuperação aprovado.
+
+Somente o endereço de login da antiga identidade QA terminal foi arquivado.
+Lease, bloqueio, senha, fatores e histórico permaneceram idênticos na comparação
+privada. Foram criados quatro atores novos e o manifesto completo foi
+comprometido, com quatro vínculos comprovados em transação posterior, antes do
+convite e de qualquer efeito de catálogo. Os três auxiliares concluíram MFA/AAL2
+antes dos papéis. Os leases originais continuaram com 14.400 segundos, vencendo
+entre `17:59:56.471443Z` e `17:59:57.26109Z`.
+
+O envio inicial às `14:00:48Z` e o único reenvio às `17:01:50Z` tiveram `/invite`
+HTTP 200 e evento `mail.send`. Esses eventos confirmam processamento, não
+entrega na caixa. O reenvio preservou a mesma identidade, os quatro vínculos e
+os prazos. Depois, o responsável concluiu senha e MFA. O backend confirmou fator
+verificado, duas sessões AAL2 e perfil MFA ativo; o perfil visível no Chrome
+normal correspondeu à identidade esperada por comparação booleana. Nenhuma
+senha, link, TOTP, cookie ou token humano foi extraído.
+
+Com quatro overrides somente `user` em staging, limitados aos leases originais,
+passaram no Chrome real:
+
+- Nome vazio, slug inválido e quantidade não positiva foram recusados pelo formulário.
+- Cadastro de rascunho sintético, duas revisões e consulta do histórico imutável.
+- Histórico removido em Novo produto e invalidado após salvar nova revisão.
+- Conflito CAS entre duas abas: alerta, autoria própria em outra edição, comparação
+  base/tentativa/atual, tentativa preservada e salvamento bloqueado até resolução.
+- Descarte da tentativa concorrente e restauração da revisão 1 como nova revisão 4,
+  com conteúdo original recuperado e nenhum snapshot público.
+- Proposta e ativação de termo sintético, rascunho editorial e prévia privada da
+  revisão gravada. Marcação de teste permaneceu texto literal, com zero scripts.
+- Prévia removida com alteração não gravada, troca de contexto bloqueada e
+  descarte explícito restabelecendo os controles sem gravação adicional.
+- Relação acessória e herança modelo–produto entre os dois rascunhos QA próprios.
+- Mobile a 390 × 844, documento de 375 px sem overflow; zero controles habilitados
+  sem nome, zero IDs duplicados, menu modal com Escape e retorno de foco.
+
+No backend real, 18 recusas cobriram reviewer sem escrita, editor sem ação
+administrativa, produto e termo fora do escopo, relação e herança externas,
+autorrelacionamento, revisão obrigatória, slug, título vazio ou longo, resumo
+longo, conteúdo extra, tipo inválido, termos duplicados, campo inesperado,
+comando desconhecido e comando anônimo. O workspace mostrou somente o produto
+do ator editor ou administrador QA; reviewer viu zero e o histórico humano
+ficou vazio para os três auxiliares. A leitura direta das tabelas retornou zero
+linhas fora do contexto da RPC, como exige o fence de ambiente; isso não é
+falha de visibilidade do workspace autorizado. As 13 tabelas de catálogo têm RLS.
+
+O atalho para conteúdo mudou a âncora para `#admin-main`, mas o foco observado
+permaneceu no `body`; o destino não tinha `tabindex`. Esse caso ficou pendente,
+sem declaração de acessibilidade integral. A correção mínima do shell e sua
+regressão são uma entrega posterior, não bytes já homologados neste ciclo.
+
+## Limpeza terminal do ciclo autenticado
+
+Após auditoria de intenção, os quatro atores foram bloqueados, seus acessos
+temporários removidos e as sessões revogadas. A RPC canônica encerrou os quatro
+leases e o último encerramento acionou a compensação do manifesto exato.
+Resultado comprovado: zero QA ativo, sessão, papel, perfil ativo, override,
+produto ativo, termo ativo ou manifesto aberto; quatro atores bloqueados e
+quatro leases `cleaned`, preservando seus prazos originais de 14.400 segundos.
+Onze revisões de produto e 22 eventos de auditoria de catálogo ficaram retidos.
+Os registros arquivados/inativos não foram apagados para alegar resíduo zero.
+
+O Chrome recarregado mostrou acesso administrativo não autorizado. O viewport
+foi restaurado e a segunda aba criada para CAS foi fechada. As ações
+`cms:qa.catalog_authenticated_checks_completed` e
+`cms:qa.catalog_cycle_cleanup_completed` preservam os resultados sanitizados.
+Flag global OFF, IA externa desativada, nenhum produto comercial, publicação,
+importação, cutover ou alteração em produção. A causa do 503 e o foco do atalho
+impedem declarar homologação integral do sistema.
