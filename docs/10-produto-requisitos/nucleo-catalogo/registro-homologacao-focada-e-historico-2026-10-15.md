@@ -645,3 +645,48 @@ lint, tipagem e build de 29,25 s. Commit e push em `origin/main` concluídos;
 CI e promoção controlada em staging ainda pendentes. O frontend servido
 continua no SHA anterior, e a homologação autenticada acima não foi atribuída
 aos novos bytes. A causa do 503 permanece aberta.
+
+## Promoção controlada da correção de foco
+
+O CI `38777455743/1` terminou com os sete jobs verdes, incluindo 73 arquivos e
+2.334 testes de banco. O plano permaneceu fail-closed em `full-release`, modo
+`bootstrap-full`, sem reutilização de gate mutante. O verificador oficial da
+seleção passou. Produtor original attempt 1, pacote `11993664484`, digest ZIP
+`aac4773dfddcdd441891c6c08369026634f0ab6107757da944af9db5daf76cfa`.
+Arquivo frontend `e2ec7f18fbb3dd5a501b1e114eda5fcd7405c7882ca9c83c26a61cdc654a07f3`;
+árvore `57d7b210b0a683633d6570e9f883eefe16f4c291f1eb5a8befbb39744d69b0f6`.
+
+A ponte `38778727842/1` e suas métricas passaram, preservando esses mesmos bytes.
+Watchdog `38780642552` terminou skipped. Os verificadores oficiais de run e
+evidência passaram. O primeiro comando local do verificador de run recusou a
+ausência do arquivo de saída obrigatório; fornecido o contexto exigido, passou
+sem alterar o guard. Um download local também recusou a sessão CLI sem
+credencial; a transferência foi feita pelo terminal autenticado como Vnd93,
+sem nova tentativa de workflow nem exposição de token.
+
+Frontend canônico `f0719f81-8689-4940-aaef-7ad685dd8853`, criado em
+`2026-10-15T17:47:31.395Z`, SHA `473602e3dcd751c2d3df2c710cb538daa294f162`,
+marker `g12-staging-bridge-run-38778727842-1`.
+Evidência `11995103619`, digest ZIP
+`17df187b23a12c91b1ca8df8f7bb372907273694de1fce542c450a5751d2b57f`.
+Restauração `11995152056`, digest ZIP
+`419d1e53d2f153d72a7cae083f58a20aa78a42fd91a8a98202f7f6899770c536`.
+O backend público capturado na versão 871 foi restaurado na versão 873, com
+bundle exato `89add82e9db167dfb4b7807e44a1a22c92ec2834ffc3abce3066bf12ec5f5de6`
+e três probes 200 consecutivos. Os números de versão mudam na restauração;
+a equivalência exigida é dos bytes capturados, não da numeração anterior.
+
+Às `2026-10-15T17:53:02.456541Z`, a conferência confirmou DB `0122`, 795
+deployments sem operação ativa, alias e marker exatos, health 200 no novo SHA,
+zero QA ativo, manifesto aberto, fence ativo ou override de catálogo; flag OFF.
+Os cinco estados ativos de workflows estavam vazios nos dois repositórios.
+O CI durou 7 min 18 s, e a ponte, 13 min 59 s, conforme timestamps do GitHub.
+Esses tempos não representam o pipeline integral de homologação.
+
+A prova da ponte é de compatibilidade com o contrato legado e controles
+negativos, com limpeza comprovada. Não testa captação positiva, backend
+integral ou sessão humana do novo SHA; não transforma o 503 anterior em
+aprovado. A conta operacional existente está ativa, com MFA, sem lease QA ou
+bloqueio e pode concluir somente leitura/teclado para a correção do foco,
+sem novo convite, e-mail ou mudança de permissão. Essa interação ainda não foi
+confirmada no Chrome. Produção permaneceu intocada.

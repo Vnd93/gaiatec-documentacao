@@ -26,13 +26,16 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
-### Recuperação QA instalada e novo 503 após a consulta principal
+### Correção do foco promovida e causa do 503 pendente
 
-O SHA servido agora é `135a14274a39aa8367e9d226a64f4900fd470979`, promovido pela
-ponte `38683706626` com o pacote original `11949275577`, sem rebuild. CI, ponte
-e verificadores oficiais passaram. A correção mínima anuncia o carregamento
-lazy e amplia o diagnóstico sanitizado, sem mudar prazos ou asserções. A
-validação canônica `38684843545/1` falhou no probe de coleção pública com 503,
+O SHA servido agora é `473602e3dcd751c2d3df2c710cb538daa294f162`, promovido pela
+ponte `38778727842/1` com o pacote original `11993664484`, sem rebuild. Os sete
+jobs do CI `38777455743/1`, ponte, métricas e verificadores oficiais passaram;
+watchdog `38780642552` terminou skipped. A mudança é restrita ao foco do atalho
+administrativo, ainda aguardando revalidação no Chrome com conta operacional.
+A ponte prova compatibilidade, não a homologação integral ou a causa do 503.
+
+No candidato anterior `135a142`, a validação canônica `38684843545/1` falhou no probe de coleção pública com 503,
 depois de passarem os 50 testes públicos de navegador, CSP e canários G12/G17.
 Finalizador e watchdog `38687054474` passaram; não há homologação integral.
 
@@ -55,8 +58,12 @@ restaurou o foco do menu. Há uma pendência de acessibilidade no atalho para o
 conteúdo: a âncora muda, mas o destino não recebe foco. A correção mínima foi
 publicada em `main` no SHA `473602e3dcd751c2d3df2c710cb538daa294f162`, com
 regressão vermelha no código anterior e check completo aprovado em 247 arquivos
-e 1.735 testes Vitest. CI e promoção estão pendentes. O candidato servido e os
-artefatos originais permanecem preservados; não há homologação
+e 1.735 testes Vitest. CI e promoção controlada passaram, com os mesmos bytes
+selados. A fotografia terminal confirmou DB `0122`, 795 deployments sem operação
+ativa, QA e manifesto aberto zero, fences e overrides vazios. O backend público
+foi restaurado na versão 873. Não houve novo convite após o ciclo encerrado;
+a verificação restante do foco pode usar a conta operacional existente, somente
+para leitura e teclado, sem novo e-mail ou mudança de permissão. Não há homologação
 integral nem liberação de produção. Flag global OFF, sem produto comercial.
 
 No histórico anterior, a ponte
