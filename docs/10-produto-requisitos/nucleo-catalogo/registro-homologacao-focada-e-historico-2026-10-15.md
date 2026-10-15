@@ -474,3 +474,73 @@ O artefato de restauração `11949467492` tem digest
 A limpeza das fixtures passou; flag OFF, sem convite humano ou produção.
 Essa prova continua limitada à compatibilidade da ponte, sem captação positiva,
 backend completo do candidato ou homologação autenticada integral.
+
+## Novo incidente após a consulta principal
+
+A execução canônica `38684843545/1`, no SHA `135a142`, passou pelos gates de
+fonte, baseline, migrations, compatibilidade de rollback, três janelas de saúde,
+50 regressões públicas de navegador, CSP, G12, G17 manual-only e ciclo editorial.
+Falhou no primeiro probe `public_collection_available`, com HTTP 503. Os demais
+checks desse script não foram executados pelo run após a falha; 14 verificações
+independentes de recusa anônima e origens hostis passaram posteriormente, sem
+converter o gate de disponibilidade em verde.
+
+O pedido foi direto ao Supabase, sem o Worker do site no caminho. A correlação
+usa o trace técnico `9aabd141-07b7-4ebc-985f-356449728011.1`, execução
+`9901b16e-9fe8-4a91-b519-5db430d3dc47`, região `us-east-2`, versão 869, em
+`2026-10-15T05:26:10.626Z–05:26:13.478Z`.
+
+- A consulta principal recebeu headers REST 200 em 227 ms, completou o body em
+  1 ms e registrou sucesso em 231 ms. O gateway registrou 196 ms, Envoy 165 ms.
+- As leituras subsequentes de replacements, assets e variants tiveram respostas
+  200 próximas, respectivamente com 83, 130 e 62 ms de origem. A associação
+  temporal dessas leituras não equivale a um trace completo de cada dependência.
+- A função registrou `upstream_timeout` às `05:26:13.445Z`, encerrando o documento
+  com 503 em 2.374 ms. O cliente mediu 2.851 ms.
+- O Storage registrou POST de assinatura iniciado às `05:26:12.615Z`, concluído
+  200 às `05:26:13.493Z`, com 860 ms de execução: 48 ms depois do encerramento
+  da função. Isso localiza uma dependência tardia de mídia; não comprova a causa
+  de todos os incidentes anteriores, que também incluíram timeout da consulta principal.
+
+Os campos de caminho diferem entre fontes: `request.pathname` em acesso de
+Funções, `request.path` em REST e `req.url` em Storage. Uma consulta inicial ao
+REST com o campo inadequado foi corrigida; seu resultado vazio não foi usado
+como prova de que o pedido não chegou. Nenhum header, body, segredo ou dado
+pessoal integra esta evidência. Não se removeu assinatura, verificação de
+direitos ou disponibilidade de mídia para obter sucesso.
+
+Finalizador e watchdog `38687054474` terminaram com sucesso. O artefato terminal
+`11949907887` tem digest ZIP
+`8a1fc7096305ee34043fcd59b1c995e786aefe11746a49596ac414fd0184bf60`.
+O probe terminal mediu 82 respostas, 100% de sucesso e p95 de 531,679 ms;
+essa janela não apaga a falha de disponibilidade anterior. Às
+`2026-10-15T05:41:04.850Z`, o inventário completo confirmou 791 deployments,
+nenhum ativo, identidade canônica `4bc0a8dc-20de-4aff-badb-e2aee2fdce53`, health
+200 no SHA exato, DB `0122`, fences vazios e nenhuma operação de workflow ativa
+nos dois repositórios. QA, manifesto aberto e override eram zero antes da
+preparação seguinte. Não houve challenge Chrome nem novo release às cegas.
+
+## Preparação autenticada sem nova caixa postal
+
+O plano `cms:qa.catalog_cycle_plan_prepared` foi persistido antes de criar os
+três auxiliares do novo ciclo, digest
+`4fbf9343c4adcb02f6e8bf3ac48ad8395518c1d315babb60824176ada07beaab`.
+Snapshot `882501e209982dc66329284d9182ee6a0f1c618e8ec3763f6139ee7eca794ece`;
+recovery `621758c1517a985cdf8488ae48fe325374d1caa9755dfc4dcf61734dfeb45107`.
+O vínculo é com o SHA completo `135a14274a39aa8367e9d226a64f4900fd470979`
+e os bytes originais promovidos pela ponte.
+
+A conferência encontrou três leases ativos com exatamente 14.400 segundos,
+três fatores MFA verificados, três atores AAL2 e três perfis/papéis preparados.
+Os vencimentos originais ficam entre `2026-10-15T09:44:26.730759Z` e
+`2026-10-15T09:44:54.217722Z`. Não há exceção de MFA, RDO ativo, override ou
+manifesto de catálogo aberto; nenhum produto foi criado. A recuperação do Auth
+permanece vinculada a cada lease. O manifesto completo dos quatro atores será
+comprometido antes da entrega do convite e de qualquer efeito de catálogo.
+
+O ator humano ainda não foi criado e não houve convite. A caixa já confirmada
+pode ser reutilizada arquivando somente o endereço de login da identidade QA
+terminal bloqueada e criando uma identidade nova, sem alterar conta operacional,
+reabrir lease ou perder histórico. A disponibilidade humana deve ser confirmada
+antes do envio; senha e MFA continuam exclusivos do responsável. A homologação
+autenticada do candidato permanece pendente, com flag global OFF e produção intocada.

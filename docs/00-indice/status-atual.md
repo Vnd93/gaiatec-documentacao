@@ -26,20 +26,35 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
-### Recuperação QA instalada; gate público de renderização pendente
+### Recuperação QA instalada e novo 503 após a consulta principal
 
 O SHA servido agora é `135a14274a39aa8367e9d226a64f4900fd470979`, promovido pela
 ponte `38683706626` com o pacote original `11949275577`, sem rebuild. CI, ponte
 e verificadores oficiais passaram. A correção mínima anuncia o carregamento
 lazy e amplia o diagnóstico sanitizado, sem mudar prazos ou asserções. A
-validação canônica deste SHA ainda não foi executada; não há homologação integral.
+validação canônica `38684843545/1` falhou no probe de coleção pública com 503,
+depois de passarem os 50 testes públicos de navegador, CSP e canários G12/G17.
+Finalizador e watchdog `38687054474` passaram; não há homologação integral.
+
+Neste incidente, a consulta principal retornou 200 em 231 ms. A função encerrou
+com `upstream_timeout` e 503 em 2.374 ms, enquanto uma assinatura de mídia no
+Storage terminou 200 depois desse encerramento. A correlação aponta para a
+etapa posterior de mídia neste pedido, mas não explica todos os 503 históricos.
+Não houve aumento de prazo, remoção de validação de mídia ou repetição de release.
+
+O plano durável do próximo ciclo foi registrado antes de criar três auxiliares
+QA novos, com MFA/AAL2 e leases originais de 240 minutos. Às `05:44Z`, os três
+estavam preparados, sem acesso RDO, override ou efeito de catálogo; flag global
+OFF. Nenhuma identidade humana ou convite foi criado neste ciclo. O acesso
+humano usará a caixa já confirmada, após confirmação de disponibilidade, com
+novo ator e manifesto completo comprometido antes da entrega do convite.
 
 No histórico anterior, a ponte
 `38672871668` passou e a execução `38673962450` aplicou a migration `0122`, cujo
 preflight passou no backend real. A etapa autenticada falhou por uma asserção
 de teste desatualizada (`draft` em vez de `Rascunho`); finalizador e watchdog
-passaram. O ambiente está recuperado, sem QA ativo, manifesto aberto ou
-operação concorrente de ambiente, e a flag continua OFF. A correção restrita ao
+passaram. Na fotografia desse ciclo, o ambiente estava recuperado, sem QA ativo,
+manifesto aberto ou operação concorrente de ambiente, com flag OFF. A correção restrita ao
 teste foi publicada como `c2045ab4d380c99986eea790af80624173bdd825`, com check
 completo aprovado e os sete jobs do CI `38678037524` verdes. A execução canônica
 `38680469214` falhou antes da etapa autenticada: documentos 200 sem o título
