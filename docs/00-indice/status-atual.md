@@ -57,7 +57,10 @@ por grupo e um único vínculo vitalício por ator. A seleção da recuperação
 o ator e o lease exatos. O check local e os sete jobs do CI passaram, incluindo
 2.334 testes de banco/RLS; a aplicação controlada em staging foi comprovada.
 
-A próxima autenticação pode usar a caixa já indicada com novo ator e lease,
+A prova hospedada de dois ciclos QA consecutivos passou no mesmo SHA e grupo,
+com transações comprometidas separadamente, dois atores novos, dois manifestos
+históricos preservados e zero resíduo ativo. Não houve produto, privilégio ou
+e-mail enviado. A próxima autenticação pode usar a caixa já indicada com novo ator e lease,
 arquivando somente o endereço da identidade QA terminal anterior. Não exige
 novo endereço nem reabre lease encerrado. Ainda não houve novo convite.
 Os logs adicionais do incidente mostram cobertura incompleta do gateway;

@@ -408,10 +408,48 @@ oferecer estado acessível; duas regressões também falharam para a observaçã
 coleção e de módulo pendente. Após a correção, os 15 testes focados passaram.
 O check completo passou em 247 arquivos e 1.734 testes Vitest, além dos
 contratos QA/EV2, avaliações, lint, tipagem e build de 18,19 s.
-O CI `38682879078` foi iniciado; a promoção desse SHA ainda está pendente.
+O CI `38682879078/1` passou nos sete jobs; a promoção desse SHA ainda está pendente.
 
 Uma execução focada somente leitura dos dois cenários públicos, em desktop e
 mobile, passou nos quatro testes em 35,1 s, com dois workers e zero retries,
 contra o frontend ainda em `c2045ab`. Essa execução usou o diagnóstico local
 ampliado; não promoveu bytes, não substitui o gate vermelho da execução canônica
 e não constitui homologação autenticada no Chrome real.
+
+## Dois ciclos comprometidos na recuperação hospedada, sem novo e-mail
+
+Após ambos os repositórios ficarem sem workflows ativos, fences vazios e o
+inventário completo confirmar 786 deployments sem operação ativa, foi executada
+uma prova de recuperação no backend real `0122`, vinculado ao frontend ainda
+em `c2045ab`, deployment `a245e2a6-2ddc-4052-95cf-8d580b115bbe` e arquivo selado
+`63c47191c66c61582fc5f31361375377a8ccde4bd322a2f01ab03f6577a2e0ae`.
+
+O plano foi persistido em auditoria antes de criar atores, digest
+`457d3b62563e80e6a0af41d73d3b6eb82c7455fbcaa647c6ec08f544d39e4cf0`.
+O snapshot tem digest
+`79b9a9a7d151038241986edb0c409b44af749420128a243adaac78491642d94e`.
+O inventário de 11 definições de função e dois índices, serializado como JSON
+ordenado, tem digest
+`621758c1517a985cdf8488ae48fe325374d1caa9755dfc4dcf61734dfeb45107`.
+Esse digest inclui índices e não usa o mesmo formato dos digests SQL anteriores.
+
+Foram criados dois atores sintéticos novos, sequencialmente, sem senha usada,
+sessão, perfil, papel, acesso RDO, produto, termo ou override. Não houve convite
+nem entrega de e-mail. Cada ciclo preparou seu manifesto e, em outra transação,
+confirmou o vínculo comprometido do ator. O bloqueio normal no Auth e a RPC
+canônica de encerramento acionaram a recuperação terminal de cada ciclo.
+
+Ambos usaram o mesmo SHA e run tag UTC real. A conferência final encontrou
+dois vínculos vitalícios de ator, dois manifestos distintos `cleaned`, dois
+leases `cleaned` com os 14.400 segundos originais e dois atores bloqueados.
+Sessões, papéis, perfis, QA ativo, manifesto aberto e override ativo eram zero;
+flag global OFF. Os históricos não foram apagados nem os leases reabertos.
+Plano e resultado estão em auditoria imutável, nas ações
+`cms:qa.catalog_repeat_recovery_proof_plan` e
+`cms:qa.catalog_repeat_recovery_proof_completed`.
+
+Essa é prova de recuperação comprometida no ambiente hospedado, não apenas
+pgTAP com rollback. Não substitui os casos de interface autenticada, a
+acessibilidade integral, o gate público que falhou ou a causa ainda aberta do 503. A preparação do acesso humano poderá reutilizar a caixa já confirmada,
+arquivando somente o endereço da identidade QA terminal e criando outra UUID,
+sem converter a conta operacional ou exigir nova caixa postal. Produção intocada.
