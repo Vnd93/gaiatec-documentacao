@@ -453,3 +453,24 @@ pgTAP com rollback. Não substitui os casos de interface autenticada, a
 acessibilidade integral, o gate público que falhou ou a causa ainda aberta do 503. A preparação do acesso humano poderá reutilizar a caixa já confirmada,
 arquivando somente o endereço da identidade QA terminal e criando outra UUID,
 sem converter a conta operacional ou exigir nova caixa postal. Produção intocada.
+
+## Ponte da correção de carregamento e diagnóstico
+
+A ponte `38683706626/1` e suas métricas passaram, com verificadores oficiais de
+run e evidência aprovados. O watchdog `38684505509` terminou `skipped`. O
+frontend servido é `135a14274a39aa8367e9d226a64f4900fd470979`, deployment
+`4bc0a8dc-20de-4aff-badb-e2aee2fdce53`, criado em `2026-10-15T04:58:34.888Z`.
+O produtor original continua `38682879078/1`, pacote `11949275577`, digest ZIP
+`1e3eeb69a95679f802576489444df6a7f2f70efb22eede36a9c5f127aadb2572`.
+Arquivo frontend `b31b8ddf05dc588ed7b3b4376c72d819a993fa4692c69c74cf1500c616c8e389`,
+árvore `8277d54e60a95e89c433d95a42ffe64bdc1ded4dfaf63ed1217cfd0a79e414b1`.
+
+A evidência da ponte é `11949657241`, digest
+`a93d7e831e2e4d4083d9669a7504be196f741701562856b06736eb2c6061f000`.
+O backend público foi restaurado na versão 866, com três probes 200 consecutivos
+e bundle exato `83f2f7f1e2f483511f71b3768a9b998dc95babc0a2e4301574da80825b6d63f9`.
+O artefato de restauração `11949467492` tem digest
+`f569941406c297ed6c1c00e9215ed57430293dccdc19717e9f018e7b9060796c`.
+A limpeza das fixtures passou; flag OFF, sem convite humano ou produção.
+Essa prova continua limitada à compatibilidade da ponte, sem captação positiva,
+backend completo do candidato ou homologação autenticada integral.

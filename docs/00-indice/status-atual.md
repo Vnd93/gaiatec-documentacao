@@ -28,8 +28,13 @@ relacionados:
 
 ### Recuperação QA instalada; gate público de renderização pendente
 
-O SHA servido agora é `c2045ab4d380c99986eea790af80624173bdd825`, promovido pela
-ponte `38678981652` com o pacote original `11946731919`, sem rebuild. A ponte
+O SHA servido agora é `135a14274a39aa8367e9d226a64f4900fd470979`, promovido pela
+ponte `38683706626` com o pacote original `11949275577`, sem rebuild. CI, ponte
+e verificadores oficiais passaram. A correção mínima anuncia o carregamento
+lazy e amplia o diagnóstico sanitizado, sem mudar prazos ou asserções. A
+validação canônica deste SHA ainda não foi executada; não há homologação integral.
+
+No histórico anterior, a ponte
 `38672871668` passou e a execução `38673962450` aplicou a migration `0122`, cujo
 preflight passou no backend real. A etapa autenticada falhou por uma asserção
 de teste desatualizada (`draft` em vez de `Rascunho`); finalizador e watchdog
