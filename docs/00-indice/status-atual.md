@@ -26,6 +26,24 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Correção do ciclo QA em validação
+
+O candidato `60b0efac868635e3d59b50e929052da497c6a473` permite ciclos QA
+sucessivos após limpeza completa, preservando históricos, um manifesto aberto
+por grupo e um único vínculo vitalício por ator. A seleção da recuperação usa
+o ator e o lease exatos. O check local e os sete jobs do CI passaram, incluindo
+2.334 testes de banco/RLS. A aplicação controlada em staging ainda está
+pendente. O ambiente servido permanece em
+`19ab3b22db810faea0073c60188d7fdb8aae9708`.
+
+A próxima autenticação pode usar a caixa já indicada com novo ator e lease,
+arquivando somente o endereço da identidade QA terminal anterior. Não exige
+novo endereço nem reabre lease encerrado. Ainda não houve novo convite.
+Os logs adicionais do incidente mostram cobertura incompleta do gateway;
+não comprovam a causa do 503. Detalhes no
+[registro de homologação](../10-produto-requisitos/nucleo-catalogo/registro-homologacao-focada-e-historico-2026-10-15.md).
+Flag global OFF, sem produção; homologação autenticada integral pendente.
+
 ### Verificações independentes concluídas sem novos e-mails
 
 Por orientação do responsável, o fluxo de novos convites foi interrompido.

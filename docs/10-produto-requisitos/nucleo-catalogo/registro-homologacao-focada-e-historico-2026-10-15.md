@@ -214,3 +214,56 @@ ciclo foi encerrada; contas operacionais não foram convertidas em QA.
 Os três auxiliares da fase independente também foram encerrados. A próxima
 fase é consolidação operacional e acompanhamento das pendências, sem abrir
 outro ciclo de convites automaticamente ou dispensar os gates pendentes.
+
+## Ciclos QA sucessivos sem novos endereços
+
+O candidato `60b0efac868635e3d59b50e929052da497c6a473` corrige o impedimento de
+preparar outro manifesto para o mesmo dia e SHA após compensação completa.
+A migration `0122` mantém a unicidade dos manifestos não terminais e exige que
+cada ator participe de um único manifesto em toda sua existência. O trigger de
+encerramento seleciona o manifesto pelo ator e pelos horários exatos do lease,
+não apenas pelo identificador do release. Manifestos encerrados, revisões e
+auditoria permanecem preservados. Leases encerrados não são reabertos.
+
+A revisão e o `npm run check` local passaram: 245 arquivos Vitest, 1.723 testes,
+QA, contratos EV2, avaliações, lint, tipos e build em 19,58 s. O
+[CI de banco e artefatos](https://github.com/Vnd93/gaiatec-cms/actions/runs/38671860280)
+concluiu com sucesso nos sete jobs. A suíte de banco passou em 73 arquivos e
+2.334 testes, incluindo os casos de ciclos sucessivos. A migration não
+foi aplicada ao ambiente nesta etapa; o deployment servido continua no SHA
+`19ab3b22db810faea0073c60188d7fdb8aae9708`.
+
+O produtor original é o attempt 1 desse CI. O pacote frontend é
+`11944583666`, digest
+`7628c6d9fc9a03c203fa20c1dd3402d278d711b674ff3d989919d356b2fdc154`;
+o payload de banco é `11943624772`, digest
+`80f7171584edf02c15a7e38cae40490d70b5175ff7954d2a15726fefd8b88b2a`.
+A seleção oficial passou em `full-release` e `bootstrap-full`, sem reduzir
+gates ou substituir o produtor. O novo preflight SQL recusou corretamente o
+banco de staging ainda sem `0122`.
+
+A caixa já indicada tem uma única identidade QA terminal e bloqueada, sem lease
+ativo. A estratégia de reutilização preserva essa identidade e seu histórico:
+arquivar somente seu endereço de login, criar outro UUID com novo lease padrão
+de 240 minutos e enviar o convite à mesma caixa. Nenhuma conta operacional será
+convertida em QA. O próximo convite depende da preparação durável e da
+disponibilidade do responsável para definir senha e concluir MFA; não foi
+enviado antecipadamente.
+
+## Correlação adicional do incidente HTTP 503
+
+Na janela do provedor entre `2026-10-14T15:01:20Z` e `15:02:05Z`, os logs da
+função registram 25 términos de tentativa por deadline e seis respostas
+upstream, enquanto o gateway expõe somente cinco registros com o trace de
+página. Os traces `a56644ac-540c-4611-81d5-ec84e4aba445.2` e
+`373a46f2-43e1-4778-b21c-62904630ef4d.1` falham na consulta primária antes dos
+headers, com duas tentativas de aproximadamente 903–904 ms e documento 503 em
+1.815–1.816 ms.
+
+O trace `a56644ac-540c-4611-81d5-ec84e4aba445.1.1` recebeu 200 na função em
+622 ms, mas não consta no extrato do gateway da mesma janela. Portanto, a
+ausência de um trace no gateway não comprova que a requisição não chegou ao
+serviço. DNS independente resolvido em poucos milissegundos também não mede
+DNS, TCP ou TLS do fetch que falhou. A causa permanece sem comprovação; não
+houve aumento de timeout, remoção de páginas, nova tentativa cega de release
+ou duplicação do chamado de suporte. Flag global OFF e produção intocada.
