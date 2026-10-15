@@ -731,3 +731,48 @@ disponibilidade pública: a causa do 503 continua aberta. A chamada exploratóri
 a `/api/health` não é o health canônico e retornou HTML 503; não foi usada como
 prova de saúde ou como reprodução conclusiva da causa. A entrega permanece
 restrita a staging. Este registro documental não exige deploy da aplicação.
+
+## Correlação da camada compartilhada de mídia
+
+O candidato `b19b06b149b1dc3dd84f452ff320889dec3ccad0` acrescenta correlação
+somente às dependências de mídia de pedidos GET explicitamente rastreados em
+staging. A origem exata e quatro operações são permitidas: leitura de
+replacements, assets e variants e assinatura em lote do bucket privado.
+Cada chamada recebe uma sequência técnica; eventos distinguem início,
+headers, corpo, expiração, cancelamento e headers tardios. Não registram
+seletores, caminhos de objetos, conteúdo, credenciais ou mensagens de erro.
+O limite é de 64 chamadas observadas por pedido, sem acrescentar I/O ou retries.
+Fora de staging ou sem trace e SHA válidos, o transporte original é preservado.
+
+A lacuna foi reproduzida antes da implementação: sete testes falharam com
+o transporte sem observação. Após a correção, 15 testes específicos passaram,
+incluindo transporte que ignora abort, consumo único de corpo, erro original,
+recusa HTTP, logger indisponível e preservação dos prazos de 900 ms. Duas
+asserções estáticas de contratos foram atualizadas para a composição adicional
+do observer, mantendo todos os limites e regras de retry. Os 31 testes focados
+e o check completo passaram: 248 arquivos, 1.750 testes Vitest, contratos QA/EV2,
+avaliações, lint, tipagem e build de 21,32 s. O diff próprio de cinco arquivos
+foi revisado, commitado e publicado em `origin/main`. CI e promoção pendentes.
+
+Uma leitura diagnóstica única, anterior à promoção, consultou diretamente a
+coleção pública do Supabase de staging. Trace técnico
+`71f0a025-c57a-4bed-b966-f52eea6e1016.1`, relógio cliente
+`2026-10-15T18:51:49.905Z–18:51:54.157Z`, HTTP 200 e 4.252 ms totais.
+O backend respondeu ainda como `135a142`, conforme a restauração da ponte;
+não se atribui essa observação ao novo candidato. O relógio do provedor
+registrou o handler entre `18:53:21.615Z` e `18:53:25.093Z`, em 3.478 ms.
+A primeira leitura primária expirou em 903 ms; a segunda recebeu 200 em
+324 ms, com body de 1 ms e consulta total de 1.230 ms. O gateway confirmou
+somente a segunda tentativa, com origem de 306 ms e Envoy de 131 ms.
+Ausência da primeira tentativa no extrato não prova ausência de chegada.
+O intervalo posterior à consulta foi de aproximadamente 2,2 s, ainda sem
+correlação individual completa da mídia nesta versão do backend.
+
+O pedido direto não passou pelo domínio oficial, CMS de produção ou Worker
+do site. Portanto, conectar staging ao domínio de produção não é uma correção
+demonstrada e não será feito. Páginas e controles de mídia permanecem intactos.
+O diagnóstico novo fecha a lacuna de observabilidade; ainda não comprova nem
+corrige a causa de todos os 503. Antes das alterações, os cinco estados de
+workflows estavam vazios nos dois repositórios, o inventário completo tinha
+795 deployments sem operação ativa e não havia QA ativo, recuperação aberta
+ou override de catálogo. Flag global OFF e produção intocada.

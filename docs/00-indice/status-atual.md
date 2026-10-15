@@ -28,6 +28,13 @@ relacionados:
 
 ### Correção do foco promovida e causa do 503 pendente
 
+O diagnóstico adicional de mídia foi publicado em `main` como
+`b19b06b149b1dc3dd84f452ff320889dec3ccad0`, ainda sem promoção em staging.
+Ele correlaciona somente chamadas de mídia permitidas e explicitamente rastreadas
+em staging, sem mudar conteúdo, status, prazos, retries ou controles. Check
+completo aprovado em 248 arquivos e 1.750 testes Vitest. A causa do 503 ainda
+não foi corrigida nem homologada; não serão excluídas páginas.
+
 O SHA servido agora é `473602e3dcd751c2d3df2c710cb538daa294f162`, promovido pela
 ponte `38778727842/1` com o pacote original `11993664484`, sem rebuild. Os sete
 jobs do CI `38777455743/1`, ponte, métricas e verificadores oficiais passaram;
