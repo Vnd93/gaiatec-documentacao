@@ -8,7 +8,7 @@ fase: execucao
 ambiente: todos
 responsavel: Vnd93
 data_criacao: 2026-09-06
-ultima_revisao: 2026-10-14
+ultima_revisao: 2026-10-15
 fonte_canonica: gaiatec-documentacao
 substitui:
   - gaiatec-status-atual-2026-09-06
@@ -25,6 +25,26 @@ relacionados:
 # Status atual do site e CMS GAIATEC
 
 ## Estado vigente — entrega vazia para operação manual
+
+### Catálogo homologado em casos focados e ciclo QA encerrado
+
+Em 15 de outubro UTC, no SHA `5187b2e`, o Chrome real com identidade QA e
+MFA/AAL2 comprovou cadastro, revisão e conflito entre abas, restauração,
+hierarquia, relação e prévia editorial privada. Passaram também os negativos
+de papéis, escopos, referências e payloads no backend real. A recuperação
+durável encerrou os quatro atores, revogou acesso e removeu todos os efeitos
+ativos, preservando o histórico. Flag global OFF e produção intacta.
+
+Foi reproduzido um histórico obsoleto ao iniciar novo produto. A correção mínima
+e três regressões passaram na validação completa e foram promovidas em staging
+como `19ab3b22db810faea0073c60188d7fdb8aae9708`, com CI `38665971683/1`,
+bridge `38666798232/1` verdes e restauração do backend comprovada. Os três
+auxiliares do novo candidato já têm MFA/AAL2 e plano durável; o convite humano
+ainda não foi enviado. Não há homologação integral: acessibilidade completa,
+revalidação da área corrigida e causa do 503 continuam pendentes. Ver o
+[registro de homologação e recuperação](../10-produto-requisitos/nucleo-catalogo/registro-homologacao-focada-e-historico-2026-10-15.md).
+As preparações e sessões descritas abaixo são fotografias anteriores, não
+acessos QA ainda ativos.
 
 ### Diagnósticos corrigidos e homologados na área afetada
 
