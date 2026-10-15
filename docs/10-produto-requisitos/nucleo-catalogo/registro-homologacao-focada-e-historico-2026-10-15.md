@@ -149,6 +149,58 @@ encerrada ou extensão de prazo.
 
 ## Próximos gates
 
+### Fase independente concluída sem novos convites
+
+O responsável determinou prosseguir sem fornecer mais endereços. Não houve
+novo convite, criação de identidade humana ou reabertura de lease encerrado.
+Os três auxiliares já preparados foram usados somente na fase de backend;
+isso não substitui o gate de Chrome autenticado nem aprova a entrega integral.
+
+Antes dos efeitos, o plano dessa fase foi registrado com digest
+`6e738ea9ed346c49fd2e8149d153eb5bd9a3418b91c205dcf91798519ed66fb4` e snapshot
+`7c940bbe1bdf0d8c96771a48dc6423841262343968e900c0ad0478c3e1b376e5`.
+O manifesto comprometido em transação independente vinculou o grupo completo
+dos três atores, sem membro humano pendente de inclusão. Só então foram
+criados overrides individuais, limitados pelos leases originais. Flag global
+OFF, SHA e deployment permaneceram inalterados.
+
+Passaram 15 casos de comando no backend real: criação pelos papéis autorizados,
+recusa de escrita por revisor e administração por editor, atualização versionada,
+recusa de revisão obsoleta, alteração e referências externas ao escopo e payloads
+inválidos. O histórico próprio retornou as revisões 2 e 1; o histórico de outro
+ator retornou vazio. Leitura direta sem o contexto autorizado permaneceu
+fechada, e o workspace autorizado mostrou somente o registro do próprio ator.
+O RPC anônimo foi recusado com `42501`; as 13 tabelas de catálogo têm RLS ativo.
+
+As verificações automatizadas remotas, com zero retries e os limites originais,
+passaram em desktop e mobile: seis jornadas públicas sem violações axe sérias
+ou críticas, atalho de teclado para o conteúdo e login com foco, contraste e
+reduced motion. Desktop teve três testes aprovados e o caso mobile não aplicável;
+no projeto mobile os quatro casos passaram, incluindo menu e Escape. Não são
+prova de acessibilidade do workspace autenticado de catálogo.
+
+No Chrome real, a página inicial renderizou e o atalho levou foco ao elemento
+principal. Instrumentação e Proteção Catódica renderizaram a 390 × 844, com
+documento de 375 px e sem overflow horizontal. O menu mobile abriu, fechou com
+Escape, devolveu o foco ao botão e liberou a rolagem. O viewport foi restaurado.
+Essas observações não comprovam a causa nem eliminam a intermitência do 503.
+
+O login respondeu 200 com `no-store`, `noindex`, `nosniff`, `DENY`,
+`no-referrer` e Permissions Policy. A CSP permanece em `Report-Only`, conforme
+a política de implantação existente; não foi tratada como CSP em enforcement.
+O health confirmou SHA e ambiente de staging exatos.
+
+Às `2026-10-15T02:05:32Z`, o encerramento normal dos três leases e a compensação
+durável comprovaram zero QA ativo, sessão, papel, perfil ativo, override ativo,
+produto/termo ativo ou manifesto aberto. Os três atores estão bloqueados;
+a sessão anteriormente válida já não acessa o catálogo. Foram preservadas cinco
+revisões de produto e oito eventos de auditoria. Não houve snapshot publicado,
+acesso RDO, alteração de senha ou produção. Os recibos imutáveis são
+`cms:qa.catalog_independent_api_results` e
+`cms:qa.catalog_independent_zero_active_residue`.
+
+### Pendências preservadas
+
 Revalidar o histórico afetado no Chrome autenticado e concluir acessibilidade e
 os demais gates do mesmo candidato. A promoção de compatibilidade já passou.
 O diagnóstico do 503 segue o
@@ -159,3 +211,6 @@ O [painel de staging](https://ev2-g17-canary.gaiatec-cms-staging.pages.dev/admin
 e o [guia de operação manual](../../30-cms/manual-do-usuario/operacao-catalogo-manual.md)
 continuam separados de liberação em produção. A identidade temporária deste
 ciclo foi encerrada; contas operacionais não foram convertidas em QA.
+Os três auxiliares da fase independente também foram encerrados. A próxima
+fase é consolidação operacional e acompanhamento das pendências, sem abrir
+outro ciclo de convites automaticamente ou dispensar os gates pendentes.

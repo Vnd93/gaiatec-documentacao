@@ -26,6 +26,28 @@ relacionados:
 
 ## Estado vigente — entrega vazia para operação manual
 
+### Verificações independentes concluídas sem novos e-mails
+
+Por orientação do responsável, o fluxo de novos convites foi interrompido.
+No SHA `19ab3b22db810faea0073c60188d7fdb8aae9708`, os três auxiliares existentes
+concluíram a fase de backend com manifesto durável do grupo completo: 15 casos
+de comando, histórico e isolamento, recusa anônima e RLS nas 13 tabelas.
+Os três leases foram encerrados com zero acesso ou efeito QA ativo e histórico
+preservado. Não há mais auxiliar aguardando convite.
+
+A acessibilidade automatizada pública passou em desktop e mobile. No Chrome
+real, página inicial, atalho de teclado, menu mobile e as páginas de
+Instrumentação e Proteção Catódica renderizaram; o mobile não teve overflow.
+O código, pacote e deployment de staging permanecem os mesmos. Flag global
+OFF, sem carga comercial, publicação ou produção.
+
+A fase seguinte consolida a operação manual e as evidências sem novos convites
+automáticos. A revalidação do histórico corrigido no Chrome autenticado, a
+acessibilidade integral do catálogo e a causa do 503 permanecem pendentes;
+não foi declarada entrega homologada ou liberação de produção. Ver
+[fase independente e recuperação](../10-produto-requisitos/nucleo-catalogo/registro-homologacao-focada-e-historico-2026-10-15.md#fase-independente-concluída-sem-novos-convites).
+Os preparativos descritos abaixo são fotografias anteriores.
+
 ### Catálogo homologado em casos focados e ciclo QA encerrado
 
 Em 15 de outubro UTC, no SHA `5187b2e`, o Chrome real com identidade QA e

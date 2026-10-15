@@ -8,7 +8,7 @@ fase: homologacao
 ambiente: staging
 responsavel: Vnd93
 data_criacao: 2026-10-13
-ultima_revisao: 2026-10-14
+ultima_revisao: 2026-10-15
 fonte_canonica: gaiatec-documentacao
 ---
 
@@ -109,7 +109,9 @@ autorizam nenhuma delas.
 
 Uma gravação desatualizada deve ser recusada, não sobrescrita silenciosamente.
 Os ensaios já realizados usaram duas abas da mesma sessão; isso não substitui
-os casos restantes entre atores e escopos diferentes.
+os casos entre atores e escopos diferentes. Estes últimos passaram no backend
+de staging em fase independente, sem novo convite; a prova de interface
+autenticada continua separada.
 
 ## Evidências e condições de entrega
 
@@ -120,11 +122,19 @@ preservando histórico e auditoria. Isso não fecha os sete fluxos e nove gates
 como conjunto canônico.
 
 Consulte o [estado atual](../../00-indice/status-atual.md) e o
-[registro de homologação](../../10-produto-requisitos/nucleo-catalogo/registro-indicadores-e-evidencia-staging-2026-10-12.md).
-Ainda faltam os casos restantes de segurança/escopo/formulários, acessibilidade
-integral, o tratamento comprovado do 503 e a consolidação no candidato final.
+[registro vigente de homologação](../../10-produto-requisitos/nucleo-catalogo/registro-homologacao-focada-e-historico-2026-10-15.md).
+No candidato atual, revisão, histórico, papéis, escopos, referências e entradas
+inválidas passaram na fase de backend. A acessibilidade pública automatizada
+passou em desktop e mobile, acompanhada por verificações no Chrome real.
+Ainda faltam a revalidação autenticada do histórico corrigido, a acessibilidade
+integral do catálogo e o tratamento comprovado do 503.
 A aceitação do valor administrativo de 2,147 s não corrige o 503 nem transforma
 uma execução histórica reprovada em evidência aprovada.
+
+Não será solicitado outro endereço nem aberto outro convite automaticamente.
+Essa interrupção não habilita o catálogo para contas operacionais, não reabre
+identidades temporárias e não dispensa a homologação pendente. Não tentar usar
+senhas ou links de QA encerrado; mantenha sua conta operacional preservada.
 
 O [manual da edição anterior](README.md) permanece preservado. Este complemento
 não atualiza silenciosamente os arquivos DOCX/PDF nem declara o sistema liberado.
